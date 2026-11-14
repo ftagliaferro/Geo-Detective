@@ -23,6 +23,12 @@ var _dragging := false
 var _moved := 0.0
 var interactive := true
 var auto_spin := 0.0
+var labels: Dictionary = {}      # country id -> Label3D
+var label_rank: Dictionary = {}  # country id -> label rank
+var highlighted := ""
+var _spin_tween: Tween
+const INK := Color("3a2f22")
+const LABEL_FONT := preload("res://assets/fonts/BebasNeue-Regular.ttf")
 
 
 func _init() -> void:
@@ -124,6 +130,74 @@ func _process(delta: float) -> void:
 	if auto_spin != 0.0:
 		yaw += auto_spin * delta
 		_apply()
+	_update_labels()
+
+
+## Country name labels (Label3D). `countries` = id -> {name, lat, lon, rank}.
+func add_country_labels(countries: Dictionary, lang: String) -> void:
+	for id in countries:
+		var c: Dictionary = countries[id]
+		var l := Label3D.new()
+		l.text = str(c["name"].get(lang, c["name"]["en"])).to_upper()
+		l.font = LABEL_FONT
+		l.font_size = 46
+		l.pixel_size = 0.0009
+		l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		l.modulate = INK
+		l.outline_modulate = Color(0.96, 0.93, 0.85, 0.9)
+		l.outline_size = 10
+		l.position = Geo.lat_lon_to_vec(c["lat"], c["lon"]) * 1.01
+		pivot.add_child(l)
+		labels[id] = l
+		label_rank[id] = int(c["rank"])
+
+
+func _update_labels() -> void:
+	if labels.is_empty():
+		return
+	var z := camera.position.z
+	var max_rank := 2 if z > 3.1 else (3 if z > 2.5 else (4 if z > 2.15 else 6))
+	var cam_dir := camera.global_position.normalized()
+	for id in labels:
+		var l: Label3D = labels[id]
+		var facing := (pivot.global_transform.basis * l.position).normalized().dot(cam_dir)
+		var wanted: bool = id == highlighted or int(label_rank[id]) <= max_rank
+		l.visible = wanted and facing > 0.42
+
+
+## Spin smoothly to a country, mark its name in red and pulse it.
+func highlight_country(id: String, lat: float, lon: float) -> void:
+	if highlighted != "" and labels.has(highlighted):
+		var old: Label3D = labels[highlighted]
+		old.modulate = INK
+		old.font_size = 46
+	highlighted = id
+	if labels.has(id):
+		var l: Label3D = labels[id]
+		l.modulate = C_PINK
+		l.font_size = 64
+	spin_to(lat, lon)
+
+
+func spin_to(lat: float, lon: float, duration := 0.7) -> void:
+	var v := Geo.lat_lon_to_vec(lat, lon)
+	var ty := -atan2(v.x, v.z)
+	var tp := asin(clampf(v.y, -1.0, 1.0))
+	while ty - yaw > PI:
+		ty -= TAU
+	while ty - yaw < -PI:
+		ty += TAU
+	if _spin_tween:
+		_spin_tween.kill()
+	_spin_tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	var y0 := yaw
+	var p0 := pitch
+	_spin_tween.tween_method(func(t: float):
+		yaw = lerpf(y0, ty, t)
+		pitch = lerpf(p0, tp, t)
+		_apply(), 0.0, 1.0, duration)
+	if camera.position.z > 3.0:
+		create_tween().tween_property(camera, "position:z", 3.0, duration)
 
 
 func _marker(color: Color, r: float) -> MeshInstance3D:

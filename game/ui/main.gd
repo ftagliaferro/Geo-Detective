@@ -253,6 +253,7 @@ func _refresh() -> void:
 	match screen:
 		"menu": show_menu()
 		"cases": show_cases()
+		"howto": show_howto()
 		"briefing": show_briefing()
 		"city": show_city()
 		"travel": show_travel()
@@ -293,6 +294,17 @@ func show_menu() -> void:
 			current_case = next
 			_start_case())
 	_button(loc.s("cases"), show_cases)
+	_button(loc.s("howto"), show_howto)
+
+
+func show_howto() -> void:
+	screen = "howto"
+	state = null
+	_chrome(loc.s("howto"), true)
+	for i in range(1, 6):
+		_label(content, loc.s("howto_%d_title" % i), 26, C_CYAN)
+		_label(content, loc.s("howto_%d" % i), 18, C_TEXT)
+	_button(loc.s("menu"), show_menu)
 
 
 func _cases_by_number() -> Dictionary:
@@ -387,9 +399,22 @@ func show_city() -> void:
 	_label(content, loc.s("notebook"), 18, C_PINK)
 	if notebook.is_empty():
 		_label(content, loc.s("notebook_empty"), 18, C_MUTED)
-	for line in notebook:
-		_mono(_label(content, "• " + line, 16, C_PAPER))
+	else:
+		_label(content, loc.s("where_header"), 16, C_CYAN)
+		var any_where := false
+		for line in notebook:
+			if not line in evidence:
+				_mono(_label(content, "• " + line, 15, C_PAPER))
+				any_where = true
+		if not any_where:
+			_label(content, loc.s("none_yet"), 15, C_MUTED)
+		_label(content, loc.s("who_header"), 16, C_CYAN)
+		for line in evidence:
+			_mono(_label(content, "• " + line, 15, C_PAPER))
+		if evidence.is_empty():
+			_label(content, loc.s("none_yet"), 15, C_MUTED)
 
+	_next_step_box()
 	for spot in CaseState.SPOTS:
 		var done: bool = state.visited.has(spot)
 		var txt: String = loc.s("spot_" + spot) + "  " + (loc.s("done") if done else loc.s("spot_cost"))
@@ -402,6 +427,24 @@ func show_city() -> void:
 	_button(loc.s("board"), show_board)
 	if state.is_final():
 		_button(loc.s("arrest"), show_chase)
+
+
+## Contextual "what now?" guidance so new players always know the next action.
+func _next_step_box() -> void:
+	var key := "step_investigate"
+	if not state.on_trail():
+		key = "step_deadend"
+	elif state.is_final():
+		key = "step_final_warrant" if state.warrant == "" else "step_final_arrest"
+	elif state.visited.size() >= 2:
+		key = "step_travel"
+	var box := PanelContainer.new()
+	box.add_theme_stylebox_override("panel", _flat_panel(Color("3a3324"), C_CYAN, 1))
+	actions.add_child(box)
+	var v := VBoxContainer.new()
+	box.add_child(v)
+	_label(v, loc.s("next_step"), 15, C_CYAN)
+	_label(v, loc.s(key, {"city": _city(state.route()[state.stop])}), 15, C_TEXT)
 
 
 func _on_spot(spot: String) -> void:
@@ -438,8 +481,8 @@ func _clue_text(clue: Dictionary) -> String:
 			return city + " — " + loc.s("wiretap_says", {"text": loc.t(clue["text"])})
 		"trait":
 			if clue.get("near", false):
-				return city + " — " + loc.s("near_evidence", {"text": loc.t(clue["text"])})
-			return city + " — " + loc.s("money_says", {"text": loc.t(clue["text"])})
+				return city + " — " + loc.s("near_evidence", {"text": loc.t(clue["text"])}) + "  " + loc.s("about_trait", {"trait": loc.t(data.traits[clue["trait"]]["name"])})
+			return city + " — " + loc.s("money_says", {"text": loc.t(clue["text"])}) + "  " + loc.s("about_trait", {"trait": loc.t(data.traits[clue["trait"]]["name"])})
 		"street":
 			if clue.get("hint_locked", false):
 				return city + " — " + loc.s("cctv_locked")
@@ -497,12 +540,27 @@ func show_travel() -> void:
 	content.add_child(globe)
 	var here: Dictionary = data.cities[state.current]
 	globe.focus(here["lat"], here["lon"])
+	globe.add_country_labels(data.countries, loc.lang)
 	if pin != Vector2.INF:
 		globe.set_pin(pin.x, pin.y)
 
 	_label(actions, loc.s("globe_from", {"city": _city(state.current)}), 20, C_CYAN)
-	_label(actions, loc.s("globe_help"), 17, C_MUTED)
-	var info := _label(actions, "", 18, C_PAPER)
+	_label(actions, loc.s("globe_help"), 15, C_MUTED)
+	var sug: Array = state.suggested_countries()
+	if not sug.is_empty():
+		_label(actions, loc.s("analyst"), 16, C_CYAN)
+		var grid := GridContainer.new()
+		grid.columns = 2
+		grid.add_theme_constant_override("h_separation", 6)
+		grid.add_theme_constant_override("v_separation", 6)
+		actions.add_child(grid)
+		for code in sug:
+			var c: Dictionary = data.countries[code]
+			var b := _button(loc.t(c["name"]), func(): globe.highlight_country(code, c["lat"], c["lon"]), false, grid)
+			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			b.alignment = HORIZONTAL_ALIGNMENT_CENTER
+			b.add_theme_font_size_override("font_size", 15)
+	var info := _label(actions, "", 17, C_PAPER)
 	var fly := _button(loc.s("fly_here"), _on_fly, true)
 	_button(loc.s("back"), show_city)
 	var update_info := func():

@@ -7,6 +7,7 @@ var trait_ids: Array = []
 var suspects: Dictionary = {}
 var cases: Dictionary = {}
 var strings: Dictionary = {}
+var countries: Dictionary = {}
 
 
 func load_all(base: String = "res://data") -> void:
@@ -23,6 +24,7 @@ func load_all(base: String = "res://data") -> void:
 	suspects = _index(_read(base + "/suspects.json")["suspects"])
 	cases = _index(_read(base + "/cases.json")["cases"])
 	strings = _read(base + "/i18n/strings.json")["strings"]
+	countries = _index(_read(base + "/countries.json")["countries"])
 
 
 static func _index(items: Array) -> Dictionary:

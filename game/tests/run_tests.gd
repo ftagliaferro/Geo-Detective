@@ -291,3 +291,20 @@ func test_chase_clean_run_catches() -> void:
 		guard += 1
 	check(result[0] == true, "perfect run catches the suspect before time runs out")
 	chase.queue_free()
+
+
+func test_suggestions_include_destination() -> void:
+	for cid in data.cases:
+		var s = CaseState.new(data, cid, 5)
+		for i in range(s.last_stop()):
+			var sug: Array = s.plan[i]["suggest"]
+			var target: String = data.cities[s.route()[i + 1]]["country_code"]
+			check(sug.size() == 4 and target in sug, "%s leg %d: 4 suggestions incl. %s (got %s)" % [cid, i, target, sug])
+
+
+func test_hard_case_suggestions_are_neighbours() -> void:
+	var s = CaseState.new(data, "case_13", 5)
+	var target: Dictionary = data.countries[data.cities[s.route()[1]]["country_code"]]
+	for code in s.plan[0]["suggest"]:
+		var c: Dictionary = data.countries[code]
+		check(Geo.distance_km(target["lat"], target["lon"], c["lat"], c["lon"]) < 3500.0, "hard decoys are nearby (%s)" % code)

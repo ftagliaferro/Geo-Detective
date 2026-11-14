@@ -217,8 +217,8 @@
       "en": "Cross out suspects until only one is left to issue the order."
     },
     "globe_help": {
-      "es": "Girá el globo arrastrando. Tocá o hacé clic para clavar el pin donde creés que fue el sospechoso. Rueda del mouse: zoom.",
-      "en": "Drag to spin the globe. Tap or click to drop the pin where you think the suspect went. Mouse wheel: zoom."
+      "es": "Arrastrá para girar, rueda para zoom. Tocá un país sugerido para ubicarlo y después tocá el globo para clavar el pin.",
+      "en": "Drag to spin, wheel to zoom. Tap a suggested country to find it, then tap the globe to drop the pin."
     },
     "globe_from": {
       "es": "Salís desde {city}.",
@@ -241,8 +241,8 @@
       "en": "You landed in {city}. Your pin was {km} km off. On the trail!"
     },
     "flight_miss": {
-      "es": "Aterrizaste en {city}. No parece haber rastro por acá…",
-      "en": "You landed in {city}. There seems to be no trail here…"
+      "es": "Aterrizaste en {city}. Acá no hay rastro del sospechoso: el destino era otro.",
+      "en": "You landed in {city}. No sign of the suspect here — the destination was elsewhere."
     },
     "chase_help": {
       "es": "Flechas o A/D, deslizá el dedo o tocá un costado de la pantalla para cambiar de carril. Esquivá los obstáculos y alcanzalo.",
@@ -319,6 +319,94 @@
     "promoted": {
       "es": "¡Ascenso! Ahora sos {rank}.",
       "en": "Promotion! You are now {rank}."
+    },
+    "howto": {
+      "es": "Cómo jugar",
+      "en": "How to play"
+    },
+    "howto_1_title": {
+      "es": "1. Leé el expediente",
+      "en": "1. Read the case file"
+    },
+    "howto_1": {
+      "es": "Una banda cometió un delito y huyó por el mundo. Tenés un límite de horas para atrapar al culpable.",
+      "en": "A gang committed a crime and fled around the world. You have limited hours to catch the culprit."
+    },
+    "howto_2_title": {
+      "es": "2. Juntá evidencia en cada ciudad",
+      "en": "2. Gather evidence in each city"
+    },
+    "howto_2": {
+      "es": "Escuchas y cámaras te dicen A DÓNDE fue el sospechoso. El rastro de dinero te dice QUIÉN es. Cada evidencia cuesta 2 horas.",
+      "en": "Wiretaps and CCTV tell you WHERE the suspect went. The money trail tells you WHO it is. Each piece of evidence costs 2 hours."
+    },
+    "howto_3_title": {
+      "es": "3. Seguilo en el globo",
+      "en": "3. Track them on the globe"
+    },
+    "howto_3": {
+      "es": "Girá el globo y clavá el pin donde creés que fue. El analista te sugiere cuatro países: uno es el correcto. Si errás, aterrizás en otra ciudad y perdés tiempo.",
+      "en": "Spin the globe and drop the pin where you think they went. The analyst suggests four countries: one is right. Miss, and you land elsewhere and lose time."
+    },
+    "howto_4_title": {
+      "es": "4. Tachá sospechosos en el pizarrón",
+      "en": "4. Cross out suspects on the corkboard"
+    },
+    "howto_4": {
+      "es": "Compará la evidencia del sospechoso con las fichas de la banda. Cuando quede uno solo, emití la orden de captura.",
+      "en": "Compare the evidence about the suspect with the gang's files. When only one is left, issue the arrest order."
+    },
+    "howto_5_title": {
+      "es": "5. Arresto y persecución",
+      "en": "5. Arrest and chase"
+    },
+    "howto_5": {
+      "es": "En la última ciudad el sospechoso está cerca. Arrestalo y ganá la persecución para sumar una estrella extra.",
+      "en": "In the last city the suspect is close. Make the arrest and win the chase for an extra star."
+    },
+    "where_header": {
+      "es": "¿A DÓNDE FUE?",
+      "en": "WHERE DID THEY GO?"
+    },
+    "who_header": {
+      "es": "¿QUIÉN ES?",
+      "en": "WHO IS IT?"
+    },
+    "none_yet": {
+      "es": "(todavía nada)",
+      "en": "(nothing yet)"
+    },
+    "about_trait": {
+      "es": "[pista sobre: {trait}]",
+      "en": "[clue about: {trait}]"
+    },
+    "next_step": {
+      "es": "PRÓXIMO PASO",
+      "en": "NEXT STEP"
+    },
+    "step_investigate": {
+      "es": "Revisá la evidencia de esta ciudad. Escuchas y cámaras: a dónde fue. Rastro de dinero: quién es.",
+      "en": "Check this city's evidence. Wiretap and CCTV: where they went. Money trail: who it is."
+    },
+    "step_travel": {
+      "es": "¿Ya tenés una idea del destino? Rastrealo en el globo. Si dudás, revisá la evidencia que falta.",
+      "en": "Got an idea of the destination? Track it on the globe. Unsure? Check the remaining evidence."
+    },
+    "step_deadend": {
+      "es": "Acá no hay rastro. Volvé a {city} o, si ya sabés a dónde fue, viajá directo para allá.",
+      "en": "No trail here. Fly back to {city} or, if you know where they went, fly straight there."
+    },
+    "step_final_warrant": {
+      "es": "¡El sospechoso está en esta ciudad! Usá el pizarrón para emitir la orden de captura.",
+      "en": "The suspect is in this city! Use the corkboard to issue the arrest order."
+    },
+    "step_final_arrest": {
+      "es": "Orden emitida. ¡Arrestalo antes de que escape!",
+      "en": "Order issued. Make the arrest before they escape!"
+    },
+    "analyst": {
+      "es": "EL ANALISTA SUGIERE (uno es el correcto):",
+      "en": "THE ANALYST SUGGESTS (one is right):"
     }
   }
 }
