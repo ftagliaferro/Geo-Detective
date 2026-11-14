@@ -29,10 +29,10 @@ class ValidateDataTest(unittest.TestCase):
         d["suspects"]["marcel_dupin"]["traits"]["mark"] = "gold_ring"
         self.assertTrue(any("uniquely" in e for e in vd.validate(d)))
 
-    def test_decoy_on_route_detected(self):
+    def test_bad_radius_detected(self):
         d = copy.deepcopy(self.data)
-        d["cases"]["case_01"]["decoys"][0][0] = "budapest"
-        self.assertTrue(any("on the route" in e for e in vd.validate(d)))
+        d["cases"]["case_01"]["radius_km"] = 10
+        self.assertTrue(any("radius_km" in e for e in vd.validate(d)))
 
 
 if __name__ == "__main__":

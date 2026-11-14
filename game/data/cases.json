@@ -1,12 +1,32 @@
 {
   "cases": [
-    {"id": "case_01", "number": 1, "network": "paper_saints",
-     "title": {"es": "Caso 1: La firma perfecta", "en": "Case 1: The Perfect Signature"},
-     "crime": {"es": "Una red de cheques falsificados vació las cuentas de un banco en Buenos Aires. Cada cheque tenía una firma impecable. Los Santos de Papel están detrás.", "en": "A forged-cheque ring emptied accounts at a bank in Buenos Aires. Every cheque carried a flawless signature. The Paper Saints are behind it."},
-     "hours": 96,
-     "route": ["buenos_aires", "lisbon", "budapest"],
-     "decoys": [["tokyo", "cairo", "toronto"], ["mumbai", "sydney", "mexico_city"]],
-     "culprit": "valentina_roca",
-     "trait_order": ["vehicle", "mark", "language", "hobby", "specialty"]}
+    {
+      "id": "case_01",
+      "number": 1,
+      "network": "paper_saints",
+      "title": {
+        "es": "Caso 1: La firma perfecta",
+        "en": "Case 1: The Perfect Signature"
+      },
+      "crime": {
+        "es": "Una red de cheques falsificados vació las cuentas de un banco en Buenos Aires. Cada cheque tenía una firma impecable. Los Santos de Papel están detrás.",
+        "en": "A forged-cheque ring emptied accounts at a bank in Buenos Aires. Every cheque carried a flawless signature. The Paper Saints are behind it."
+      },
+      "hours": 96,
+      "route": [
+        "buenos_aires",
+        "lisbon",
+        "budapest"
+      ],
+      "culprit": "valentina_roca",
+      "trait_order": [
+        "vehicle",
+        "mark",
+        "language",
+        "hobby",
+        "specialty"
+      ],
+      "radius_km": 1000
+    }
   ]
 }

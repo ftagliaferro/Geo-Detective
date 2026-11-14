@@ -1,6 +1,6 @@
 # Game Design Document — Geo Detective *(working title)*
 
-> Version 0.1 — 2026-11-14 · Status: draft for review
+> Version 0.2 — 2026-11-14 · Status: core twist applied (ADR-0006)
 
 ## 1. Pitch
 You are a field agent of a fictional international task force. Crime networks — cartels, con artists, hackers, traffickers — are moving across the world. Follow their trail city by city, read the clues (people, places, street scenes), build the suspect's profile and issue the arrest order **before the clock runs out**.
@@ -13,20 +13,20 @@ You are a field agent of a fictional international task force. Crime networks �
 
 ## 2. Core loop (one case)
 ```
-Briefing ─► Investigate city ─► Read clues ─► Update deduction board
+Briefing ─► Gather evidence ─► Read clues ─► Update corkboard
    ▲                                              │
-   │                         Travel (3D globe) ◄──┘
+   │                     Pin-drop on 3D globe ◄──┘
    └──── Final city: issue arrest order ─► Arcade chase ─► Results
 ```
 1. **Briefing:** crime, origin city, time budget (e.g. 120 in-game hours), gang file.
-2. **Investigate:** each city has 3 spots. Each visit costs hours.
-   - **Witness** — text clue about the next destination ("She asked for change in *forints*").
-   - **Informant** — clue about the suspect ("He never takes off his gold signet ring").
-   - **Street look** — a curated street image of the *next* destination; optional hint highlights what to look at (plates, signs, script, driving side). Easy GeoGuessr.
-3. **Travel:** on the 3D globe choose among 4 destinations. Travel cost depends on distance. Wrong city → dead-end clues ("Nobody here saw anyone like that") and time lost.
-4. **Deduction board:** 5 suspect traits (specialty, vehicle, distinctive mark, language, hobby). Filtering narrows the gang roster. An **arrest order** must be issued before the final city.
+2. **Investigate:** each city has 3 evidence sources. Each costs hours.
+   - **Wiretap** — intercepted call transcript hinting at the next destination ("…the money waits where they pay in *forints*").
+   - **Money trail** — receipts, card payments and crypto transfers revealing a suspect trait ("Card used to buy opera tickets").
+   - **CCTV** — a real, openly licensed street photo of the *next* destination, styled as surveillance footage; optional hint highlights plates, signs, script, driving side. Easy GeoGuessr.
+3. **Pin-drop pursuit:** no destination list. Spin the 3D globe and drop a pin. Within the case's precision radius → you land on the trail; otherwise you land in the nearest other city and find nothing. Flight time depends on distance; precision adds score.
+4. **Corkboard:** suspect cards pinned on a board. Each piece of evidence crosses out suspects that don't match (5 traits: specialty, vehicle, distinctive mark, language, hobby). The last card standing gets the **arrest order**, which must exist before the arrest.
 5. **Arcade chase (final city):** a 30–45 s low-poly chase (rooftops / streets / harbour). Success depends on the arrest order being correct; skill only adds bonus stars.
-6. **Results:** 1–3 stars (time left, wrong trips, chase), XP toward rank.
+6. **Results:** 1–3 stars (time left, misses, average pin precision, chase), XP toward rank.
 
 **Lose conditions:** time runs out, or arrest order wrong/missing at the end.
 
@@ -53,7 +53,7 @@ Five fictional crime networks × 3 cases each; the 3rd case of each arc is the n
 ## 4. Content model (data-driven, engine-independent — ADR-0002)
 - `cities.json` — ~40 cities in v1: id, name (es/en), country, lat/lon, clue pools by category & difficulty, street-look image ids.
 - `suspects.json` — fictional characters with 5 traits, portrait id, network.
-- `cases.json` — hand-authored: route (city ids), culprit, time budget, decoys, difficulty.
+- `cases.json` — hand-authored: route (city ids), culprit, time budget, precision radius (km), trait order.
 - `streetlook.json` — image file, source, author, license, "what to look at" (es/en).
 - `i18n/` — UI strings es/en.
 Python tools validate everything (routes reachable, clues exist for each hop, licenses present, both languages complete).
@@ -89,4 +89,4 @@ Case 1 playable end-to-end in the browser: 3 cities, 4 suspects, witness + infor
 
 ---
 ## 🇪🇸 Resumen
-Sos agente de una fuerza internacional ficticia. En cada caso seguís a una banda por el mundo: en cada ciudad investigás 3 lugares (testigo, informante y una **foto de la calle** del próximo destino), viajás en un globo 3D, completás el tablero de deducción, emitís la orden de captura y terminás con una **persecución arcade** corta. 15 casos en 5 bandas (estafadores, contrabando, hackers, arte, cartel final), con dificultad creciente y rangos de detective. Anuncios solo en menús, mapa y resultados; compra única para quitarlos.
+Sos agente de una fuerza internacional ficticia. En cada caso seguís a una banda por el mundo: en cada ciudad revisás 3 evidencias (**escucha telefónica**, **rastro de dinero** y **cámara de seguridad** con una foto real de la calle del próximo destino), viajás **clavando un pin en el globo 3D** (si le errás, aterrizás en otro lado), tachás sospechosos en un **pizarrón de corcho**, emitís la orden de captura y terminás con una **persecución arcade** corta. 15 casos en 5 bandas (estafadores, contrabando, hackers, arte, cartel final), con dificultad creciente y rangos de detective. Anuncios solo en menús, mapa y resultados; compra única para quitarlos.

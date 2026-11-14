@@ -78,6 +78,9 @@ def validate(d: dict) -> list[str]:
             if val not in {v["id"] for v in traits[tid]["values"]}:
                 errors.append(f"suspect {sid}: invalid or missing trait {tid}={val!r}")
 
+    if len(cities) < 30:
+        errors.append(f"world pool has {len(cities)} cities; need at least 30 for pin-drop landings")
+
     for kid, k in cases.items():
         _i18n(k["title"], f"case {kid}.title", errors)
         _i18n(k["crime"], f"case {kid}.crime", errors)
@@ -93,16 +96,9 @@ def validate(d: dict) -> list[str]:
                 errors.append(f"case {kid}: destination {nxt} has no witness clues")
             if not c.get("street"):
                 errors.append(f"case {kid}: destination {nxt} has no street look")
-        if len(k["decoys"]) != len(route) - 1:
-            errors.append(f"case {kid}: need one decoy list per hop")
-        for i, decoys in enumerate(k["decoys"]):
-            if len(decoys) != 3:
-                errors.append(f"case {kid}: hop {i} needs exactly 3 decoys")
-            for dc in decoys:
-                if dc not in cities:
-                    errors.append(f"case {kid}: unknown decoy {dc}")
-                if dc in route:
-                    errors.append(f"case {kid}: decoy {dc} is on the route")
+        radius = k.get("radius_km")
+        if not isinstance(radius, (int, float)) or not 100 <= radius <= 3000:
+            errors.append(f"case {kid}: radius_km must be between 100 and 3000")
         culprit = k["culprit"]
         if culprit not in suspects:
             errors.append(f"case {kid}: unknown culprit {culprit}")

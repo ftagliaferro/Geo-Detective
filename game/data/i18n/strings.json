@@ -1,52 +1,276 @@
 {
   "strings": {
-    "game_title": {"es": "GEO DETECTIVE", "en": "GEO DETECTIVE"},
-    "tagline": {"es": "Seguí el rastro. Leé el mundo. Atrapá a la banda.", "en": "Follow the trail. Read the world. Catch the gang."},
-    "play_case": {"es": "Jugar {title}", "en": "Play {title}"},
-    "lang_button": {"es": "English", "en": "Español"},
-    "hours": {"es": "Horas: {used} / {budget}", "en": "Hours: {used} / {budget}"},
-    "briefing": {"es": "EXPEDIENTE", "en": "CASE FILE"},
-    "budget_info": {"es": "Tenés {hours} horas para atrapar al culpable. Cada lugar que investigás cuesta 2 horas; viajar cuesta según la distancia.", "en": "You have {hours} hours to catch the culprit. Each place you investigate costs 2 hours; travel costs depend on distance."},
-    "start": {"es": "Empezar", "en": "Start"},
-    "you_are_in": {"es": "Estás en {city}, {country}.", "en": "You are in {city}, {country}."},
-    "spot_witness": {"es": "Hablar con un testigo", "en": "Talk to a witness"},
-    "spot_informant": {"es": "Ver al informante", "en": "Meet the informant"},
-    "spot_street": {"es": "Mirar la calle", "en": "Look at the street"},
-    "spot_cost": {"es": "(2 h)", "en": "(2 h)"},
-    "done": {"es": "(visto)", "en": "(done)"},
-    "travel": {"es": "Viajar", "en": "Travel"},
-    "board": {"es": "Tablero de deducción", "en": "Deduction board"},
-    "arrest": {"es": "¡Arrestar!", "en": "Arrest!"},
-    "back": {"es": "Volver", "en": "Back"},
-    "choose_destination": {"es": "¿A dónde viajás desde {city}?", "en": "Where do you fly from {city}?"},
-    "witness_says": {"es": "Testigo: «{text}»", "en": "Witness: \"{text}\""},
-    "informant_says": {"es": "Informante: «{text}»", "en": "Informant: \"{text}\""},
-    "near_prefix": {"es": "¡Está cerca! ", "en": "They're close! "},
-    "near_only": {"es": "Alguien con esa descripción pasó por acá hace minutos. ¡Está en la ciudad!", "en": "Someone matching that description was here minutes ago. They're in the city!"},
-    "deadend": {"es": "Nadie vio a nadie con esa descripción. Quizás viajaste al lugar equivocado.", "en": "Nobody saw anyone like that. Maybe you flew to the wrong place."},
-    "street_title": {"es": "Foto de la calle del próximo destino", "en": "Street photo of the next destination"},
-    "street_pending": {"es": "[ Foto real pendiente de curación ]", "en": "[ Real photo pending curation ]"},
-    "street_hint": {"es": "Fijate en: {hint}", "en": "Look at: {hint}"},
-    "notebook": {"es": "LIBRETA", "en": "NOTEBOOK"},
-    "notebook_empty": {"es": "Todavía no anotaste nada.", "en": "Nothing written down yet."},
-    "board_title": {"es": "Marcá lo que sabés del sospechoso", "en": "Mark what you know about the suspect"},
-    "unknown": {"es": "?", "en": "?"},
-    "matches": {"es": "Sospechosos que coinciden: {n}", "en": "Matching suspects: {n}"},
-    "issue_warrant": {"es": "Emitir orden de captura", "en": "Issue arrest order"},
-    "warrant_for": {"es": "Orden de captura emitida contra: {name}", "en": "Arrest order issued for: {name}"},
-    "no_warrant": {"es": "Todavía no emitiste ninguna orden de captura.", "en": "No arrest order issued yet."},
-    "chase_title": {"es": "¡PERSECUCIÓN!", "en": "CHASE!"},
-    "chase_text": {"es": "Lo viste doblar una esquina en {city}. Es ahora o nunca.", "en": "You spot them turning a corner in {city}. Now or never."},
-    "chase_no_warrant": {"es": "Ojo: sin orden de captura, aunque lo atrapes, se te escapa.", "en": "Careful: without an arrest order they'll walk free even if you catch them."},
-    "catch": {"es": "¡Atrapalo!", "en": "Catch them!"},
-    "won": {"es": "¡CASO RESUELTO! Atrapaste a {name}.", "en": "CASE CLOSED! You caught {name}."},
-    "lost_time": {"es": "Se acabó el tiempo. La banda se te escapó.", "en": "Time's up. The gang got away."},
-    "lost_wrong": {"es": "Atrapaste a la persona equivocada. El verdadero culpable escapó.", "en": "You arrested the wrong person. The real culprit escaped."},
-    "lost_nowarrant": {"es": "Lo atrapaste, pero sin orden de captura tuviste que soltarlo.", "en": "You caught them, but without an arrest order you had to let them go."},
-    "stars": {"es": "Estrellas: {stars} / 3", "en": "Stars: {stars} / 3"},
-    "summary": {"es": "Horas usadas: {used} de {budget} · Viajes equivocados: {wrong}", "en": "Hours used: {used} of {budget} · Wrong trips: {wrong}"},
-    "play_again": {"es": "Jugar de nuevo", "en": "Play again"},
-    "menu": {"es": "Menú", "en": "Menu"},
-    "ad_placeholder": {"es": "Publicidad (espacio para banner AdMob)", "en": "Advertisement (AdMob banner slot)"}
+    "game_title": {
+      "es": "GEO DETECTIVE",
+      "en": "GEO DETECTIVE"
+    },
+    "tagline": {
+      "es": "Seguí el rastro. Leé el mundo. Atrapá a la banda.",
+      "en": "Follow the trail. Read the world. Catch the gang."
+    },
+    "play_case": {
+      "es": "Jugar {title}",
+      "en": "Play {title}"
+    },
+    "lang_button": {
+      "es": "English",
+      "en": "Español"
+    },
+    "hours": {
+      "es": "Horas: {used} / {budget}",
+      "en": "Hours: {used} / {budget}"
+    },
+    "briefing": {
+      "es": "EXPEDIENTE",
+      "en": "CASE FILE"
+    },
+    "budget_info": {
+      "es": "Tenés {hours} horas. Cada evidencia que revisás cuesta 2 horas. Para viajar, clavás un pin en el globo: si caés a menos de {radius} km del destino real, seguís el rastro; si no, aterrizás en otro lado y perdés tiempo.",
+      "en": "You have {hours} hours. Each piece of evidence costs 2 hours. To travel, drop a pin on the globe: land within {radius} km of the real destination to stay on the trail; otherwise you land somewhere else and lose time."
+    },
+    "start": {
+      "es": "Empezar",
+      "en": "Start"
+    },
+    "you_are_in": {
+      "es": "Estás en {city}, {country}.",
+      "en": "You are in {city}, {country}."
+    },
+    "spot_cost": {
+      "es": "(2 h)",
+      "en": "(2 h)"
+    },
+    "done": {
+      "es": "(visto)",
+      "en": "(done)"
+    },
+    "travel": {
+      "es": "Rastrear en el globo",
+      "en": "Track on the globe"
+    },
+    "board": {
+      "es": "Pizarrón de corcho",
+      "en": "Corkboard"
+    },
+    "arrest": {
+      "es": "¡Arrestar!",
+      "en": "Arrest!"
+    },
+    "back": {
+      "es": "Volver",
+      "en": "Back"
+    },
+    "near_only": {
+      "es": "Alguien con esa descripción pasó por acá hace minutos. ¡Está en la ciudad!",
+      "en": "Someone matching that description was here minutes ago. They're in the city!"
+    },
+    "deadend": {
+      "es": "Nadie vio a nadie con esa descripción. Quizás viajaste al lugar equivocado.",
+      "en": "Nobody saw anyone like that. Maybe you flew to the wrong place."
+    },
+    "street_hint": {
+      "es": "Fijate en: {hint}",
+      "en": "Look at: {hint}"
+    },
+    "notebook": {
+      "es": "LIBRETA",
+      "en": "NOTEBOOK"
+    },
+    "notebook_empty": {
+      "es": "Todavía no anotaste nada.",
+      "en": "Nothing written down yet."
+    },
+    "unknown": {
+      "es": "?",
+      "en": "?"
+    },
+    "issue_warrant": {
+      "es": "Emitir orden de captura",
+      "en": "Issue arrest order"
+    },
+    "warrant_for": {
+      "es": "Orden de captura emitida contra: {name}",
+      "en": "Arrest order issued for: {name}"
+    },
+    "no_warrant": {
+      "es": "Todavía no emitiste ninguna orden de captura.",
+      "en": "No arrest order issued yet."
+    },
+    "chase_title": {
+      "es": "¡PERSECUCIÓN!",
+      "en": "CHASE!"
+    },
+    "chase_text": {
+      "es": "Lo viste doblar una esquina en {city}. Es ahora o nunca.",
+      "en": "You spot them turning a corner in {city}. Now or never."
+    },
+    "chase_no_warrant": {
+      "es": "Ojo: sin orden de captura, aunque lo atrapes, se te escapa.",
+      "en": "Careful: without an arrest order they'll walk free even if you catch them."
+    },
+    "catch": {
+      "es": "¡Atrapalo!",
+      "en": "Catch them!"
+    },
+    "won": {
+      "es": "¡CASO RESUELTO! Atrapaste a {name}.",
+      "en": "CASE CLOSED! You caught {name}."
+    },
+    "lost_time": {
+      "es": "Se acabó el tiempo. La banda se te escapó.",
+      "en": "Time's up. The gang got away."
+    },
+    "lost_wrong": {
+      "es": "Atrapaste a la persona equivocada. El verdadero culpable escapó.",
+      "en": "You arrested the wrong person. The real culprit escaped."
+    },
+    "lost_nowarrant": {
+      "es": "Lo atrapaste, pero sin orden de captura tuviste que soltarlo.",
+      "en": "You caught them, but without an arrest order you had to let them go."
+    },
+    "stars": {
+      "es": "Estrellas: {stars} / 3",
+      "en": "Stars: {stars} / 3"
+    },
+    "summary": {
+      "es": "Horas usadas: {used} de {budget} · Pines errados: {misses} · Precisión media: {km} km",
+      "en": "Hours used: {used} of {budget} · Missed pins: {misses} · Avg precision: {km} km"
+    },
+    "play_again": {
+      "es": "Jugar de nuevo",
+      "en": "Play again"
+    },
+    "menu": {
+      "es": "Menú",
+      "en": "Menu"
+    },
+    "ad_placeholder": {
+      "es": "Publicidad (espacio para banner AdMob)",
+      "en": "Advertisement (AdMob banner slot)"
+    },
+    "spot_wiretap": {
+      "es": "Escuchas telefónicas",
+      "en": "Wiretap"
+    },
+    "spot_money": {
+      "es": "Rastro de dinero",
+      "en": "Money trail"
+    },
+    "spot_cctv": {
+      "es": "Cámaras de seguridad",
+      "en": "CCTV footage"
+    },
+    "wiretap_says": {
+      "es": "Escucha interceptada: «{text}»",
+      "en": "Intercepted call: \"{text}\""
+    },
+    "money_says": {
+      "es": "Rastro de dinero: {text}",
+      "en": "Money trail: {text}"
+    },
+    "cctv_title": {
+      "es": "CÁMARA · imagen del próximo destino del sospechoso",
+      "en": "CCTV · footage from the suspect's next destination"
+    },
+    "cctv_note": {
+      "es": "Cámara de seguridad del próximo destino. Fijate en: {hint}",
+      "en": "CCTV from the next destination. Look at: {hint}"
+    },
+    "cctv_pending": {
+      "es": "[ Imagen pendiente ]",
+      "en": "[ Footage pending ]"
+    },
+    "photo_credit": {
+      "es": "Foto: {artist} · {license} · Wikimedia Commons",
+      "en": "Photo: {artist} · {license} · Wikimedia Commons"
+    },
+    "cork_title": {
+      "es": "Tachá a los sospechosos que no coinciden con la evidencia.",
+      "en": "Cross out the suspects who don't match the evidence."
+    },
+    "cork_evidence": {
+      "es": "EVIDENCIA SOBRE EL SOSPECHOSO",
+      "en": "EVIDENCE ON THE SUSPECT"
+    },
+    "cork_no_evidence": {
+      "es": "Todavía no tenés evidencia sobre el sospechoso. Revisá el rastro de dinero.",
+      "en": "No evidence on the suspect yet. Check the money trail."
+    },
+    "cross_out": {
+      "es": "Tachar",
+      "en": "Cross out"
+    },
+    "restore": {
+      "es": "Restaurar",
+      "en": "Restore"
+    },
+    "discarded": {
+      "es": "DESCARTADO",
+      "en": "RULED OUT"
+    },
+    "issue_warrant_for": {
+      "es": "Orden de captura: {name}",
+      "en": "Arrest order: {name}"
+    },
+    "issue_warrant_hint": {
+      "es": "Tachá sospechosos hasta que quede uno solo para emitir la orden.",
+      "en": "Cross out suspects until only one is left to issue the order."
+    },
+    "globe_help": {
+      "es": "Girá el globo arrastrando. Tocá o hacé clic para clavar el pin donde creés que fue el sospechoso. Rueda del mouse: zoom.",
+      "en": "Drag to spin the globe. Tap or click to drop the pin where you think the suspect went. Mouse wheel: zoom."
+    },
+    "globe_from": {
+      "es": "Salís desde {city}.",
+      "en": "Departing from {city}."
+    },
+    "pin_none": {
+      "es": "Todavía no clavaste el pin.",
+      "en": "No pin dropped yet."
+    },
+    "pin_at": {
+      "es": "Pin: {lat}, {lon} · vuelo aprox. {hours} h",
+      "en": "Pin: {lat}, {lon} · flight approx. {hours} h"
+    },
+    "fly_here": {
+      "es": "Volar al pin",
+      "en": "Fly to pin"
+    },
+    "flight_hit": {
+      "es": "Aterrizaste en {city}. Tu pin quedó a {km} km. ¡Vas bien!",
+      "en": "You landed in {city}. Your pin was {km} km off. On the trail!"
+    },
+    "flight_miss": {
+      "es": "Aterrizaste en {city}. No parece haber rastro por acá…",
+      "en": "You landed in {city}. There seems to be no trail here…"
+    },
+    "chase_help": {
+      "es": "Flechas o A/D, deslizá el dedo o tocá un costado de la pantalla para cambiar de carril. Esquivá los obstáculos y alcanzalo.",
+      "en": "Arrows or A/D, swipe, or tap a side of the screen to change lanes. Dodge obstacles and catch up."
+    },
+    "chase_start": {
+      "es": "¡Empezar persecución!",
+      "en": "Start the chase!"
+    },
+    "chase_time": {
+      "es": "Tiempo",
+      "en": "Time"
+    },
+    "chase_gap": {
+      "es": "Distancia",
+      "en": "Gap"
+    },
+    "chase_caught": {
+      "es": "¡Lo alcanzaste en la persecución! (+1 estrella)",
+      "en": "You caught them in the chase! (+1 star)"
+    },
+    "chase_escaped": {
+      "es": "Se te escapó en la persecución, pero los refuerzos lo cercaron.",
+      "en": "They outran you, but backup closed them in."
+    },
+    "near_evidence": {
+      "es": "¡Está cerca! Evidencia: {text}",
+      "en": "They're close! Evidence: {text}"
+    }
   }
 }

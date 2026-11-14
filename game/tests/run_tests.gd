@@ -6,6 +6,7 @@ const CaseState = preload("res://core/case_state.gd")
 const Deduction = preload("res://core/deduction.gd")
 const Geo = preload("res://core/geo.gd")
 const Loc = preload("res://core/loc.gd")
+const ChaseView = preload("res://ui/chase_view.gd")
 
 var passed := 0
 var failed := 0
@@ -40,28 +41,43 @@ func test_distance_buenos_aires_lisbon() -> void:
 
 
 func test_data_loaded() -> void:
-	check(data.cities.size() >= 9, "cities loaded")
+	check(data.cities.size() >= 30, "world city pool loaded")
 	check(data.suspects.has("valentina_roca"), "suspects loaded")
 	check(data.cases.has("case_01"), "case loaded")
 	check(data.trait_ids.size() == 5, "5 traits")
 
 
+func _pin(s, city: String) -> Dictionary:
+	var c: Dictionary = data.cities[city]
+	return s.travel_to_pin(c["lat"] + 0.5, c["lon"] - 0.5)
+
+
 func _win_path(s) -> void:
 	for spot in CaseState.SPOTS:
 		s.visit(spot)
-	s.travel("lisbon")
+	_pin(s, "lisbon")
 	for spot in CaseState.SPOTS:
 		s.visit(spot)
-	s.travel("budapest")
+	_pin(s, "budapest")
 
 
 func test_full_win() -> void:
 	var s = CaseState.new(data, "case_01", 42)
 	_win_path(s)
 	check(s.is_final(), "reached final city")
+	check(not s.can_travel(), "no travel from final city")
 	s.issue_warrant("valentina_roca")
-	check(s.arrest() == "won", "arrest wins")
-	check(s.stars() == 3, "perfect run gets 3 stars, got %d" % s.stars())
+	check(s.arrest(true) == "won", "arrest wins")
+	check(s.stars() == 3, "perfect run + chase gets 3 stars, got %d" % s.stars())
+	check(s.avg_precision_km() < 100.0, "precision recorded")
+
+
+func test_win_without_chase_bonus() -> void:
+	var s = CaseState.new(data, "case_01", 42)
+	_win_path(s)
+	s.issue_warrant("valentina_roca")
+	s.arrest(false)
+	check(s.status == "won" and s.stars() == 2, "won without chase = 2 stars")
 
 
 func test_wrong_warrant() -> void:
@@ -83,21 +99,45 @@ func test_cannot_arrest_before_final() -> void:
 	check(s.arrest() == "playing", "arrest ignored outside final city")
 
 
-func test_dead_end_and_return() -> void:
+func test_pin_within_radius_hits() -> void:
 	var s = CaseState.new(data, "case_01", 42)
-	check(s.travel("tokyo"), "can fly to decoy")
-	check(not s.on_trail(), "off trail in decoy")
-	check(s.visit("witness")["kind"] == "deadend", "decoy gives dead end")
-	check(s.travel_options() == ["buenos_aires"], "only option is going back")
-	s.travel("buenos_aires")
-	check(s.on_trail() and s.wrong_trips == 1, "back on trail, 1 wrong trip")
+	var r: Dictionary = s.travel_to_pin(40.42, -3.70)  # Madrid, ~500 km from Lisbon
+	check(r["hit"] and s.current == "lisbon" and s.stop == 1, "pin near Lisbon lands on trail")
+
+
+func test_pin_miss_lands_elsewhere() -> void:
+	var s = CaseState.new(data, "case_01", 42)
+	var r: Dictionary = s.travel_to_pin(35.6, 139.7)  # Tokyo
+	check(not r["hit"] and s.current == "tokyo", "miss lands at nearest city")
+	check(not s.on_trail() and s.misses == 1, "off trail after miss")
+	check(s.visit("wiretap")["kind"] == "deadend", "miss gives dead end")
+
+
+func test_recover_from_miss_to_next_city() -> void:
+	var s = CaseState.new(data, "case_01", 42)
+	s.travel_to_pin(35.6, 139.7)
+	_pin(s, "lisbon")
+	check(s.on_trail() and s.stop == 1, "can jump from dead end straight to next city")
+
+
+func test_recover_from_miss_back() -> void:
+	var s = CaseState.new(data, "case_01", 42)
+	s.travel_to_pin(35.6, 139.7)
+	_pin(s, "buenos_aires")
+	check(s.on_trail() and s.stop == 0, "flying back to last good city works")
+
+
+func test_pin_on_current_city_does_not_stay() -> void:
+	var s = CaseState.new(data, "case_01", 42)
+	var r: Dictionary = s.resolve_pin(-34.6, -58.4)
+	check(r["city"] != "buenos_aires", "never lands on the city you are in")
 
 
 func test_repeat_visit_free() -> void:
 	var s = CaseState.new(data, "case_01", 42)
-	s.visit("witness")
+	s.visit("wiretap")
 	var h: int = s.hours_used
-	s.visit("witness")
+	s.visit("wiretap")
 	check(s.hours_used == h, "repeat visit costs nothing")
 
 
@@ -105,24 +145,27 @@ func test_time_runs_out() -> void:
 	var s = CaseState.new(data, "case_01", 42)
 	var guard := 0
 	while s.status == "playing" and guard < 20:
-		s.travel("tokyo")
-		s.travel("buenos_aires")
+		s.travel_to_pin(35.6, 139.7)
+		_pin(s, "buenos_aires")
 		guard += 1
 	check(s.status == "lost_time", "time runs out")
 
 
-func test_options_contain_next_city() -> void:
-	for seed in [1, 2, 3, 99]:
-		var s = CaseState.new(data, "case_01", seed)
-		var opts: Array = s.travel_options()
-		check(opts.size() == 4 and "lisbon" in opts, "4 options incl. next city (seed %d)" % seed)
+func test_latlon_roundtrip() -> void:
+	for p in [Vector2(0, 0), Vector2(-34.6, -58.38), Vector2(47.5, 19.04), Vector2(64.1, -21.9), Vector2(-36.8, 174.7)]:
+		var back: Vector2 = Geo.vec_to_lat_lon(Geo.lat_lon_to_vec(p.x, p.y))
+		check(abs(back.x - p.x) < 0.001 and abs(back.y - p.y) < 0.001, "lat/lon roundtrip %s -> %s" % [p, back])
+
+
+func test_nearest_city() -> void:
+	check(Geo.nearest_city(data.cities, 48.0, 16.0) == "vienna", "nearest to (48,16) is Vienna")
 
 
 func test_informant_traits_identify_culprit() -> void:
 	var s = CaseState.new(data, "case_01", 7)
 	var sel := {}
 	for i in range(s.last_stop()):
-		var c: Dictionary = s.plan[i]["informant"]
+		var c: Dictionary = s.plan[i]["money"]
 		sel[c["trait"]] = c["value"]
 	check(Deduction.matching(data.suspects, sel) == ["valentina_roca"], "trail clues single out culprit")
 
@@ -134,7 +177,46 @@ func test_deduction_filter() -> void:
 
 func test_loc() -> void:
 	var l = Loc.new(data.strings, "es")
-	check(l.s("travel") == "Viajar", "spanish string")
+	check(l.s("back") == "Volver", "spanish string")
 	l.toggle()
-	check(l.s("travel") == "Travel", "english string")
+	check(l.s("back") == "Back", "english string")
 	check(l.s("hours", {"used": 2, "budget": 96}) == "Hours: 2 / 96", "format args")
+
+
+func _run_chase(dodge: bool) -> Variant:
+	var chase = ChaseView.new()
+	root.add_child(chase)
+	var result := [null]
+	chase.finished.connect(func(caught: bool): result[0] = caught)
+	chase.start(1234)
+	var guard := 0
+	while chase.running and guard < 2000:
+		if dodge:
+			for o in chase.obstacles:
+				if absf(o.position.x - chase.player.position.x) < 0.9 and o.position.z > -12.0:
+					chase.lane = (chase.lane + 1) % 3
+		chase._process(0.05)
+		guard += 1
+	chase.queue_free()
+	return result[0]
+
+
+func test_chase_finishes() -> void:
+	var r = _run_chase(true)
+	check(r != null, "chase emits finished")
+
+
+func test_chase_clean_run_catches() -> void:
+	var chase = ChaseView.new()
+	root.add_child(chase)
+	var result := [null]
+	chase.finished.connect(func(caught: bool): result[0] = caught)
+	chase.start(1)
+	var guard := 0
+	while chase.running and guard < 2000:
+		for o in chase.obstacles.duplicate():
+			chase._remove(o)  # perfect driving: no collisions
+		chase._process(0.05)
+		guard += 1
+	check(result[0] == true, "perfect run catches the suspect before time runs out")
+	chase.queue_free()

@@ -3,7 +3,7 @@
 > An original 3D-arcade geography detective game — chase a gang of thieves around the world, collect clues, deduce the suspect, and make the arrest before time runs out.
 > Built with **Godot 4** for **PC, Android, iOS and Web**. Free with ads, one-time purchase to remove them.
 
-**Status:** 🟡 Pre-production — game design & architecture.
+**Status:** 🟡 Pre-alpha — case 1 playable end to end (placeholder art).
 
 ## Why this project
 A portfolio project documented end to end: design, technical decisions, development log, testing and store release. Every significant decision is recorded in [`docs/decisions/`](docs/decisions/) and every work session in [`docs/devlog/`](docs/devlog/).
@@ -11,8 +11,10 @@ A portfolio project documented end to end: design, technical decisions, developm
 ## Planned features (v1)
 - 15 hand-crafted cases (levels) with rising difficulty and a detective rank progression
 - Stylized low-poly 3D globe + arcade/retro UI
-- Clue system: witnesses, landmarks, currencies, flags, languages, local customs
-- Deduction board to narrow down the suspect and issue an arrest order
+- **Pin-drop pursuit** on a 3D globe — no destination menus; precision matters
+- **Forensic evidence**: wiretaps, money trail and CCTV street photos (easy GeoGuessr-style)
+- **Corkboard** deduction: cross out suspects, issue the arrest order
+- **Arcade chase** finale (keyboard, swipe or tap)
 - Spanish & English
 - Ads banner (AdMob) + "Remove ads" in-app purchase
 - Targets: Windows/Linux, Android, iOS, Web (itch.io)
@@ -33,7 +35,7 @@ This is an original work. It belongs to the *geography/detective* genre, but its
 ---
 
 ## 🇪🇸 Resumen en español
-Juego original de detectives y geografía, con gráficos 3D estilo arcade, hecho en **Godot 4** para PC, Android, iOS y web. Perseguís a una banda de ladrones por el mundo, juntás pistas, deducís quién es el sospechoso y lo arrestás antes de que se acabe el tiempo. La v1 tiene 15 casos (niveles), español e inglés, anuncios y una compra única para quitarlos. Todo el desarrollo queda documentado (decisiones, diario y plan) como proyecto de portfolio.
+Juego original de detectives y geografía, con gráficos 3D estilo arcade, hecho en **Godot 4** para PC, Android, iOS y web. Perseguís a redes criminales por el mundo: revisás escuchas, rastros de dinero y cámaras de seguridad, **clavás un pin en un globo 3D** para seguirlos, tachás sospechosos en un pizarrón de corcho y terminás con una persecución arcade. La v1 tiene 15 casos (niveles), español e inglés, anuncios y una compra única para quitarlos. Todo el desarrollo queda documentado (decisiones, diario y plan) como proyecto de portfolio.
 
 ## Play the latest build
 ▶️ **https://ftagliaferro.github.io/Geo-Detective/** — built and deployed automatically by GitHub Actions on every push to `main`.

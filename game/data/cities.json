@@ -1,30 +1,46 @@
 {
   "cities": [
-    {"id": "buenos_aires", "name": {"es": "Buenos Aires", "en": "Buenos Aires"}, "country": {"es": "Argentina", "en": "Argentina"}, "lat": -34.60, "lon": -58.38,
-     "clues": [
-       {"es": "Dijo que extrañaba bailar tango en San Telmo.", "en": "Said they missed dancing tango in San Telmo."},
-       {"es": "Cambió dólares por pesos argentinos.", "en": "Exchanged dollars for Argentine pesos."}
-     ],
-     "street": {"image": null, "hint": {"es": "Colectivos de colores, carteles en español y avenidas anchas como la 9 de Julio.", "en": "Colourful buses called 'colectivos', Spanish signs and huge avenues like 9 de Julio."}}},
-    {"id": "lisbon", "name": {"es": "Lisboa", "en": "Lisbon"}, "country": {"es": "Portugal", "en": "Portugal"}, "lat": 38.72, "lon": -9.14,
-     "clues": [
-       {"es": "Preguntó por los tranvías amarillos que suben las colinas.", "en": "Asked about the yellow trams that climb the hills."},
-       {"es": "Pagó en euros y practicaba frases en portugués.", "en": "Paid in euros and was practising Portuguese phrases."},
-       {"es": "Quería ver una torre de piedra junto al río Tajo.", "en": "Wanted to see a stone tower on the Tagus river."}
-     ],
-     "street": {"image": null, "hint": {"es": "Veredas de piedritas blancas y negras ('calçada portuguesa'), tranvías amarillos y patentes europeas con la letra P.", "en": "Black-and-white cobbled pavements ('calçada portuguesa'), yellow trams and EU plates with the letter P."}}},
-    {"id": "budapest", "name": {"es": "Budapest", "en": "Budapest"}, "country": {"es": "Hungría", "en": "Hungary"}, "lat": 47.50, "lon": 19.04,
-     "clues": [
-       {"es": "Pidió cambio en florines (forint).", "en": "Asked for change in forints."},
-       {"es": "Hablaba de los baños termales junto al Danubio.", "en": "Kept talking about thermal baths by the Danube."},
-       {"es": "Tenía una postal de un parlamento enorme a orillas de un río.", "en": "Carried a postcard of a huge parliament on a riverbank."}
-     ],
-     "street": {"image": null, "hint": {"es": "Patentes europeas con la letra H, carteles en húngaro con letras como 'ő' y 'ű', y tranvías amarillos.", "en": "EU plates with the letter H, Hungarian signs with letters like 'ő' and 'ű', and yellow trams."}}},
+    {"id": "buenos_aires", "name": {"es": "Buenos Aires", "en": "Buenos Aires"}, "country": {"es": "Argentina", "en": "Argentina"}, "lat": -34.6, "lon": -58.38, "clues": [{"es": "—¿Y la milonga? —Esta noche, en San Telmo. Traé pesos.", "en": "\"What about the milonga?\" \"Tonight, in San Telmo. Bring pesos.\""}, {"es": "—Te espero en la avenida más ancha del mundo, al lado del obelisco.", "en": "\"Meet me on the widest avenue in the world, by the obelisk.\""}], "street": {"image": null, "hint": {"es": "Colectivos de colores, carteles en español y avenidas anchas como la 9 de Julio.", "en": "Colourful buses called 'colectivos', Spanish signs and huge avenues like 9 de Julio."}}},
+    {"id": "lisbon", "name": {"es": "Lisboa", "en": "Lisbon"}, "country": {"es": "Portugal", "en": "Portugal"}, "lat": 38.72, "lon": -9.14, "clues": [{"es": "—¿Dónde nos vemos? —Donde los tranvías amarillos suben las colinas.", "en": "\"Where do we meet?\" \"Where the yellow trams climb the hills.\""}, {"es": "—Pagá en euros y no abras la boca: allá se habla portugués.", "en": "\"Pay in euros and keep quiet — they speak Portuguese there.\""}, {"es": "—El contacto espera junto a la torre de piedra, a orillas del Tajo.", "en": "\"The contact waits by the stone tower on the Tagus.\""}], "street": {"image": null, "hint": {"es": "Veredas de piedritas blancas y negras ('calçada portuguesa'), tranvías amarillos y patentes europeas con la letra P.", "en": "Black-and-white cobbled pavements ('calçada portuguesa'), yellow trams and EU plates with the letter P."}, "source": "File:Number 28 tram, Calçada de São Francisco, Lisbon, Portugal julesvernex2.jpg"}},
+    {"id": "budapest", "name": {"es": "Budapest", "en": "Budapest"}, "country": {"es": "Hungría", "en": "Hungary"}, "lat": 47.5, "lon": 19.04, "clues": [{"es": "—Llevá florines. Allá no te aceptan euros en todos lados.", "en": "\"Bring forints. Not everyone takes euros there.\""}, {"es": "—Nos vemos en los baños termales, del lado de Buda del Danubio.", "en": "\"See you at the thermal baths, on the Buda side of the Danube.\""}, {"es": "—El parlamento gigante sobre el río es la señal. No falles.", "en": "\"The giant parliament on the river is the signal. Don't miss it.\""}], "street": {"image": null, "hint": {"es": "Patentes europeas con la letra H, carteles en húngaro con letras como 'ő' y 'ű', y tranvías amarillos.", "en": "EU plates with the letter H, Hungarian signs with letters like 'ő' and 'ű', and yellow trams."}, "source": "File:Kerékgyártó street tram stop, Budapest, Hungary.jpg"}},
     {"id": "tokyo", "name": {"es": "Tokio", "en": "Tokyo"}, "country": {"es": "Japón", "en": "Japan"}, "lat": 35.68, "lon": 139.69, "clues": [], "street": null},
     {"id": "cairo", "name": {"es": "El Cairo", "en": "Cairo"}, "country": {"es": "Egipto", "en": "Egypt"}, "lat": 30.04, "lon": 31.24, "clues": [], "street": null},
     {"id": "toronto", "name": {"es": "Toronto", "en": "Toronto"}, "country": {"es": "Canadá", "en": "Canada"}, "lat": 43.65, "lon": -79.38, "clues": [], "street": null},
     {"id": "mumbai", "name": {"es": "Bombay", "en": "Mumbai"}, "country": {"es": "India", "en": "India"}, "lat": 19.08, "lon": 72.88, "clues": [], "street": null},
     {"id": "sydney", "name": {"es": "Sídney", "en": "Sydney"}, "country": {"es": "Australia", "en": "Australia"}, "lat": -33.87, "lon": 151.21, "clues": [], "street": null},
-    {"id": "mexico_city", "name": {"es": "Ciudad de México", "en": "Mexico City"}, "country": {"es": "México", "en": "Mexico"}, "lat": 19.43, "lon": -99.13, "clues": [], "street": null}
+    {"id": "mexico_city", "name": {"es": "Ciudad de México", "en": "Mexico City"}, "country": {"es": "México", "en": "Mexico"}, "lat": 19.43, "lon": -99.13, "clues": [], "street": null},
+    {"id": "new_york", "name": {"es": "Nueva York", "en": "New York"}, "country": {"es": "Estados Unidos", "en": "United States"}, "lat": 40.71, "lon": -74.01, "clues": [], "street": null},
+    {"id": "los_angeles", "name": {"es": "Los Ángeles", "en": "Los Angeles"}, "country": {"es": "Estados Unidos", "en": "United States"}, "lat": 34.05, "lon": -118.24, "clues": [], "street": null},
+    {"id": "chicago", "name": {"es": "Chicago", "en": "Chicago"}, "country": {"es": "Estados Unidos", "en": "United States"}, "lat": 41.88, "lon": -87.63, "clues": [], "street": null},
+    {"id": "miami", "name": {"es": "Miami", "en": "Miami"}, "country": {"es": "Estados Unidos", "en": "United States"}, "lat": 25.76, "lon": -80.19, "clues": [], "street": null},
+    {"id": "havana", "name": {"es": "La Habana", "en": "Havana"}, "country": {"es": "Cuba", "en": "Cuba"}, "lat": 23.11, "lon": -82.37, "clues": [], "street": null},
+    {"id": "bogota", "name": {"es": "Bogotá", "en": "Bogotá"}, "country": {"es": "Colombia", "en": "Colombia"}, "lat": 4.71, "lon": -74.07, "clues": [], "street": null},
+    {"id": "lima", "name": {"es": "Lima", "en": "Lima"}, "country": {"es": "Perú", "en": "Peru"}, "lat": -12.05, "lon": -77.04, "clues": [], "street": null},
+    {"id": "santiago", "name": {"es": "Santiago", "en": "Santiago"}, "country": {"es": "Chile", "en": "Chile"}, "lat": -33.45, "lon": -70.67, "clues": [], "street": null},
+    {"id": "sao_paulo", "name": {"es": "San Pablo", "en": "São Paulo"}, "country": {"es": "Brasil", "en": "Brazil"}, "lat": -23.55, "lon": -46.63, "clues": [], "street": null},
+    {"id": "rio", "name": {"es": "Río de Janeiro", "en": "Rio de Janeiro"}, "country": {"es": "Brasil", "en": "Brazil"}, "lat": -22.91, "lon": -43.17, "clues": [], "street": null},
+    {"id": "reykjavik", "name": {"es": "Reikiavik", "en": "Reykjavik"}, "country": {"es": "Islandia", "en": "Iceland"}, "lat": 64.15, "lon": -21.94, "clues": [], "street": null},
+    {"id": "london", "name": {"es": "Londres", "en": "London"}, "country": {"es": "Reino Unido", "en": "United Kingdom"}, "lat": 51.51, "lon": -0.13, "clues": [], "street": null},
+    {"id": "paris", "name": {"es": "París", "en": "Paris"}, "country": {"es": "Francia", "en": "France"}, "lat": 48.86, "lon": 2.35, "clues": [], "street": null},
+    {"id": "madrid", "name": {"es": "Madrid", "en": "Madrid"}, "country": {"es": "España", "en": "Spain"}, "lat": 40.42, "lon": -3.7, "clues": [], "street": null},
+    {"id": "rome", "name": {"es": "Roma", "en": "Rome"}, "country": {"es": "Italia", "en": "Italy"}, "lat": 41.9, "lon": 12.5, "clues": [], "street": null},
+    {"id": "berlin", "name": {"es": "Berlín", "en": "Berlin"}, "country": {"es": "Alemania", "en": "Germany"}, "lat": 52.52, "lon": 13.4, "clues": [], "street": null},
+    {"id": "amsterdam", "name": {"es": "Ámsterdam", "en": "Amsterdam"}, "country": {"es": "Países Bajos", "en": "Netherlands"}, "lat": 52.37, "lon": 4.9, "clues": [], "street": null},
+    {"id": "vienna", "name": {"es": "Viena", "en": "Vienna"}, "country": {"es": "Austria", "en": "Austria"}, "lat": 48.21, "lon": 16.37, "clues": [], "street": null},
+    {"id": "stockholm", "name": {"es": "Estocolmo", "en": "Stockholm"}, "country": {"es": "Suecia", "en": "Sweden"}, "lat": 59.33, "lon": 18.07, "clues": [], "street": null},
+    {"id": "athens", "name": {"es": "Atenas", "en": "Athens"}, "country": {"es": "Grecia", "en": "Greece"}, "lat": 37.98, "lon": 23.73, "clues": [], "street": null},
+    {"id": "istanbul", "name": {"es": "Estambul", "en": "Istanbul"}, "country": {"es": "Turquía", "en": "Türkiye"}, "lat": 41.01, "lon": 28.98, "clues": [], "street": null},
+    {"id": "moscow", "name": {"es": "Moscú", "en": "Moscow"}, "country": {"es": "Rusia", "en": "Russia"}, "lat": 55.76, "lon": 37.62, "clues": [], "street": null},
+    {"id": "marrakech", "name": {"es": "Marrakech", "en": "Marrakesh"}, "country": {"es": "Marruecos", "en": "Morocco"}, "lat": 31.63, "lon": -8.01, "clues": [], "street": null},
+    {"id": "lagos", "name": {"es": "Lagos", "en": "Lagos"}, "country": {"es": "Nigeria", "en": "Nigeria"}, "lat": 6.52, "lon": 3.38, "clues": [], "street": null},
+    {"id": "nairobi", "name": {"es": "Nairobi", "en": "Nairobi"}, "country": {"es": "Kenia", "en": "Kenya"}, "lat": -1.29, "lon": 36.82, "clues": [], "street": null},
+    {"id": "cape_town", "name": {"es": "Ciudad del Cabo", "en": "Cape Town"}, "country": {"es": "Sudáfrica", "en": "South Africa"}, "lat": -33.92, "lon": 18.42, "clues": [], "street": null},
+    {"id": "dubai", "name": {"es": "Dubái", "en": "Dubai"}, "country": {"es": "Emiratos Árabes Unidos", "en": "United Arab Emirates"}, "lat": 25.2, "lon": 55.27, "clues": [], "street": null},
+    {"id": "bangkok", "name": {"es": "Bangkok", "en": "Bangkok"}, "country": {"es": "Tailandia", "en": "Thailand"}, "lat": 13.76, "lon": 100.5, "clues": [], "street": null},
+    {"id": "singapore", "name": {"es": "Singapur", "en": "Singapore"}, "country": {"es": "Singapur", "en": "Singapore"}, "lat": 1.35, "lon": 103.82, "clues": [], "street": null},
+    {"id": "hong_kong", "name": {"es": "Hong Kong", "en": "Hong Kong"}, "country": {"es": "China", "en": "China"}, "lat": 22.32, "lon": 114.17, "clues": [], "street": null},
+    {"id": "beijing", "name": {"es": "Pekín", "en": "Beijing"}, "country": {"es": "China", "en": "China"}, "lat": 39.9, "lon": 116.41, "clues": [], "street": null},
+    {"id": "seoul", "name": {"es": "Seúl", "en": "Seoul"}, "country": {"es": "Corea del Sur", "en": "South Korea"}, "lat": 37.57, "lon": 126.98, "clues": [], "street": null},
+    {"id": "auckland", "name": {"es": "Auckland", "en": "Auckland"}, "country": {"es": "Nueva Zelanda", "en": "New Zealand"}, "lat": -36.85, "lon": 174.76, "clues": [], "street": null}
   ]
 }
