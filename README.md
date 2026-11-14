@@ -34,3 +34,17 @@ This is an original work. It belongs to the *geography/detective* genre, but its
 
 ## 🇪🇸 Resumen en español
 Juego original de detectives y geografía, con gráficos 3D estilo arcade, hecho en **Godot 4** para PC, Android, iOS y web. Perseguís a una banda de ladrones por el mundo, juntás pistas, deducís quién es el sospechoso y lo arrestás antes de que se acabe el tiempo. La v1 tiene 15 casos (niveles), español e inglés, anuncios y una compra única para quitarlos. Todo el desarrollo queda documentado (decisiones, diario y plan) como proyecto de portfolio.
+
+## Play the latest build
+▶️ **https://ftagliaferro.github.io/Geo-Detective/** — built and deployed automatically by GitHub Actions on every push to `main`.
+
+## Development
+```bash
+# Validate content (Python 3.10+)
+python3 tools/validate_data.py
+python3 -m unittest discover -s tools/tests
+
+# Game logic tests (Godot 4.4.1)
+godot --headless --path game --import
+godot --headless --path game --script res://tests/run_tests.gd
+```

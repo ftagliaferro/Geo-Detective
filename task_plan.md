@@ -5,8 +5,8 @@ Ship v1.1: 15 cases, ES/EN, PC + Android + Web (itch.io), then iOS; ads + remove
 
 ## Phases
 - [x] 0. Kickoff: scope, engine, originality policy, repo docs
-- [~] 1. Game Design Document (core loop, clue system, difficulty curve, story, name)
-- [ ] 2. Vertical slice: 1 playable case (3 cities) — logic + tests + minimal UI
+- [x] 1. Game Design Document (core loop, clue system, difficulty curve, story)
+- [x] 2. Vertical slice: case 1 playable (logic + tests + placeholder UI + CI deploy)
 - [ ] 3. Content pipeline: JSON schema + Python validator, ~30 cities, suspects
 - [ ] 4. Art & audio direction: low-poly 3D globe, arcade UI, music (original/CC0)
 - [ ] 5. Full v1 content: 15 cases, rank progression, save system, ES/EN

@@ -1,0 +1,12 @@
+{
+  "suspects": [
+    {"id": "valentina_roca", "name": "Valentina \"La Firma\" Roca", "network": "paper_saints",
+     "traits": {"specialty": "forgery", "vehicle": "convertible", "mark": "gold_ring", "language": "italian", "hobby": "opera"}},
+    {"id": "dimitri_vask", "name": "Dimitri Vask", "network": "paper_saints",
+     "traits": {"specialty": "forgery", "vehicle": "motorcycle", "mark": "gold_ring", "language": "german", "hobby": "chess"}},
+    {"id": "lucia_ferraz", "name": "Lucía Ferraz", "network": "paper_saints",
+     "traits": {"specialty": "pickpocket", "vehicle": "convertible", "mark": "scar", "language": "portuguese", "hobby": "opera"}},
+    {"id": "marcel_dupin", "name": "Marcel Dupin", "network": "paper_saints",
+     "traits": {"specialty": "forgery", "vehicle": "convertible", "mark": "tattoo", "language": "french", "hobby": "golf"}}
+  ]
+}

@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+env:
+  GODOT_VERSION: 4.4.1
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate game content
+        run: python tools/validate_data.py
+
+      - name: Python tool tests
+        run: python -m unittest discover -s tools/tests -v
+
+      - name: Cache Godot
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-web
+
+      - name: Install Godot + web templates
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot && cd ~/godot
+          base=https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable
+          curl -sSL -o godot.zip $base/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip
+          unzip -q godot.zip && rm godot.zip
+          curl -sSL -o t.tpz $base/Godot_v${GODOT_VERSION}-stable_export_templates.tpz
+          dest=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mkdir -p $dest
+          unzip -q -j t.tpz 'templates/web_*' 'templates/version.txt' -d $dest && rm t.tpz
+
+      - name: Import project
+        run: ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path game --import
+
+      - name: Game logic tests
+        run: ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path game --script res://tests/run_tests.gd
+
+      - name: Export Web build
+        run: |
+          mkdir -p build/web
+          ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path game --export-release "Web" ../build/web/index.html
+          test -f build/web/index.wasm
+
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: build/web
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

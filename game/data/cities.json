@@ -1,0 +1,30 @@
+{
+  "cities": [
+    {"id": "buenos_aires", "name": {"es": "Buenos Aires", "en": "Buenos Aires"}, "country": {"es": "Argentina", "en": "Argentina"}, "lat": -34.60, "lon": -58.38,
+     "clues": [
+       {"es": "Dijo que extrañaba bailar tango en San Telmo.", "en": "Said they missed dancing tango in San Telmo."},
+       {"es": "Cambió dólares por pesos argentinos.", "en": "Exchanged dollars for Argentine pesos."}
+     ],
+     "street": {"image": null, "hint": {"es": "Colectivos de colores, carteles en español y avenidas anchas como la 9 de Julio.", "en": "Colourful buses called 'colectivos', Spanish signs and huge avenues like 9 de Julio."}}},
+    {"id": "lisbon", "name": {"es": "Lisboa", "en": "Lisbon"}, "country": {"es": "Portugal", "en": "Portugal"}, "lat": 38.72, "lon": -9.14,
+     "clues": [
+       {"es": "Preguntó por los tranvías amarillos que suben las colinas.", "en": "Asked about the yellow trams that climb the hills."},
+       {"es": "Pagó en euros y practicaba frases en portugués.", "en": "Paid in euros and was practising Portuguese phrases."},
+       {"es": "Quería ver una torre de piedra junto al río Tajo.", "en": "Wanted to see a stone tower on the Tagus river."}
+     ],
+     "street": {"image": null, "hint": {"es": "Veredas de piedritas blancas y negras ('calçada portuguesa'), tranvías amarillos y patentes europeas con la letra P.", "en": "Black-and-white cobbled pavements ('calçada portuguesa'), yellow trams and EU plates with the letter P."}}},
+    {"id": "budapest", "name": {"es": "Budapest", "en": "Budapest"}, "country": {"es": "Hungría", "en": "Hungary"}, "lat": 47.50, "lon": 19.04,
+     "clues": [
+       {"es": "Pidió cambio en florines (forint).", "en": "Asked for change in forints."},
+       {"es": "Hablaba de los baños termales junto al Danubio.", "en": "Kept talking about thermal baths by the Danube."},
+       {"es": "Tenía una postal de un parlamento enorme a orillas de un río.", "en": "Carried a postcard of a huge parliament on a riverbank."}
+     ],
+     "street": {"image": null, "hint": {"es": "Patentes europeas con la letra H, carteles en húngaro con letras como 'ő' y 'ű', y tranvías amarillos.", "en": "EU plates with the letter H, Hungarian signs with letters like 'ő' and 'ű', and yellow trams."}}},
+    {"id": "tokyo", "name": {"es": "Tokio", "en": "Tokyo"}, "country": {"es": "Japón", "en": "Japan"}, "lat": 35.68, "lon": 139.69, "clues": [], "street": null},
+    {"id": "cairo", "name": {"es": "El Cairo", "en": "Cairo"}, "country": {"es": "Egipto", "en": "Egypt"}, "lat": 30.04, "lon": 31.24, "clues": [], "street": null},
+    {"id": "toronto", "name": {"es": "Toronto", "en": "Toronto"}, "country": {"es": "Canadá", "en": "Canada"}, "lat": 43.65, "lon": -79.38, "clues": [], "street": null},
+    {"id": "mumbai", "name": {"es": "Bombay", "en": "Mumbai"}, "country": {"es": "India", "en": "India"}, "lat": 19.08, "lon": 72.88, "clues": [], "street": null},
+    {"id": "sydney", "name": {"es": "Sídney", "en": "Sydney"}, "country": {"es": "Australia", "en": "Australia"}, "lat": -33.87, "lon": 151.21, "clues": [], "street": null},
+    {"id": "mexico_city", "name": {"es": "Ciudad de México", "en": "Mexico City"}, "country": {"es": "México", "en": "Mexico"}, "lat": 19.43, "lon": -99.13, "clues": [], "street": null}
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "traits": [
+    {"id": "specialty", "name": {"es": "Especialidad", "en": "Specialty"}, "values": [
+      {"id": "forgery", "label": {"es": "Falsificación", "en": "Forgery"}, "clues": [{"es": "Dicen que copia cualquier firma en segundos.", "en": "Word is they can copy any signature in seconds."}]},
+      {"id": "pickpocket", "label": {"es": "Carterista", "en": "Pickpocket"}, "clues": [{"es": "Le faltó la billetera a medio hotel.", "en": "Half the hotel lost their wallets."}]}
+    ]},
+    {"id": "vehicle", "name": {"es": "Vehículo", "en": "Vehicle"}, "values": [
+      {"id": "convertible", "label": {"es": "Descapotable", "en": "Convertible"}, "clues": [{"es": "Se fue en un descapotable rojo, con la capota baja.", "en": "Drove off in a red convertible, top down."}]},
+      {"id": "motorcycle", "label": {"es": "Moto", "en": "Motorcycle"}, "clues": [{"es": "Escapó en una moto negra a toda velocidad.", "en": "Sped away on a black motorcycle."}]}
+    ]},
+    {"id": "mark", "name": {"es": "Seña particular", "en": "Distinctive mark"}, "values": [
+      {"id": "gold_ring", "label": {"es": "Anillo de oro", "en": "Gold signet ring"}, "clues": [{"es": "Nunca se saca un anillo de oro con sello.", "en": "Never takes off a gold signet ring."}]},
+      {"id": "scar", "label": {"es": "Cicatriz", "en": "Scar"}, "clues": [{"es": "Tiene una cicatriz finita en la ceja.", "en": "Has a thin scar across one eyebrow."}]},
+      {"id": "tattoo", "label": {"es": "Tatuaje de pluma", "en": "Quill tattoo"}, "clues": [{"es": "Lleva tatuada una pluma de escribir en la muñeca.", "en": "Has a writing quill tattooed on the wrist."}]}
+    ]},
+    {"id": "language", "name": {"es": "Idioma", "en": "Language"}, "values": [
+      {"id": "italian", "label": {"es": "Italiano", "en": "Italian"}, "clues": [{"es": "Hablaba por teléfono en italiano.", "en": "Was on the phone speaking Italian."}]},
+      {"id": "german", "label": {"es": "Alemán", "en": "German"}, "clues": [{"es": "Se le escapaban palabras en alemán.", "en": "Kept slipping into German."}]},
+      {"id": "portuguese", "label": {"es": "Portugués", "en": "Portuguese"}, "clues": [{"es": "Su acento era claramente portugués.", "en": "Had an unmistakable Portuguese accent."}]},
+      {"id": "french", "label": {"es": "Francés", "en": "French"}, "clues": [{"es": "Leía el diario en francés.", "en": "Was reading a French newspaper."}]}
+    ]},
+    {"id": "hobby", "name": {"es": "Pasatiempo", "en": "Hobby"}, "values": [
+      {"id": "opera", "label": {"es": "Ópera", "en": "Opera"}, "clues": [{"es": "Compró entradas para la ópera.", "en": "Bought opera tickets."}]},
+      {"id": "chess", "label": {"es": "Ajedrez", "en": "Chess"}, "clues": [{"es": "Jugaba al ajedrez en la plaza contra los jubilados.", "en": "Played chess in the square against the locals."}]},
+      {"id": "golf", "label": {"es": "Golf", "en": "Golf"}, "clues": [{"es": "Preguntó dónde había un campo de golf.", "en": "Asked where the nearest golf course was."}]}
+    ]}
+  ]
+}
