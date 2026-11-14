@@ -25,7 +25,7 @@ CITIES = ROOT / "game" / "data" / "cities.json"
 OUT_DIR = ROOT / "game" / "assets" / "street"
 CREDITS = ROOT / "CREDITS.md"
 API = "https://commons.wikimedia.org/w/api.php"
-UA = {"User-Agent": "EduGameAssetCuration/0.1 (open-license image curation; low volume)"}
+UA = {"User-Agent": "GeoDetectiveAssetTool/0.2 (https://github.com/ftagliaferro/Geo-Detective; low-volume open-license curation)"}
 ALLOWED = ("CC0", "Public domain", "CC BY 2.0", "CC BY 3.0", "CC BY 4.0",
            "CC BY-SA 2.0", "CC BY-SA 3.0", "CC BY-SA 4.0")
 
@@ -51,6 +51,7 @@ def file_info(title: str) -> dict:
     ii = page["imageinfo"][0]
     meta = ii.get("extmetadata", {})
     artist = re.sub(r"<[^>]+>", "", meta.get("Artist", {}).get("value", "Unknown")).strip()
+    artist = artist.splitlines()[0].strip() or "Unknown"
     return {"thumb": ii["thumburl"], "url": ii["descriptionurl"],
             "license": meta.get("LicenseShortName", {}).get("value", "?"), "artist": artist}
 
