@@ -16,6 +16,7 @@ import json
 import re
 import time
 import urllib.parse
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -29,9 +30,17 @@ ALLOWED = ("CC0", "Public domain", "CC BY 2.0", "CC BY 3.0", "CC BY 4.0",
            "CC BY-SA 2.0", "CC BY-SA 3.0", "CC BY-SA 4.0")
 
 
-def _get(url: str) -> bytes:
-    req = urllib.request.Request(url, headers=UA)
-    return urllib.request.urlopen(req, timeout=60).read()
+def _get(url: str, tries: int = 4) -> bytes:
+    """GET with polite exponential backoff on HTTP 429 (Wikimedia rate limit)."""
+    for attempt in range(tries):
+        try:
+            req = urllib.request.Request(url, headers=UA)
+            return urllib.request.urlopen(req, timeout=60).read()
+        except urllib.error.HTTPError as e:
+            if e.code != 429 or attempt == tries - 1:
+                raise
+            time.sleep(60 * (attempt + 1))
+    raise RuntimeError("unreachable")
 
 
 def file_info(title: str) -> dict:
