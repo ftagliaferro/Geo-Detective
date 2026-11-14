@@ -59,7 +59,10 @@ def write_credits(doc: dict) -> None:
         cr = (c.get("street") or {}).get("credit")
         if cr:
             lines.append(f"- **{c['name']['en']}** — {cr['artist']} · {cr['license']} · <{cr['url']}>")
-    lines += ["", "## Engine", "- [Godot Engine](https://godotengine.org) — MIT license.", ""]
+    lines += ["", "## Fonts",
+              "- Bebas Neue — The Bebas Neue Project Authors · SIL Open Font License 1.1",
+              "- Space Mono — The Space Mono Project Authors · SIL Open Font License 1.1",
+              "", "## Engine", "- [Godot Engine](https://godotengine.org) — MIT license.", ""]
     CREDITS.write_text("\n".join(lines), encoding="utf-8")
 
 

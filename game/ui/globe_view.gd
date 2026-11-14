@@ -13,7 +13,7 @@ const TAP_SLOP := 8.0
 var viewport: SubViewport
 var camera: Camera3D
 var pivot: Node3D
-var pin_marker: MeshInstance3D
+var pin_marker: Node3D
 var home_marker: MeshInstance3D
 var yaw := 0.0
 var pitch := 0.0
@@ -21,6 +21,7 @@ var _press_pos := Vector2.ZERO
 var _dragging := false
 var _moved := 0.0
 var interactive := true
+var auto_spin := 0.0
 
 
 func _init() -> void:
@@ -86,9 +87,42 @@ func _init() -> void:
 	halo.scale = Vector3(2, 2, 2)
 	viewport.add_child(halo)
 
-	home_marker = _marker(C_CYAN, 0.035)
-	pin_marker = _marker(C_PINK, 0.045)
+	home_marker = _marker(C_CYAN, 0.03)
+	pin_marker = _pin_mesh()
 	pin_marker.visible = false
+
+
+## A map pin: needle + glowing head, pointing away from the globe surface.
+func _pin_mesh() -> Node3D:
+	var root := Node3D.new()
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = C_PINK
+	var needle := MeshInstance3D.new()
+	var cyl := CylinderMesh.new()
+	cyl.top_radius = 0.006
+	cyl.bottom_radius = 0.002
+	cyl.height = 0.16
+	needle.mesh = cyl
+	needle.position = Vector3(0, 0.08, 0)
+	needle.material_override = mat
+	root.add_child(needle)
+	var head := MeshInstance3D.new()
+	var sm := SphereMesh.new()
+	sm.radius = 0.035
+	sm.height = 0.07
+	head.mesh = sm
+	head.position = Vector3(0, 0.17, 0)
+	head.material_override = mat
+	root.add_child(head)
+	pivot.add_child(root)
+	return root
+
+
+func _process(delta: float) -> void:
+	if auto_spin != 0.0:
+		yaw += auto_spin * delta
+		_apply()
 
 
 func _marker(color: Color, r: float) -> MeshInstance3D:
@@ -119,7 +153,9 @@ func clear_pin() -> void:
 
 
 func set_pin(lat: float, lon: float) -> void:
-	pin_marker.position = Geo.lat_lon_to_vec(lat, lon) * 1.02
+	var v := Geo.lat_lon_to_vec(lat, lon)
+	pin_marker.position = v
+	pin_marker.basis = Basis(Quaternion(Vector3.UP, v.normalized()))
 	pin_marker.visible = true
 
 

@@ -7,6 +7,35 @@ const Geo = preload("res://core/geo.gd")
 const Loc = preload("res://core/loc.gd")
 const GlobeView = preload("res://ui/globe_view.gd")
 const ChaseView = preload("res://ui/chase_view.gd")
+const FONT_TITLE := preload("res://assets/fonts/BebasNeue-Regular.ttf")
+const FONT_MONO := preload("res://assets/fonts/SpaceMono-Regular.ttf")
+
+const BG_SHADER := """
+shader_type canvas_item;
+void fragment() {
+	vec2 uv = UV;
+	vec3 col = mix(vec3(0.035, 0.04, 0.09), vec3(0.11, 0.04, 0.16), uv.y * 0.9 + 0.05 * sin(TIME * 0.3 + uv.x * 3.0));
+	float horizon = 0.64;
+	if (uv.y > horizon) {
+		float d = uv.y - horizon;
+		vec2 g = vec2((uv.x - 0.5) / d * 0.12, 0.06 / d + TIME * 0.12);
+		vec2 f = abs(fract(g) - 0.5);
+		float line = smoothstep(0.46, 0.5, max(f.x, f.y));
+		col += vec3(1.0, 0.24, 0.5) * line * 0.22 * smoothstep(0.0, 0.25, d);
+	}
+	col += vec3(1.0, 0.3, 0.6) * 0.08 * smoothstep(0.08, 0.0, abs(uv.y - horizon));
+	float v = smoothstep(1.15, 0.35, length(uv - 0.5) * 1.35);
+	COLOR = vec4(col * v, 1.0);
+}
+"""
+
+const SCANLINE_SHADER := """
+shader_type canvas_item;
+void fragment() {
+	float s = sin(FRAGCOORD.y * 3.14159) * 0.5 + 0.5;
+	COLOR = vec4(0.0, 0.0, 0.0, s * 0.06);
+}
+"""
 
 const C_BG := Color("0b0d16")
 const C_PANEL := Color("12152a")
@@ -56,6 +85,7 @@ func _build_layout() -> void:
 	var bg := ColorRect.new()
 	bg.color = C_BG
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bg.material = _canvas_shader(BG_SHADER)
 	add_child(bg)
 
 	var margin := MarginContainer.new()
@@ -71,13 +101,15 @@ func _build_layout() -> void:
 	var top := HBoxContainer.new()
 	root.add_child(top)
 	title_label = Label.new()
-	title_label.add_theme_font_size_override("font_size", 30)
+	title_label.add_theme_font_size_override("font_size", 42)
+	title_label.add_theme_font_override("font", FONT_TITLE)
 	title_label.add_theme_color_override("font_color", C_PINK)
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(title_label)
 	clock_label = Label.new()
 	clock_label.add_theme_color_override("font_color", C_CYAN)
-	clock_label.add_theme_font_size_override("font_size", 24)
+	clock_label.add_theme_font_size_override("font_size", 32)
+	clock_label.add_theme_font_override("font", FONT_TITLE)
 	top.add_child(clock_label)
 	lang_btn = Button.new()
 	lang_btn.pressed.connect(func():
@@ -125,6 +157,20 @@ func _build_layout() -> void:
 	ad_bar.add_child(ad_label)
 	root.add_child(ad_bar)
 
+	var scan := ColorRect.new()
+	scan.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scan.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	scan.material = _canvas_shader(SCANLINE_SHADER)
+	add_child(scan)
+
+
+func _canvas_shader(code: String) -> ShaderMaterial:
+	var sh := Shader.new()
+	sh.code = code
+	var m := ShaderMaterial.new()
+	m.shader = sh
+	return m
+
 
 func _make_theme() -> Theme:
 	var th := Theme.new()
@@ -150,7 +196,7 @@ func _make_theme() -> Theme:
 	th.set_color("font_hover_color", "Button", C_CYAN)
 	th.set_color("font_disabled_color", "Button", C_MUTED)
 	var panel := StyleBoxFlat.new()
-	panel.bg_color = C_PANEL
+	panel.bg_color = Color(C_PANEL, 0.74)
 	panel.border_color = Color("2b3160")
 	panel.set_border_width_all(1)
 	panel.set_corner_radius_all(8)
@@ -173,7 +219,15 @@ func _label(parent: Control, text: String, size := 20, color := C_TEXT) -> Label
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	l.add_theme_font_size_override("font_size", size)
 	l.add_theme_color_override("font_color", color)
+	if size >= 26:
+		l.add_theme_font_override("font", FONT_TITLE)
+		l.add_theme_font_size_override("font_size", int(size * 1.35))
 	parent.add_child(l)
+	return l
+
+
+func _mono(l: Label) -> Label:
+	l.add_theme_font_override("font", FONT_MONO)
 	return l
 
 
@@ -227,9 +281,23 @@ func _city(id: String) -> String:
 func show_menu() -> void:
 	screen = "menu"
 	state = null
-	_chrome(loc.s("game_title"), true)
-	_label(content, loc.s("tagline"), 26, C_CYAN)
-	_label(content, "Pre-alpha — placeholder art", 16, C_MUTED)
+	_chrome("", true)
+	var logo := _label(content, loc.s("game_title"), 60, C_PINK)
+	logo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	logo.add_theme_color_override("font_outline_color", Color("31e1f7"))
+	logo.add_theme_constant_override("outline_size", 2)
+	var tag := _label(content, loc.s("tagline"), 20, C_CYAN)
+	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var hero := GlobeView.new()
+	hero.custom_minimum_size = Vector2(0, 300)
+	hero.interactive = false
+	hero.auto_spin = 0.25
+	hero.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	content.add_child(hero)
+	hero.focus(20.0, -30.0)
+	hero.camera.position.z = 3.2
+	hero.home_marker.visible = false
+	_label(content, "Pre-alpha", 14, C_MUTED).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_button(loc.s("play_case", {"title": loc.t(data.cases[current_case]["title"])}), _start_case)
 
 
@@ -272,7 +340,7 @@ func show_city() -> void:
 	if notebook.is_empty():
 		_label(content, loc.s("notebook_empty"), 18, C_MUTED)
 	for line in notebook:
-		_label(content, "• " + line, 18, C_PAPER)
+		_mono(_label(content, "• " + line, 16, C_PAPER))
 
 	for spot in CaseState.SPOTS:
 		var done: bool = state.visited.has(spot)
@@ -350,7 +418,7 @@ func _render_clue(clue: Dictionary) -> void:
 		if street.has("credit"):
 			var cr: Dictionary = street["credit"]
 			_label(content, loc.s("photo_credit", {"artist": cr["artist"], "license": cr["license"]}), 13, C_MUTED)
-	_label(content, _clue_text(clue), 22, C_TEXT)
+	_mono(_label(content, _clue_text(clue), 19, C_TEXT))
 
 
 # ---------- pin-drop travel ----------
