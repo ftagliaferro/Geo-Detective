@@ -5,7 +5,7 @@ Ship v1.1: 15 cases, ES/EN, PC + Android + Web (itch.io), then iOS; ads + remove
 
 ## Phases
 - [x] 0. Kickoff: scope, engine, originality policy, repo docs
-- [ ] 1. Game Design Document (core loop, clue system, difficulty curve, story, name)
+- [~] 1. Game Design Document (core loop, clue system, difficulty curve, story, name)
 - [ ] 2. Vertical slice: 1 playable case (3 cities) — logic + tests + minimal UI
 - [ ] 3. Content pipeline: JSON schema + Python validator, ~30 cities, suspects
 - [ ] 4. Art & audio direction: low-poly 3D globe, arcade UI, music (original/CC0)
@@ -17,4 +17,4 @@ Ship v1.1: 15 cases, ES/EN, PC + Android + Web (itch.io), then iOS; ads + remove
 
 ## Open questions
 - Final game title
-- Street imagery source (ADR-0005)
+- Rewarded ad "+6 hours"?
