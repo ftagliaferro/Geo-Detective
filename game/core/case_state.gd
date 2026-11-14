@@ -5,8 +5,9 @@ extends RefCounted
 
 const Geo = preload("res://core/geo.gd")
 
-const SPOTS := ["wiretap", "money", "cctv"]
+const SPOTS := ["wiretap", "cctv", "contact", "money"]
 const SPOT_HOURS := 2
+const SPOT_COST := {"wiretap": 2, "cctv": 2, "contact": 3, "money": 2}
 const ENHANCE_HOURS := 1
 
 var data
@@ -66,7 +67,7 @@ func visit(spot: String) -> Dictionary:
 		return {}
 	if visited.has(spot):
 		return visited[spot]
-	hours_used += SPOT_HOURS
+	hours_used += int(SPOT_COST.get(spot, SPOT_HOURS))
 	var clue: Dictionary
 	if on_trail():
 		clue = plan[stop][spot]
@@ -192,6 +193,13 @@ func _prepare() -> void:
 			var pool := _clues_in_tiers(nxt["clues"], tiers)
 			var first: Dictionary = pool.pop_at(rng.randi_range(0, pool.size() - 1))
 			p["wiretap"] = {"kind": "dest", "text": first}
+			# Local contact: a clue from a tier just outside the case range (pricier, different angle).
+			var ct: int = int(tiers[0]) - 1 if int(tiers[0]) > 1 else int(tiers[1]) + 1
+			var cpool := _clues_in_tiers(nxt["clues"], [ct, ct])
+			cpool = cpool.filter(func(c): return c != first)
+			if cpool.is_empty():
+				cpool = pool if not pool.is_empty() else [first]
+			p["contact"] = {"kind": "dest", "source": "contact", "text": cpool[rng.randi_range(0, cpool.size() - 1)]}
 			if i < order.size():
 				p["money"] = _trait_clue(order[i], culprit)
 			else:

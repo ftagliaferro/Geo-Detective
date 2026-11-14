@@ -1,6 +1,6 @@
 # Game Design Document — Geo Detective *(working title)*
 
-> Version 0.3 — 2026-11-14 · Status: full campaign (ADR-0006, ADR-0007)
+> Version 0.4 — 2026-11-14 · Status: full campaign, redesigned UI (ADR-0006…0009)
 
 ## 1. Pitch
 You are a field agent of a fictional international task force. Crime networks — cartels, con artists, hackers, traffickers — are moving across the world. Follow their trail city by city, read the clues (people, places, street scenes), build the suspect's profile and issue the arrest order **before the clock runs out**.
@@ -19,7 +19,7 @@ Briefing ─► Gather evidence ─► Read clues ─► Update corkboard
    └──── Final city: issue arrest order ─► Arcade chase ─► Results
 ```
 1. **Briefing:** crime, origin city, time budget (e.g. 120 in-game hours), gang file.
-2. **Investigate:** each city has 3 evidence sources. Each costs hours.
+2. **Investigate:** each city has 4 evidence sources (wiretap, CCTV, local contact 3 h, money trail). Each costs hours.
    - **Wiretap** — intercepted call transcript hinting at the next destination ("…the money waits where they pay in *forints*").
    - **Money trail** — receipts, card payments and crypto transfers revealing a suspect trait ("Card used to buy opera tickets").
    - **CCTV** — a real, openly licensed street photo of the *next* destination, styled as surveillance footage; optional hint highlights plates, signs, script, driving side. Easy GeoGuessr.
@@ -35,11 +35,11 @@ Five fictional crime networks × 3 cases each; the 3rd case of each arc is the n
 
 | Arc | Network (working name) | Crime | Cases | Hops | Suspects |
 |---|---|---|---|---|---|
-| 1 | *The Paper Saints* | Forgers & con artists | 1–3 | 3–5 | 6 |
-| 2 | *Blue Harbour Syndicate* | Smuggling routes | 4–6 | 4–6 | 6 |
-| 3 | *Zero Signal* | Cyber-crime & crypto scams | 7–9 | 5–6 | 6 |
-| 4 | *Velvet Hands* | Art & antiquities traffic | 10–12 | 5–6 | 6 |
-| 5 | *The Glass Serpent Cartel* | Cartel finale | 13–15 | 6–8 | 8 |
+| 1 | *The Paper Saints* | Forgers & con artists | 1–3 | 4–6 | 6 |
+| 2 | *Blue Harbour Syndicate* | Smuggling routes | 4–6 | 6–7 | 6 |
+| 3 | *Zero Signal* | Cyber-crime & crypto scams | 7–9 | 7–8 | 6 |
+| 4 | *Velvet Hands* | Art & antiquities traffic | 10–12 | 8–9 | 6 |
+| 5 | *The Glass Serpent Cartel* | Cartel finale | 13–15 | 9–11 | 8 |
 
 *Names are placeholders and will be checked against existing trademarks/fiction before release (ADR-0003).*
 

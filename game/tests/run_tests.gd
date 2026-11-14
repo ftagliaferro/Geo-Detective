@@ -54,12 +54,10 @@ func _pin(s, city: String) -> Dictionary:
 
 
 func _win_path(s) -> void:
-	for spot in CaseState.SPOTS:
-		s.visit(spot)
-	_pin(s, "lisbon")
-	for spot in CaseState.SPOTS:
-		s.visit(spot)
-	_pin(s, "budapest")
+	for i in range(s.last_stop()):
+		for spot in CaseState.SPOTS:
+			s.visit(spot)
+		_pin(s, s.route()[i + 1])
 
 
 func test_full_win() -> void:
@@ -308,3 +306,13 @@ func test_hard_case_suggestions_are_neighbours() -> void:
 	for code in s.plan[0]["suggest"]:
 		var c: Dictionary = data.countries[code]
 		check(Geo.distance_km(target["lat"], target["lon"], c["lat"], c["lon"]) < 3500.0, "hard decoys are nearby (%s)" % code)
+
+
+func test_contact_gives_other_destination_clue() -> void:
+	var s = CaseState.new(data, "case_13", 9)
+	var w: Dictionary = s.plan[0]["wiretap"]["text"]
+	var c: Dictionary = s.plan[0]["contact"]["text"]
+	check(int(c.get("tier", 0)) == 2 and c != w, "hard case contact gives a tier-2 clue distinct from the wiretap")
+	var h: int = s.hours_used
+	s.visit("contact")
+	check(s.hours_used == h + 3, "contact costs 3 h")

@@ -49,12 +49,12 @@
       "en": "Track on the globe"
     },
     "board": {
-      "es": "Pizarrón de corcho",
+      "es": "Pizarrón",
       "en": "Corkboard"
     },
     "arrest": {
       "es": "¡Arrestar!",
-      "en": "Arrest!"
+      "en": "Make the arrest!"
     },
     "back": {
       "es": "Volver",
@@ -407,6 +407,134 @@
     "analyst": {
       "es": "EL ANALISTA SUGIERE (uno es el correcto):",
       "en": "THE ANALYST SUGGESTS (one is right):"
+    },
+    "your_rank": {
+      "es": "TU RANGO",
+      "en": "YOUR RANK"
+    },
+    "stars_total": {
+      "es": "{stars} de {max} estrellas",
+      "en": "{stars} of {max} stars"
+    },
+    "case_meta": {
+      "es": "{stops} ciudades",
+      "en": "{stops} cities"
+    },
+    "boss": {
+      "es": "JEFE DE LA BANDA",
+      "en": "GANG BOSS"
+    },
+    "confidential": {
+      "es": "CONFIDENCIAL",
+      "en": "CONFIDENTIAL"
+    },
+    "chip_difficulty": {
+      "es": "Dificultad {n}/5",
+      "en": "Difficulty {n}/5"
+    },
+    "chip_cities": {
+      "es": "{n} ciudades",
+      "en": "{n} cities"
+    },
+    "chip_radius": {
+      "es": "Margen del pin: {km} km",
+      "en": "Pin margin: {km} km"
+    },
+    "chip_hours": {
+      "es": "{h} horas",
+      "en": "{h} hours"
+    },
+    "objective": {
+      "es": "TU MISIÓN",
+      "en": "YOUR MISSION"
+    },
+    "objective_1": {
+      "es": "En cada ciudad, revisá la evidencia para saber a dónde huyó el sospechoso.",
+      "en": "In each city, check the evidence to learn where the suspect fled."
+    },
+    "objective_2": {
+      "es": "Seguilo clavando un pin en el globo; el analista te sugiere cuatro países.",
+      "en": "Follow them by dropping a pin on the globe; the analyst suggests four countries."
+    },
+    "objective_3": {
+      "es": "Juntá pistas sobre quién es, tachá sospechosos y emití la orden antes del arresto.",
+      "en": "Collect clues on who it is, cross out suspects and issue the order before the arrest."
+    },
+    "accept_case": {
+      "es": "Aceptar el caso",
+      "en": "Accept the case"
+    },
+    "status_final": {
+      "es": "¡EL SOSPECHOSO ESTÁ ACÁ!",
+      "en": "THE SUSPECT IS HERE!"
+    },
+    "status_trail": {
+      "es": "En el rastro · etapa {n}",
+      "en": "On the trail · leg {n}"
+    },
+    "status_cold": {
+      "es": "Sin rastro",
+      "en": "Trail cold"
+    },
+    "q_where": {
+      "es": "¿A DÓNDE FUE?",
+      "en": "WHERE DID THEY GO?"
+    },
+    "q_who": {
+      "es": "¿QUIÉN ES?",
+      "en": "WHO IS IT?"
+    },
+    "spot_contact": {
+      "es": "Contacto local",
+      "en": "Local contact"
+    },
+    "desc_wiretap": {
+      "es": "Llamadas interceptadas del sospechoso. Suelen nombrar lugares, monedas o costumbres del destino.",
+      "en": "The suspect's intercepted calls. They often mention places, currencies or customs of the destination."
+    },
+    "desc_cctv": {
+      "es": "Una cámara de seguridad del próximo destino. Mirá carteles, patentes y de qué lado manejan.",
+      "en": "Security footage from the next destination. Look at signs, number plates and which side they drive on."
+    },
+    "desc_contact": {
+      "es": "Un informante de la zona. Cobra más, pero cuenta lo que vio desde otro ángulo.",
+      "en": "A local informant. Costs more, but tells what they saw from another angle."
+    },
+    "desc_money": {
+      "es": "Pagos, recibos y transferencias. Revelan rasgos del sospechoso para el pizarrón.",
+      "en": "Payments, receipts and transfers. They reveal the suspect's traits for the corkboard."
+    },
+    "investigate": {
+      "es": "Investigar ({h} h)",
+      "en": "Investigate ({h} h)"
+    },
+    "near_short": {
+      "es": "¡Está cerca!",
+      "en": "Close by!"
+    },
+    "cctv_note_short": {
+      "es": "Fijate en: {hint}",
+      "en": "Look at: {hint}"
+    },
+    "notebook_btn": {
+      "es": "Libreta ({n})",
+      "en": "Notebook ({n})"
+    },
+    "results": {
+      "es": "Informe del caso",
+      "en": "Case report"
+    },
+    "stamp_won": {
+      "es": "CASO RESUELTO",
+      "en": "CASE CLOSED"
+    },
+    "stamp_lost": {
+      "es": "CASO FALLIDO",
+      "en": "CASE FAILED"
+    },
+    "stars_rule": {
+      "es": "Estrellas: resolver el caso · no errar ningún pin · ganar la persecución",
+      "en": "Stars: solve the case · miss no pins · win the chase"
     }
   }
 }

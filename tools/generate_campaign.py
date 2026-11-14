@@ -85,7 +85,7 @@ def km(a: dict, b: dict) -> float:
 def time_budget(route: list, cities: dict, net_id: str, free_hint: bool) -> int:
     """Perfect run (all evidence + exact flights + CCTV analysis) times the arc's slack."""
     flights = sum(2 + round(km(cities[a], cities[b]) / 800) for a, b in zip(route, route[1:]))
-    evidence = 6 * len(route) + (0 if free_hint else len(route) - 1)
+    evidence = 9 * len(route) + (0 if free_hint else len(route) - 1)  # 2+2+3+2 h per city
     return int(math.ceil((flights + evidence) * SLACK[net_id] / 5.0) * 5)
 
 

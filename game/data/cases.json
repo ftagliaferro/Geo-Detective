@@ -16,7 +16,7 @@
         "es": "Una red de cheques falsificados vació las cuentas de un banco en Buenos Aires. Cada cheque tenía una firma impecable.",
         "en": "A forged-cheque ring emptied accounts at a bank in Buenos Aires. Every cheque carried a flawless signature."
       },
-      "hours": 85,
+      "hours": 130,
       "radius_km": 1000,
       "tiers": [
         1,
@@ -26,15 +26,16 @@
       "route": [
         "buenos_aires",
         "lisbon",
-        "budapest"
+        "budapest",
+        "athens"
       ],
       "culprit": "dimitri_vask",
       "trait_order": [
         "specialty",
-        "hobby",
         "mark",
-        "vehicle",
-        "language"
+        "hobby",
+        "language",
+        "vehicle"
       ]
     },
     {
@@ -53,7 +54,7 @@
         "es": "Un supuesto piloto de aerolínea cobró cheques de viaje falsos en tres aeropuertos de Madrid en una sola tarde.",
         "en": "A so-called airline pilot cashed fake traveller's cheques at three Madrid airport desks in a single afternoon."
       },
-      "hours": 75,
+      "hours": 130,
       "radius_km": 1000,
       "tiers": [
         1,
@@ -64,13 +65,14 @@
         "madrid",
         "paris",
         "amsterdam",
+        "berlin",
         "london"
       ],
       "culprit": "lucia_ferraz",
       "trait_order": [
+        "hobby",
         "mark",
         "specialty",
-        "hobby",
         "language",
         "vehicle"
       ]
@@ -91,7 +93,7 @@
         "es": "Apareció una imprenta clandestina en Nueva York que fabricaba bonos del Tesoro perfectos. La jefa de los Santos de Papel dejó su firma.",
         "en": "A secret press in New York was printing flawless Treasury bonds. The Paper Saints' leader left her signature."
       },
-      "hours": 130,
+      "hours": 190,
       "radius_km": 900,
       "tiers": [
         1,
@@ -103,15 +105,16 @@
         "havana",
         "mexico_city",
         "rome",
-        "vienna"
+        "vienna",
+        "stockholm"
       ],
       "culprit": "valentina_la_firma_roca",
       "trait_order": [
+        "language",
         "mark",
-        "specialty",
         "vehicle",
         "hobby",
-        "language"
+        "specialty"
       ]
     },
     {
@@ -130,7 +133,7 @@
         "es": "Un contenedor con marfil falso y documentos adulterados desapareció del puerto de Ciudad del Cabo.",
         "en": "A container of fake ivory and doctored papers vanished from the port of Cape Town."
       },
-      "hours": 85,
+      "hours": 155,
       "radius_km": 800,
       "tiers": [
         1,
@@ -141,15 +144,17 @@
         "cape_town",
         "lagos",
         "marrakech",
-        "athens"
+        "lisbon",
+        "athens",
+        "cairo"
       ],
       "culprit": "sasha_ilinskaya",
       "trait_order": [
         "specialty",
-        "mark",
         "hobby",
+        "vehicle",
         "language",
-        "vehicle"
+        "mark"
       ]
     },
     {
@@ -168,7 +173,7 @@
         "es": "Un barco de bandera falsa zarpó de Río con un cargamento que nadie declaró.",
         "en": "A ship under a false flag left Rio carrying undeclared cargo."
       },
-      "hours": 115,
+      "hours": 170,
       "radius_km": 800,
       "tiers": [
         2,
@@ -177,18 +182,19 @@
       "cctv_hint_free": false,
       "route": [
         "rio",
-        "lisbon",
+        "madrid",
         "istanbul",
         "dubai",
-        "mumbai"
+        "mumbai",
+        "bangkok"
       ],
       "culprit": "tomas_quiroga",
       "trait_order": [
-        "hobby",
-        "mark",
-        "specialty",
+        "vehicle",
         "language",
-        "vehicle"
+        "hobby",
+        "specialty",
+        "mark"
       ]
     },
     {
@@ -207,7 +213,7 @@
         "es": "El jefe del Sindicato Puerto Azul cerró un trato millonario en Singapur y cruzó el Pacífico antes del amanecer.",
         "en": "The Blue Harbour boss sealed a million-dollar deal in Singapore and crossed the Pacific before dawn."
       },
-      "hours": 150,
+      "hours": 210,
       "radius_km": 750,
       "tiers": [
         2,
@@ -217,6 +223,7 @@
       "route": [
         "singapore",
         "hong_kong",
+        "seoul",
         "sydney",
         "auckland",
         "santiago",
@@ -224,11 +231,11 @@
       ],
       "culprit": "kofi_mensah_lund",
       "trait_order": [
+        "specialty",
         "language",
         "mark",
         "vehicle",
-        "hobby",
-        "specialty"
+        "hobby"
       ]
     },
     {
@@ -247,7 +254,7 @@
         "es": "Un ataque informático apagó las pantallas de la bolsa de Seúl durante diez minutos. Alguien ganó una fortuna.",
         "en": "A cyberattack blanked the Seoul stock exchange screens for ten minutes. Someone made a fortune."
       },
-      "hours": 105,
+      "hours": 170,
       "radius_km": 650,
       "tiers": [
         2,
@@ -257,17 +264,19 @@
       "route": [
         "seoul",
         "tokyo",
+        "los_angeles",
         "toronto",
         "reykjavik",
-        "stockholm"
+        "stockholm",
+        "berlin"
       ],
       "culprit": "yuna_seo",
       "trait_order": [
-        "hobby",
+        "specialty",
+        "language",
         "vehicle",
         "mark",
-        "specialty",
-        "language"
+        "hobby"
       ]
     },
     {
@@ -286,7 +295,7 @@
         "es": "Robaron las claves de un monedero cripto con millones de una empresa berlinesa.",
         "en": "The keys to a crypto wallet holding millions were stolen from a Berlin company."
       },
-      "hours": 95,
+      "hours": 170,
       "radius_km": 650,
       "tiers": [
         2,
@@ -295,18 +304,20 @@
       "cctv_hint_free": false,
       "route": [
         "berlin",
+        "vienna",
         "moscow",
         "beijing",
         "bangkok",
-        "singapore"
+        "singapore",
+        "sydney"
       ],
       "culprit": "lars_ekdahl",
       "trait_order": [
-        "vehicle",
         "mark",
-        "hobby",
         "language",
-        "specialty"
+        "vehicle",
+        "specialty",
+        "hobby"
       ]
     },
     {
@@ -325,7 +336,7 @@
         "es": "Con una voz clonada por computadora, alguien ordenó una transferencia gigante desde un estudio de Los Ángeles. Es obra del líder de Señal Cero.",
         "en": "Using a computer-cloned voice, someone ordered a huge transfer from a Los Angeles studio. It's the work of Zero Signal's leader."
       },
-      "hours": 125,
+      "hours": 200,
       "radius_km": 600,
       "tiers": [
         2,
@@ -336,16 +347,18 @@
         "los_angeles",
         "new_york",
         "london",
+        "paris",
         "dubai",
         "nairobi",
-        "cairo"
+        "cairo",
+        "istanbul"
       ],
       "culprit": "glitch_okafor",
       "trait_order": [
         "specialty",
-        "mark",
         "vehicle",
         "language",
+        "mark",
         "hobby"
       ]
     },
@@ -365,7 +378,7 @@
         "es": "En un museo de París descubrieron que un cuadro famoso era una copia. El original lleva días de viaje.",
         "en": "A Paris museum discovered a famous painting was a copy. The original has been travelling for days."
       },
-      "hours": 70,
+      "hours": 155,
       "radius_km": 500,
       "tiers": [
         2,
@@ -374,18 +387,21 @@
       "cctv_hint_free": false,
       "route": [
         "paris",
+        "amsterdam",
         "rome",
         "athens",
         "cairo",
-        "istanbul"
+        "istanbul",
+        "moscow",
+        "stockholm"
       ],
       "culprit": "felix_marchetti",
       "trait_order": [
-        "hobby",
         "vehicle",
+        "specialty",
         "language",
         "mark",
-        "specialty"
+        "hobby"
       ]
     },
     {
@@ -404,7 +420,7 @@
         "es": "Un violín de trescientos años desapareció de una bóveda en Viena durante un concierto.",
         "en": "A three-hundred-year-old violin vanished from a Vienna vault during a concert."
       },
-      "hours": 110,
+      "hours": 190,
       "radius_km": 500,
       "tiers": [
         3,
@@ -417,13 +433,15 @@
         "moscow",
         "beijing",
         "tokyo",
-        "sydney"
+        "sydney",
+        "auckland",
+        "los_angeles"
       ],
       "culprit": "ottilie_strand",
       "trait_order": [
+        "vehicle",
         "hobby",
         "mark",
-        "vehicle",
         "specialty",
         "language"
       ]
@@ -444,7 +462,7 @@
         "es": "Una máscara de jade prehispánica fue robada de un museo en Ciudad de México. La condesa de las Manos de Terciopelo está detrás.",
         "en": "A pre-Hispanic jade mask was stolen from a Mexico City museum. The Velvet Hands' countess is behind it."
       },
-      "hours": 105,
+      "hours": 190,
       "radius_km": 450,
       "tiers": [
         3,
@@ -457,14 +475,17 @@
         "bogota",
         "havana",
         "madrid",
+        "marrakech",
+        "rome",
+        "vienna",
         "amsterdam"
       ],
       "culprit": "contessa_aurelia_bianchi",
       "trait_order": [
         "vehicle",
-        "mark",
         "specialty",
         "hobby",
+        "mark",
         "language"
       ]
     },
@@ -484,7 +505,7 @@
         "es": "Un contador del cartel de la Serpiente de Cristal desapareció de Bogotá con los libros de la organización.",
         "en": "A Glass Serpent Cartel accountant vanished from Bogotá with the organisation's books."
       },
-      "hours": 110,
+      "hours": 190,
       "radius_km": 400,
       "tiers": [
         3,
@@ -497,15 +518,18 @@
         "los_angeles",
         "tokyo",
         "hong_kong",
-        "mumbai"
+        "bangkok",
+        "mumbai",
+        "dubai",
+        "nairobi"
       ],
       "culprit": "bastian_ortega",
       "trait_order": [
-        "mark",
         "language",
+        "mark",
         "hobby",
-        "specialty",
-        "vehicle"
+        "vehicle",
+        "specialty"
       ]
     },
     {
@@ -524,7 +548,7 @@
         "es": "Una red de casas de cambio en Lima mueve dinero del cartel por medio mundo.",
         "en": "A network of exchange houses in Lima is moving cartel money across half the world."
       },
-      "hours": 120,
+      "hours": 200,
       "radius_km": 400,
       "tiers": [
         3,
@@ -535,18 +559,21 @@
         "lima",
         "santiago",
         "buenos_aires",
+        "rio",
         "cape_town",
         "nairobi",
         "dubai",
-        "moscow"
+        "moscow",
+        "berlin",
+        "london"
       ],
       "culprit": "camila_reyes",
       "trait_order": [
-        "specialty",
-        "mark",
-        "language",
+        "hobby",
         "vehicle",
-        "hobby"
+        "language",
+        "mark",
+        "specialty"
       ]
     },
     {
@@ -565,7 +592,7 @@
         "es": "La jefa del cartel salió de Río en un vuelo privado. Es ahora o nunca: atrapá a La Serpiente.",
         "en": "The cartel boss left Rio on a private flight. It's now or never: catch the Serpent."
       },
-      "hours": 125,
+      "hours": 225,
       "radius_km": 350,
       "tiers": [
         3,
@@ -580,14 +607,17 @@
         "london",
         "reykjavik",
         "toronto",
-        "new_york"
+        "new_york",
+        "havana",
+        "bogota",
+        "buenos_aires"
       ],
       "culprit": "leonor_la_serpiente_vidal",
       "trait_order": [
-        "language",
-        "mark",
-        "specialty",
         "hobby",
+        "specialty",
+        "mark",
+        "language",
         "vehicle"
       ]
     }

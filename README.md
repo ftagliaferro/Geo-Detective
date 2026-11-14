@@ -9,10 +9,10 @@
 A portfolio project documented end to end: design, technical decisions, development log, testing and store release. Every significant decision is recorded in [`docs/decisions/`](docs/decisions/) and every work session in [`docs/devlog/`](docs/devlog/).
 
 ## Planned features (v1)
-- 15 hand-crafted cases across 5 gangs, routes of 3–8 cities, saved progress and detective ranks
+- 15 hand-crafted cases across 5 gangs, routes of 4–11 cities, saved progress and detective ranks
 - Stylized low-poly 3D globe + arcade/retro UI
 - **Pin-drop pursuit** on a labelled 3D globe with an analyst shortlist of four countries — precision matters
-- **Forensic evidence**: wiretaps, money trail and CCTV street photos (easy GeoGuessr-style)
+- **Four evidence sources** per city: wiretaps, CCTV street photos (easy GeoGuessr-style), a local contact and the money trail
 - **Corkboard** deduction: cross out suspects, issue the arrest order
 - **Arcade chase** finale (keyboard, swipe or tap)
 - Built-in guidance: *How to play*, a *Next step* box and a notebook split into *Where?* / *Who?*
