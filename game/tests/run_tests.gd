@@ -7,6 +7,7 @@ const Deduction = preload("res://core/deduction.gd")
 const Geo = preload("res://core/geo.gd")
 const Loc = preload("res://core/loc.gd")
 const ChaseView = preload("res://ui/chase_view.gd")
+const Progress = preload("res://core/progress.gd")
 
 var passed := 0
 var failed := 0
@@ -42,8 +43,8 @@ func test_distance_buenos_aires_lisbon() -> void:
 
 func test_data_loaded() -> void:
 	check(data.cities.size() >= 30, "world city pool loaded")
-	check(data.suspects.has("valentina_roca"), "suspects loaded")
-	check(data.cases.has("case_01"), "case loaded")
+	check(data.suspects.size() == 32, "32 suspects loaded")
+	check(data.cases.size() == 15, "15 cases loaded")
 	check(data.trait_ids.size() == 5, "5 traits")
 
 
@@ -66,7 +67,7 @@ func test_full_win() -> void:
 	_win_path(s)
 	check(s.is_final(), "reached final city")
 	check(not s.can_travel(), "no travel from final city")
-	s.issue_warrant("valentina_roca")
+	s.issue_warrant(s.case_def["culprit"])
 	check(s.arrest(true) == "won", "arrest wins")
 	check(s.stars() == 3, "perfect run + chase gets 3 stars, got %d" % s.stars())
 	check(s.avg_precision_km() < 100.0, "precision recorded")
@@ -75,7 +76,7 @@ func test_full_win() -> void:
 func test_win_without_chase_bonus() -> void:
 	var s = CaseState.new(data, "case_01", 42)
 	_win_path(s)
-	s.issue_warrant("valentina_roca")
+	s.issue_warrant(s.case_def["culprit"])
 	s.arrest(false)
 	check(s.status == "won" and s.stars() == 2, "won without chase = 2 stars")
 
@@ -83,7 +84,7 @@ func test_win_without_chase_bonus() -> void:
 func test_wrong_warrant() -> void:
 	var s = CaseState.new(data, "case_01", 42)
 	_win_path(s)
-	s.issue_warrant("marcel_dupin")
+	s.issue_warrant(_innocent(s))
 	check(s.arrest() == "lost_wrong", "wrong warrant loses")
 
 
@@ -95,7 +96,7 @@ func test_no_warrant() -> void:
 
 func test_cannot_arrest_before_final() -> void:
 	var s = CaseState.new(data, "case_01", 42)
-	s.issue_warrant("valentina_roca")
+	s.issue_warrant(s.case_def["culprit"])
 	check(s.arrest() == "playing", "arrest ignored outside final city")
 
 
@@ -161,18 +162,88 @@ func test_nearest_city() -> void:
 	check(Geo.nearest_city(data.cities, 48.0, 16.0) == "vienna", "nearest to (48,16) is Vienna")
 
 
-func test_informant_traits_identify_culprit() -> void:
-	var s = CaseState.new(data, "case_01", 7)
-	var sel := {}
+func _innocent(s) -> String:
+	for sid in data.suspects:
+		if data.suspects[sid]["network"] == s.case_def["network"] and sid != s.case_def["culprit"]:
+			return sid
+	return ""
+
+
+func _network_pool(net: String) -> Dictionary:
+	var pool := {}
+	for sid in data.suspects:
+		if data.suspects[sid]["network"] == net:
+			pool[sid] = data.suspects[sid]
+	return pool
+
+
+func test_every_case_is_solvable_from_trail() -> void:
+	for cid in data.cases:
+		var s = CaseState.new(data, cid, 7)
+		var sel := {}
+		for i in range(s.last_stop()):
+			var c: Dictionary = s.plan[i]["money"]
+			if c["kind"] == "trait":
+				sel[c["trait"]] = c["value"]
+		var m: Array = Deduction.matching(_network_pool(s.case_def["network"]), sel)
+		check(m == [s.case_def["culprit"]], "%s: trail clues single out culprit (got %s)" % [cid, m])
+
+
+func test_every_case_full_playthrough() -> void:
+	for cid in data.cases:
+		var s = CaseState.new(data, cid, 11)
+		for stop_i in range(s.last_stop()):
+			for spot in CaseState.SPOTS:
+				s.visit(spot)
+			_pin(s, s.route()[stop_i + 1])
+		s.issue_warrant(s.case_def["culprit"])
+		check(s.arrest(true) == "won", "%s: perfect playthrough wins (status %s, %d/%d h)" % [cid, s.status, s.hours_used, s.budget])
+
+
+func test_clue_tiers_respected() -> void:
+	var s = CaseState.new(data, "case_15", 3)
 	for i in range(s.last_stop()):
-		var c: Dictionary = s.plan[i]["money"]
-		sel[c["trait"]] = c["value"]
-	check(Deduction.matching(data.suspects, sel) == ["valentina_roca"], "trail clues single out culprit")
+		check(int(s.plan[i]["wiretap"]["text"].get("tier", 0)) == 3, "case 15 uses tier-3 wiretaps")
+
+
+func test_long_route_money_gives_destination() -> void:
+	var s = CaseState.new(data, "case_15", 3)
+	check(s.plan[5]["money"]["kind"] == "dest", "after 5 traits, money trail points to destination")
+
+
+func test_cctv_enhance() -> void:
+	var s = CaseState.new(data, "case_04", 3)
+	var c: Dictionary = s.visit("cctv")
+	check(c.get("hint_locked", false), "case 4 CCTV hint starts locked")
+	var h: int = s.hours_used
+	c = s.enhance_cctv()
+	check(not c["hint_locked"] and s.hours_used == h + 1, "enhancing costs 1 h and unlocks hint")
+	s.enhance_cctv()
+	check(s.hours_used == h + 1, "enhancing twice is free")
+
+
+func test_progress_unlock_and_rank() -> void:
+	var p = Progress.new("user://test_progress.json")
+	var by_num := {}
+	for cid in data.cases:
+		by_num[int(data.cases[cid]["number"])] = data.cases[cid]
+	check(p.is_unlocked(1, by_num) and not p.is_unlocked(2, by_num), "only case 1 unlocked at start")
+	p.record("case_01", 2)
+	p.record("case_01", 1)
+	check(p.best("case_01") == 2, "best stars kept")
+	check(p.is_unlocked(2, by_num), "solving case 1 unlocks case 2")
+	p.save_file()
+	var q = Progress.new("user://test_progress.json")
+	q.load_file()
+	check(q.best("case_01") == 2, "progress persists")
+	check(str(q.rank()["en"]) == "Rookie", "rank from stars")
 
 
 func test_deduction_filter() -> void:
-	check(Deduction.matching(data.suspects, {}).size() == 4, "empty selection matches all")
-	check(Deduction.matching(data.suspects, {"vehicle": "motorcycle"}) == ["dimitri_vask"], "filter by vehicle")
+	var pool := _network_pool("paper_saints")
+	check(Deduction.matching(pool, {}).size() == 6, "empty selection matches whole network")
+	var d: Dictionary = pool["dimitri_vask"]["traits"]
+	check("dimitri_vask" in Deduction.matching(pool, {"vehicle": d["vehicle"]}), "filter by vehicle")
 
 
 func test_loc() -> void:

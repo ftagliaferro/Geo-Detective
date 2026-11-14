@@ -90,10 +90,18 @@ def validate(d: dict) -> list[str]:
         for city in route:
             if city not in cities:
                 errors.append(f"case {kid}: unknown route city {city}")
+        tiers = k.get("tiers", [1, 3])
+        if not (isinstance(tiers, list) and len(tiers) == 2 and 1 <= tiers[0] <= tiers[1] <= 3):
+            errors.append(f"case {kid}: tiers must be [min, max] within 1..3")
+            tiers = [1, 3]
+        if not isinstance(k.get("cctv_hint_free", True), bool):
+            errors.append(f"case {kid}: cctv_hint_free must be true/false")
         for nxt in route[1:]:
             c = cities.get(nxt, {})
             if not c.get("clues"):
-                errors.append(f"case {kid}: destination {nxt} has no witness clues")
+                errors.append(f"case {kid}: destination {nxt} has no wiretap clues")
+            elif not any(tiers[0] <= cl.get("tier", 1) <= tiers[1] for cl in c["clues"]):
+                errors.append(f"case {kid}: destination {nxt} has no clue in tiers {tiers}")
             if not c.get("street"):
                 errors.append(f"case {kid}: destination {nxt} has no street look")
         radius = k.get("radius_km")

@@ -2,6 +2,7 @@
 extends SubViewportContainer
 
 signal pin_dropped(lat: float, lon: float)
+signal flight_done
 
 const Geo = preload("res://core/geo.gd")
 const TEXTURE := preload("res://assets/globe/world.png")
@@ -137,6 +138,51 @@ func _marker(color: Color, r: float) -> MeshInstance3D:
 	mi.material_override = mat
 	pivot.add_child(mi)
 	return mi
+
+
+## Animate a flight: dashed great-circle arc, a moving plane marker, globe follows.
+func fly(from_lat: float, from_lon: float, to_lat: float, to_lon: float, duration := 1.8) -> void:
+	interactive = false
+	var va := Geo.lat_lon_to_vec(from_lat, from_lon)
+	var vb := Geo.lat_lon_to_vec(to_lat, to_lon)
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = C_PINK
+	var arc := MeshInstance3D.new()
+	var im := ImmediateMesh.new()
+	arc.mesh = im
+	arc.material_override = mat
+	pivot.add_child(arc)
+	var plane := MeshInstance3D.new()
+	var pm := SphereMesh.new()
+	pm.radius = 0.03
+	pm.height = 0.06
+	plane.mesh = pm
+	plane.material_override = mat
+	pivot.add_child(plane)
+	var path := func(t: float) -> Vector3:
+		return va.slerp(vb, t).normalized() * (1.0 + 0.12 * sin(PI * t))
+	var tw := create_tween()
+	tw.tween_method(func(t: float):
+		im.clear_surfaces()
+		im.surface_begin(Mesh.PRIMITIVE_LINES)
+		var steps := 48
+		for i in range(steps):
+			var a := float(i) / steps
+			var b := float(i + 1) / steps
+			if a > t:
+				break
+			if i % 2 == 0:
+				im.surface_add_vertex(path.call(a))
+				im.surface_add_vertex(path.call(minf(b, t)))
+		im.surface_end()
+		var p: Vector3 = path.call(t)
+		plane.position = p
+		var n := p.normalized()
+		yaw = -atan2(n.x, n.z)
+		pitch = asin(clampf(n.y, -1.0, 1.0))
+		_apply(), 0.0, 1.0, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tw.finished.connect(func(): flight_done.emit())
 
 
 ## Spin the globe so (lat, lon) faces the camera and mark it as "you are here".

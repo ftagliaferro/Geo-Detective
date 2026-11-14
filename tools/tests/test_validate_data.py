@@ -26,7 +26,11 @@ class ValidateDataTest(unittest.TestCase):
 
     def test_ambiguous_culprit_detected(self):
         d = copy.deepcopy(self.data)
-        d["suspects"]["marcel_dupin"]["traits"]["mark"] = "gold_ring"
+        case = d["cases"]["case_01"]
+        culprit = d["suspects"][case["culprit"]]
+        for sid, s in d["suspects"].items():
+            if s["network"] == case["network"]:
+                s["traits"] = dict(culprit["traits"])
         self.assertTrue(any("uniquely" in e for e in vd.validate(d)))
 
     def test_bad_radius_detected(self):
@@ -37,3 +41,10 @@ class ValidateDataTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TierTest(unittest.TestCase):
+    def test_bad_tiers_detected(self):
+        d = copy.deepcopy(vd.load(vd.DEFAULT_DIR))
+        d["cases"]["case_02"]["tiers"] = [3, 1]
+        self.assertTrue(any("tiers" in e for e in vd.validate(d)))

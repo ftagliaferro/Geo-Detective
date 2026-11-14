@@ -101,19 +101,19 @@
       "en": "CHASE!"
     },
     "chase_text": {
-      "es": "Lo viste doblar una esquina en {city}. Es ahora o nunca.",
-      "en": "You spot them turning a corner in {city}. Now or never."
+      "es": "¡Ahí va! El auto del sospechoso dobla una esquina en {city}. Es ahora o nunca.",
+      "en": "There! The suspect's car turns a corner in {city}. Now or never."
     },
     "chase_no_warrant": {
-      "es": "Ojo: sin orden de captura, aunque lo atrapes, se te escapa.",
-      "en": "Careful: without an arrest order they'll walk free even if you catch them."
+      "es": "Ojo: sin orden de captura, aunque haya captura, la persona sale libre.",
+      "en": "Careful: without an arrest order, the suspect walks free even if caught."
     },
     "catch": {
       "es": "¡Atrapalo!",
       "en": "Catch them!"
     },
     "won": {
-      "es": "¡CASO RESUELTO! Atrapaste a {name}.",
+      "es": "¡CASO RESUELTO! Capturaste a {name}.",
       "en": "CASE CLOSED! You caught {name}."
     },
     "lost_time": {
@@ -125,12 +125,12 @@
       "en": "You arrested the wrong person. The real culprit escaped."
     },
     "lost_nowarrant": {
-      "es": "Lo atrapaste, pero sin orden de captura tuviste que soltarlo.",
-      "en": "You caught them, but without an arrest order you had to let them go."
+      "es": "Hubo captura, pero sin orden de captura hubo que liberar a la persona.",
+      "en": "There was an arrest, but without an arrest order the suspect had to be released."
     },
     "stars": {
-      "es": "Estrellas: {stars} / 3",
-      "en": "Stars: {stars} / 3"
+      "es": "Estrellas: {stars} / 3  (resolver · sin pines errados · persecución)",
+      "en": "Stars: {stars} / 3  (solve · no missed pins · chase)"
     },
     "summary": {
       "es": "Horas usadas: {used} de {budget} · Pines errados: {misses} · Precisión media: {km} km",
@@ -261,16 +261,64 @@
       "en": "Gap"
     },
     "chase_caught": {
-      "es": "¡Lo alcanzaste en la persecución! (+1 estrella)",
-      "en": "You caught them in the chase! (+1 star)"
+      "es": "¡Alcanzaste el auto en la persecución! (+1 estrella)",
+      "en": "You caught the car in the chase! (+1 star)"
     },
     "chase_escaped": {
-      "es": "Se te escapó en la persecución, pero los refuerzos lo cercaron.",
-      "en": "They outran you, but backup closed them in."
+      "es": "El auto se te escapó, pero los refuerzos cerraron la zona.",
+      "en": "The car got away, but backup sealed off the area."
     },
     "near_evidence": {
       "es": "¡Está cerca! Evidencia: {text}",
       "en": "They're close! Evidence: {text}"
+    },
+    "cases": {
+      "es": "Casos",
+      "en": "Cases"
+    },
+    "cases_help": {
+      "es": "Resolvé un caso para desbloquear el siguiente. Cada banda tiene tres casos; el tercero es contra su jefe.",
+      "en": "Solve a case to unlock the next one. Each gang has three cases; the third is against its boss."
+    },
+    "rank_line": {
+      "es": "Rango: {rank} · Estrellas: {stars}/{max}",
+      "en": "Rank: {rank} · Stars: {stars}/{max}"
+    },
+    "continue_case": {
+      "es": "Continuar: {title}",
+      "en": "Continue: {title}"
+    },
+    "case_stars": {
+      "es": "[{stars}/3 estrellas]",
+      "en": "[{stars}/3 stars]"
+    },
+    "locked": {
+      "es": "[bloqueado]",
+      "en": "[locked]"
+    },
+    "difficulty": {
+      "es": "Dificultad {n}/5 · {stops} ciudades · margen del pin: {radius} km",
+      "en": "Difficulty {n}/5 · {stops} cities · pin margin: {radius} km"
+    },
+    "money_dest": {
+      "es": "Rastro de dinero — transferencia relacionada con el destino: «{text}»",
+      "en": "Money trail — transfer linked to the destination: \"{text}\""
+    },
+    "cctv_locked": {
+      "es": "Imagen de cámara del próximo destino, sin analizar. Mirala bien… o pagá el análisis.",
+      "en": "Unanalysed CCTV footage of the next destination. Look closely… or pay for analysis."
+    },
+    "enhance": {
+      "es": "Analizar imagen (1 h)",
+      "en": "Analyse footage (1 h)"
+    },
+    "next_case": {
+      "es": "Siguiente: {title}",
+      "en": "Next: {title}"
+    },
+    "promoted": {
+      "es": "¡Ascenso! Ahora sos {rank}.",
+      "en": "Promotion! You are now {rank}."
     }
   }
 }

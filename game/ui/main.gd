@@ -7,6 +7,8 @@ const Geo = preload("res://core/geo.gd")
 const Loc = preload("res://core/loc.gd")
 const GlobeView = preload("res://ui/globe_view.gd")
 const ChaseView = preload("res://ui/chase_view.gd")
+const Progress = preload("res://core/progress.gd")
+const SuspectPortrait = preload("res://ui/suspect_portrait.gd")
 const FONT_TITLE := preload("res://assets/fonts/BebasNeue-Regular.ttf")
 const FONT_MONO := preload("res://assets/fonts/SpaceMono-Regular.ttf")
 
@@ -45,6 +47,9 @@ var last_flight: Dictionary = {}
 var crossed: Dictionary = {}
 var pin: Vector2 = Vector2.INF
 var chase_result := ""
+var progress
+var recorded := false
+var flying := false
 
 var title_label: Label
 var clock_label: Label
@@ -59,6 +64,8 @@ var screen := "menu"
 func _ready() -> void:
 	data = GameData.new()
 	data.load_all()
+	progress = Progress.new()
+	progress.load_file()
 	loc = Loc.new(data.strings, "es" if OS.get_locale_language() == "es" else "en")
 	theme = _make_theme()
 	_build_layout()
@@ -245,6 +252,7 @@ func _chrome(title: String, show_ad: bool) -> void:
 func _refresh() -> void:
 	match screen:
 		"menu": show_menu()
+		"cases": show_cases()
 		"briefing": show_briefing()
 		"city": show_city()
 		"travel": show_travel()
@@ -278,7 +286,62 @@ func show_menu() -> void:
 	hero.camera.position.z = 3.2
 	hero.home_marker.visible = false
 	_label(content, "Pre-alpha", 14, C_MUTED).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_button(loc.s("play_case", {"title": loc.t(data.cases[current_case]["title"])}), _start_case)
+	_label(actions, loc.s("rank_line", {"rank": loc.t(progress.rank()), "stars": progress.total_stars(), "max": data.cases.size() * 3}), 20, C_CYAN)
+	var next := _next_case()
+	if next != "":
+		_button(loc.s("continue_case", {"title": loc.t(data.cases[next]["title"])}), func():
+			current_case = next
+			_start_case())
+	_button(loc.s("cases"), show_cases)
+
+
+func _cases_by_number() -> Dictionary:
+	var by := {}
+	for cid in data.cases:
+		by[int(data.cases[cid]["number"])] = data.cases[cid]
+	return by
+
+
+## First unlocked case that is not solved yet (or the last case if all are solved).
+func _next_case() -> String:
+	var by := _cases_by_number()
+	var nums: Array = by.keys()
+	nums.sort()
+	for n in nums:
+		if progress.is_unlocked(n, by) and not progress.is_solved(by[n]["id"]):
+			return by[n]["id"]
+	return by[nums[-1]]["id"] if not nums.is_empty() else ""
+
+
+func show_cases() -> void:
+	screen = "cases"
+	state = null
+	_chrome(loc.s("cases"), true)
+	var by := _cases_by_number()
+	var nums: Array = by.keys()
+	nums.sort()
+	var last_net := ""
+	for n in nums:
+		var cd: Dictionary = by[n]
+		if cd["network"] != last_net:
+			last_net = cd["network"]
+			_label(content, loc.t(cd["network_name"]), 26, C_CYAN)
+		var row := HBoxContainer.new()
+		content.add_child(row)
+		var unlocked: bool = progress.is_unlocked(n, by)
+		var best: int = progress.best(cd["id"])
+		var txt: String = loc.t(cd["title"])
+		if unlocked:
+			txt += "   " + loc.s("case_stars", {"stars": best})
+		else:
+			txt += "   " + loc.s("locked")
+		var b := _button(txt, func():
+			current_case = cd["id"]
+			_start_case(), not unlocked, row)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_label(actions, loc.s("rank_line", {"rank": loc.t(progress.rank()), "stars": progress.total_stars(), "max": data.cases.size() * 3}), 20, C_CYAN)
+	_label(actions, loc.s("cases_help"), 16, C_MUTED)
+	_button(loc.s("menu"), show_menu)
 
 
 func _start_case() -> void:
@@ -289,6 +352,8 @@ func _start_case() -> void:
 	last_flight = {}
 	crossed = {}
 	chase_result = ""
+	recorded = false
+	pin = Vector2.INF
 	show_briefing()
 
 
@@ -296,8 +361,11 @@ func show_briefing() -> void:
 	screen = "briefing"
 	var cd: Dictionary = state.case_def
 	_chrome(loc.s("briefing"), false)
+	_label(content, loc.t(cd["network_name"]), 18, C_CYAN)
 	_label(content, loc.t(cd["title"]), 28, C_PINK)
 	_label(content, loc.t(cd["crime"]), 22, C_PAPER)
+	var arc := int((int(cd["number"]) - 1) / 3) + 1
+	_label(content, loc.s("difficulty", {"n": arc, "stops": cd["route"].size(), "radius": int(state.radius_km)}), 18, C_MUTED)
 	_label(content, loc.s("budget_info", {"hours": state.budget, "radius": int(state.radius_km)}), 20, C_CYAN)
 	_button(loc.s("start"), show_city)
 
@@ -326,6 +394,9 @@ func show_city() -> void:
 		var done: bool = state.visited.has(spot)
 		var txt: String = loc.s("spot_" + spot) + "  " + (loc.s("done") if done else loc.s("spot_cost"))
 		_button(txt, _on_spot.bind(spot))
+	var cc: Dictionary = state.visited.get("cctv", {})
+	if cc.get("hint_locked", false):
+		_button(loc.s("enhance"), _on_enhance)
 	if state.can_travel():
 		_button(loc.s("travel"), show_travel)
 	_button(loc.s("board"), show_board)
@@ -347,16 +418,31 @@ func _on_spot(spot: String) -> void:
 	show_city()
 
 
+func _on_enhance() -> void:
+	var old := _clue_text(state.visited["cctv"])
+	var clue: Dictionary = state.enhance_cctv()
+	notebook.erase(old)
+	var line := _clue_text(clue)
+	if not line in notebook:
+		notebook.append(line)
+	last_clue = clue
+	show_city()
+
+
 func _clue_text(clue: Dictionary) -> String:
 	var city: String = _city(state.current)
 	match clue.get("kind", ""):
 		"dest":
+			if clue.get("source", "") == "money":
+				return city + " — " + loc.s("money_dest", {"text": loc.t(clue["text"])})
 			return city + " — " + loc.s("wiretap_says", {"text": loc.t(clue["text"])})
 		"trait":
 			if clue.get("near", false):
 				return city + " — " + loc.s("near_evidence", {"text": loc.t(clue["text"])})
 			return city + " — " + loc.s("money_says", {"text": loc.t(clue["text"])})
 		"street":
+			if clue.get("hint_locked", false):
+				return city + " — " + loc.s("cctv_locked")
 			return city + " — " + loc.s("cctv_note", {"hint": loc.t(clue["street"]["hint"])})
 		"near":
 			return city + " — " + loc.s("near_only")
@@ -406,6 +492,7 @@ func show_travel() -> void:
 	screen = "travel"
 	_chrome(loc.s("travel"), true)
 	var globe := GlobeView.new()
+	globe.name = "TravelGlobe"
 	globe.custom_minimum_size = Vector2(0, 470)
 	content.add_child(globe)
 	var here: Dictionary = data.cities[state.current]
@@ -441,11 +528,24 @@ func _fmt_lon(v: float) -> String:
 
 
 func _on_fly() -> void:
-	if pin == Vector2.INF:
+	if pin == Vector2.INF or flying:
 		return
+	flying = true
+	var from: Dictionary = data.cities[state.current]
 	last_flight = state.travel_to_pin(pin.x, pin.y)
 	pin = Vector2.INF
 	last_clue = {}
+	var to: Dictionary = data.cities[state.current]
+	var globe := content.find_child("TravelGlobe", true, false)
+	for b in actions.get_children():
+		if b is Button:
+			b.disabled = true
+	if globe:
+		globe.clear_pin()
+		globe.fly(from["lat"], from["lon"], to["lat"], to["lon"])
+		await globe.flight_done
+		await get_tree().create_timer(0.3).timeout
+	flying = false
 	show_city()
 
 
@@ -465,11 +565,11 @@ func show_board() -> void:
 
 	_label(col, loc.s("cork_title"), 16, C_PAPER)
 	var grid := GridContainer.new()
-	grid.columns = 2
+	grid.columns = 3
 	grid.add_theme_constant_override("h_separation", 12)
 	grid.add_theme_constant_override("v_separation", 12)
 	col.add_child(grid)
-	var ids: Array = data.suspects.keys()
+	var ids: Array = data.suspects.keys().filter(func(i): return data.suspects[i]["network"] == state.case_def["network"])
 	ids.sort()
 	for sid in ids:
 		grid.add_child(_suspect_card(sid))
@@ -510,36 +610,27 @@ func _suspect_card(sid: String) -> Control:
 	var v := VBoxContainer.new()
 	card.add_child(v)
 	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 6)
 	v.add_child(head)
-	var mug := PanelContainer.new()
-	mug.custom_minimum_size = Vector2(44, 48)
-	mug.add_theme_stylebox_override("panel", _flat_panel(Color("3b3f4f")))
-	var ini := Label.new()
-	var parts: PackedStringArray = str(s["name"]).replace("\"", "").split(" ", false)
-	ini.text = parts[0].substr(0, 1) + parts[parts.size() - 1].substr(0, 1)
-	ini.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	ini.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	ini.add_theme_font_size_override("font_size", 20)
-	ini.add_theme_color_override("font_color", C_PAPER)
-	mug.add_child(ini)
-	head.add_child(mug)
-	var name_l := _label(head, str(s["name"]), 17, C_INK)
+	var portrait := SuspectPortrait.new()
+	portrait.custom_minimum_size = Vector2(54, 64)
+	portrait.setup(s, is_out)
+	portrait.tooltip_text = loc.s("discarded") if is_out else ""
+	head.add_child(portrait)
+	var name_l := _label(head, str(s["name"]), 15, C_INK)
 	name_l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	for tid in data.trait_ids:
 		var tr: Dictionary = data.traits[tid]
 		var val: String = s["traits"][tid]
-		var tl := _label(v, "%s: %s" % [loc.t(tr["name"]), loc.t(tr["values"][val]["label"])], 14, C_INK)
+		var tl := _label(v, "%s: %s" % [loc.t(tr["name"]), loc.t(tr["values"][val]["label"])], 12, C_INK)
 		tl.add_theme_constant_override("line_spacing", -2)
 	if is_out:
-		ini.text = "X"
-		ini.add_theme_color_override("font_color", Color("ff5a5a"))
-		mug.tooltip_text = loc.s("discarded")
 		card.modulate = Color(1, 1, 1, 0.55)
 	var b := _button(loc.s("restore") if is_out else loc.s("cross_out"), func():
 		crossed[sid] = not is_out
 		show_board(), false, v)
 	b.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	b.add_theme_font_size_override("font_size", 15)
+	b.add_theme_font_size_override("font_size", 13)
 	var bs := _flat_panel(Color("353b42"), Color("5c646e"), 1)
 	bs.set_content_margin_all(4)
 	b.add_theme_stylebox_override("normal", bs)
@@ -585,5 +676,20 @@ func show_results() -> void:
 		_label(content, loc.s(chase_result), 20, C_PAPER)
 	_label(content, loc.s("stars", {"stars": state.stars()}), 24, C_PAPER)
 	_label(content, loc.s("summary", {"used": state.hours_used, "budget": state.budget, "misses": state.misses, "km": int(state.avg_precision_km())}), 20, C_TEXT)
+	if not recorded:
+		recorded = true
+		var old_rank: String = loc.t(progress.rank())
+		progress.record(state.case_def["id"], state.stars())
+		progress.save_file()
+		if loc.t(progress.rank()) != old_rank:
+			_label(content, loc.s("promoted", {"rank": loc.t(progress.rank())}), 26, C_CYAN)
+	_label(content, loc.s("rank_line", {"rank": loc.t(progress.rank()), "stars": progress.total_stars(), "max": data.cases.size() * 3}), 18, C_MUTED)
+	var by := _cases_by_number()
+	var nxt = by.get(int(state.case_def["number"]) + 1)
+	if state.status == "won" and nxt != null:
+		_button(loc.s("next_case", {"title": loc.t(nxt["title"])}), func():
+			current_case = nxt["id"]
+			_start_case())
 	_button(loc.s("play_again"), _start_case)
+	_button(loc.s("cases"), show_cases)
 	_button(loc.s("menu"), show_menu)

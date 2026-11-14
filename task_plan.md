@@ -9,7 +9,7 @@ Ship v1.1: 15 cases, ES/EN, PC + Android + Web (itch.io), then iOS; ads + remove
 - [x] 2. Vertical slice: case 1 playable (logic + tests + placeholder UI + CI deploy)
 - [~] 3. Content pipeline: Python validator ✓, 42-city world pool ✓, street photo tool ✓ (photos pending)
 - [~] 4. Art & audio: 3D neon globe ✓, arcade chase ✓, corkboard ✓; music & final art pending
-- [ ] 5. Full v1 content: 15 cases, rank progression, save system, ES/EN
+- [x] 5. Full v1 content: 15 cases, rank progression, save system, ES/EN (ADR-0007)
 - [ ] 6. Monetization: AdMob banner + "Remove ads" IAP (Android first)
 - [ ] 7. Builds & CI: Web (itch.io), Windows/Linux, Android; iOS via GitHub Actions macOS
 - [ ] 8. Store release: privacy policy, store listings, age rating

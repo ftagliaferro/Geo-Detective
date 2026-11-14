@@ -3,13 +3,13 @@
 > An original 3D-arcade geography detective game — chase a gang of thieves around the world, collect clues, deduce the suspect, and make the arrest before time runs out.
 > Built with **Godot 4** for **PC, Android, iOS and Web**. Free with ads, one-time purchase to remove them.
 
-**Status:** 🟡 Pre-alpha — case 1 playable end to end (placeholder art).
+**Status:** 🟡 Pre-alpha — full 15-case campaign playable; art and audio in progress.
 
 ## Why this project
 A portfolio project documented end to end: design, technical decisions, development log, testing and store release. Every significant decision is recorded in [`docs/decisions/`](docs/decisions/) and every work session in [`docs/devlog/`](docs/devlog/).
 
 ## Planned features (v1)
-- 15 hand-crafted cases (levels) with rising difficulty and a detective rank progression
+- 15 hand-crafted cases across 5 gangs, routes of 3–8 cities, saved progress and detective ranks
 - Stylized low-poly 3D globe + arcade/retro UI
 - **Pin-drop pursuit** on a 3D globe — no destination menus; precision matters
 - **Forensic evidence**: wiretaps, money trail and CCTV street photos (easy GeoGuessr-style)

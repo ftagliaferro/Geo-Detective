@@ -7,6 +7,7 @@ const Geo = preload("res://core/geo.gd")
 
 const SPOTS := ["wiretap", "money", "cctv"]
 const SPOT_HOURS := 2
+const ENHANCE_HOURS := 1
 
 var data
 var case_def: Dictionary
@@ -74,6 +75,21 @@ func visit(spot: String) -> Dictionary:
 	visited[spot] = clue
 	_check_time()
 	return clue
+
+
+## Pay to analyse CCTV footage and reveal what to look at (cases without free hints).
+func enhance_cctv() -> Dictionary:
+	if status != "playing" or not visited.has("cctv"):
+		return {}
+	var c: Dictionary = visited["cctv"]
+	if not c.get("hint_locked", false):
+		return c
+	hours_used += ENHANCE_HOURS
+	c = c.duplicate()
+	c["hint_locked"] = false
+	visited["cctv"] = c
+	_check_time()
+	return c
 
 
 func flight_hours(city_id: String) -> int:
@@ -145,12 +161,12 @@ func avg_precision_km() -> float:
 	return total / precision_km.size()
 
 
-## 1 star for solving, +1 for a clean fast run, +1 for winning the chase.
+## 1 star for solving, +1 for a clean run (no missed pins), +1 for winning the chase.
 func stars() -> int:
 	if status != "won":
 		return 0
 	var s := 1
-	if float(hours_left()) / float(budget) >= 0.5 and misses == 0:
+	if misses == 0:
 		s += 1
 	if chase_caught:
 		s += 1
@@ -165,19 +181,27 @@ func _check_time() -> void:
 func _prepare() -> void:
 	var order: Array = case_def["trait_order"]
 	var culprit: Dictionary = data.suspects[case_def["culprit"]]
+	var tiers: Array = case_def.get("tiers", [1, 3])
+	var free_hint: bool = case_def.get("cctv_hint_free", true)
 	plan.clear()
 	for i in range(route().size()):
 		var p := {}
 		if i < last_stop():
 			var nxt_id: String = route()[i + 1]
 			var nxt: Dictionary = data.cities[nxt_id]
-			var dclues: Array = nxt["clues"]
-			p["wiretap"] = {"kind": "dest", "text": dclues[rng.randi_range(0, dclues.size() - 1)]}
-			p["money"] = _trait_clue(order[i], culprit)
-			p["cctv"] = {"kind": "street", "city": nxt_id, "street": nxt["street"]}
+			var pool := _clues_in_tiers(nxt["clues"], tiers)
+			var first: Dictionary = pool.pop_at(rng.randi_range(0, pool.size() - 1))
+			p["wiretap"] = {"kind": "dest", "text": first}
+			if i < order.size():
+				p["money"] = _trait_clue(order[i], culprit)
+			else:
+				# Long routes: the money trail points to the destination instead.
+				var extra: Dictionary = pool[rng.randi_range(0, pool.size() - 1)] if not pool.is_empty() else first
+				p["money"] = {"kind": "dest", "source": "money", "text": extra}
+			p["cctv"] = {"kind": "street", "city": nxt_id, "street": nxt["street"], "hint_locked": not free_hint}
 		else:
 			for j in range(SPOTS.size()):
-				var idx := last_stop() + j
+				var idx: int = mini(last_stop(), order.size()) + j
 				if idx < order.size():
 					var c := _trait_clue(order[idx], culprit)
 					c["near"] = true
@@ -185,6 +209,18 @@ func _prepare() -> void:
 				else:
 					p[SPOTS[j]] = {"kind": "near"}
 		plan.append(p)
+
+
+## Clues whose tier is within [min, max]; falls back to all clues if none match.
+static func _clues_in_tiers(clues: Array, tiers: Array) -> Array:
+	var out: Array = []
+	for c in clues:
+		var t: int = int(c.get("tier", 1))
+		if t >= int(tiers[0]) and t <= int(tiers[1]):
+			out.append(c)
+	if out.is_empty():
+		out = clues.duplicate()
+	return out
 
 
 func _trait_clue(trait_id: String, culprit: Dictionary) -> Dictionary:

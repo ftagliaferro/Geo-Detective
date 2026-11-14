@@ -1,12 +1,388 @@
 {
   "suspects": [
-    {"id": "valentina_roca", "name": "Valentina \"La Firma\" Roca", "network": "paper_saints",
-     "traits": {"specialty": "forgery", "vehicle": "convertible", "mark": "gold_ring", "language": "italian", "hobby": "opera"}},
-    {"id": "dimitri_vask", "name": "Dimitri Vask", "network": "paper_saints",
-     "traits": {"specialty": "forgery", "vehicle": "motorcycle", "mark": "gold_ring", "language": "german", "hobby": "chess"}},
-    {"id": "lucia_ferraz", "name": "Lucía Ferraz", "network": "paper_saints",
-     "traits": {"specialty": "pickpocket", "vehicle": "convertible", "mark": "scar", "language": "portuguese", "hobby": "opera"}},
-    {"id": "marcel_dupin", "name": "Marcel Dupin", "network": "paper_saints",
-     "traits": {"specialty": "forgery", "vehicle": "convertible", "mark": "tattoo", "language": "french", "hobby": "golf"}}
+    {
+      "id": "valentina_la_firma_roca",
+      "name": "Valentina \"La Firma\" Roca",
+      "network": "paper_saints",
+      "traits": {
+        "specialty": "con_artist",
+        "vehicle": "convertible",
+        "mark": "glasses",
+        "language": "portuguese",
+        "hobby": "photography"
+      }
+    },
+    {
+      "id": "dimitri_vask",
+      "name": "Dimitri Vask",
+      "network": "paper_saints",
+      "traits": {
+        "specialty": "forgery",
+        "vehicle": "yacht",
+        "mark": "gold_ring",
+        "language": "german",
+        "hobby": "opera"
+      }
+    },
+    {
+      "id": "lucia_ferraz",
+      "name": "Lucía Ferraz",
+      "network": "paper_saints",
+      "traits": {
+        "specialty": "con_artist",
+        "vehicle": "convertible",
+        "mark": "glasses",
+        "language": "german",
+        "hobby": "chess"
+      }
+    },
+    {
+      "id": "marcel_dupin",
+      "name": "Marcel Dupin",
+      "network": "paper_saints",
+      "traits": {
+        "specialty": "pickpocket",
+        "vehicle": "motorcycle",
+        "mark": "scar",
+        "language": "portuguese",
+        "hobby": "photography"
+      }
+    },
+    {
+      "id": "hugo_brandt",
+      "name": "Hugo Brandt",
+      "network": "paper_saints",
+      "traits": {
+        "specialty": "smuggling",
+        "vehicle": "private_jet",
+        "mark": "red_scarf",
+        "language": "russian",
+        "hobby": "opera"
+      }
+    },
+    {
+      "id": "ines_salvatierra",
+      "name": "Inés Salvatierra",
+      "network": "paper_saints",
+      "traits": {
+        "specialty": "forgery",
+        "vehicle": "vintage_car",
+        "mark": "scar",
+        "language": "german",
+        "hobby": "golf"
+      }
+    },
+    {
+      "id": "kofi_mensah_lund",
+      "name": "Kofi Mensah-Lund",
+      "network": "blue_harbour",
+      "traits": {
+        "specialty": "hacking",
+        "vehicle": "vintage_car",
+        "mark": "gold_ring",
+        "language": "italian",
+        "hobby": "golf"
+      }
+    },
+    {
+      "id": "sasha_ilinskaya",
+      "name": "Sasha Ilinskaya",
+      "network": "blue_harbour",
+      "traits": {
+        "specialty": "art_theft",
+        "vehicle": "private_jet",
+        "mark": "scar",
+        "language": "italian",
+        "hobby": "tango"
+      }
+    },
+    {
+      "id": "tomas_quiroga",
+      "name": "Tomás Quiroga",
+      "network": "blue_harbour",
+      "traits": {
+        "specialty": "art_theft",
+        "vehicle": "yacht",
+        "mark": "gold_ring",
+        "language": "portuguese",
+        "hobby": "golf"
+      }
+    },
+    {
+      "id": "nadia_farouk",
+      "name": "Nadia Farouk",
+      "network": "blue_harbour",
+      "traits": {
+        "specialty": "art_theft",
+        "vehicle": "private_jet",
+        "mark": "scar",
+        "language": "italian",
+        "hobby": "chess"
+      }
+    },
+    {
+      "id": "elias_varga",
+      "name": "Elias Varga",
+      "network": "blue_harbour",
+      "traits": {
+        "specialty": "pickpocket",
+        "vehicle": "motorcycle",
+        "mark": "red_scarf",
+        "language": "german",
+        "hobby": "chess"
+      }
+    },
+    {
+      "id": "mara_coelho",
+      "name": "Mara Coelho",
+      "network": "blue_harbour",
+      "traits": {
+        "specialty": "art_theft",
+        "vehicle": "vintage_car",
+        "mark": "gold_ring",
+        "language": "italian",
+        "hobby": "golf"
+      }
+    },
+    {
+      "id": "glitch_okafor",
+      "name": "\"Glitch\" Okafor",
+      "network": "zero_signal",
+      "traits": {
+        "specialty": "forgery",
+        "vehicle": "motorcycle",
+        "mark": "scar",
+        "language": "japanese",
+        "hobby": "chess"
+      }
+    },
+    {
+      "id": "yuna_seo",
+      "name": "Yuna Seo",
+      "network": "zero_signal",
+      "traits": {
+        "specialty": "smuggling",
+        "vehicle": "yacht",
+        "mark": "gold_ring",
+        "language": "russian",
+        "hobby": "golf"
+      }
+    },
+    {
+      "id": "lars_ekdahl",
+      "name": "Lars Ekdahl",
+      "network": "zero_signal",
+      "traits": {
+        "specialty": "pickpocket",
+        "vehicle": "yacht",
+        "mark": "gold_ring",
+        "language": "japanese",
+        "hobby": "golf"
+      }
+    },
+    {
+      "id": "priya_raman",
+      "name": "Priya Raman",
+      "network": "zero_signal",
+      "traits": {
+        "specialty": "art_theft",
+        "vehicle": "convertible",
+        "mark": "scar",
+        "language": "russian",
+        "hobby": "tango"
+      }
+    },
+    {
+      "id": "viktor_hale",
+      "name": "Viktor Hale",
+      "network": "zero_signal",
+      "traits": {
+        "specialty": "con_artist",
+        "vehicle": "motorcycle",
+        "mark": "red_scarf",
+        "language": "russian",
+        "hobby": "golf"
+      }
+    },
+    {
+      "id": "noor_haddad",
+      "name": "Noor Haddad",
+      "network": "zero_signal",
+      "traits": {
+        "specialty": "forgery",
+        "vehicle": "motorcycle",
+        "mark": "scar",
+        "language": "japanese",
+        "hobby": "poker"
+      }
+    },
+    {
+      "id": "contessa_aurelia_bianchi",
+      "name": "Contessa Aurelia Bianchi",
+      "network": "velvet_hands",
+      "traits": {
+        "specialty": "forgery",
+        "vehicle": "private_jet",
+        "mark": "gold_ring",
+        "language": "french",
+        "hobby": "chess"
+      }
+    },
+    {
+      "id": "felix_marchetti",
+      "name": "Felix Marchetti",
+      "network": "velvet_hands",
+      "traits": {
+        "specialty": "pickpocket",
+        "vehicle": "motorcycle",
+        "mark": "gold_ring",
+        "language": "french",
+        "hobby": "golf"
+      }
+    },
+    {
+      "id": "ottilie_strand",
+      "name": "Ottilie Strand",
+      "network": "velvet_hands",
+      "traits": {
+        "specialty": "forgery",
+        "vehicle": "private_jet",
+        "mark": "gold_ring",
+        "language": "german",
+        "hobby": "chess"
+      }
+    },
+    {
+      "id": "rafael_montiel",
+      "name": "Rafael Montiel",
+      "network": "velvet_hands",
+      "traits": {
+        "specialty": "art_theft",
+        "vehicle": "motorcycle",
+        "mark": "glasses",
+        "language": "french",
+        "hobby": "golf"
+      }
+    },
+    {
+      "id": "zara_whitlock",
+      "name": "Zara Whitlock",
+      "network": "velvet_hands",
+      "traits": {
+        "specialty": "hacking",
+        "vehicle": "vintage_car",
+        "mark": "glasses",
+        "language": "russian",
+        "hobby": "opera"
+      }
+    },
+    {
+      "id": "ilya_petrov",
+      "name": "Ilya Petrov",
+      "network": "velvet_hands",
+      "traits": {
+        "specialty": "pickpocket",
+        "vehicle": "private_jet",
+        "mark": "scar",
+        "language": "french",
+        "hobby": "poker"
+      }
+    },
+    {
+      "id": "leonor_la_serpiente_vidal",
+      "name": "Leonor \"La Serpiente\" Vidal",
+      "network": "glass_serpent",
+      "traits": {
+        "specialty": "pickpocket",
+        "vehicle": "convertible",
+        "mark": "scar",
+        "language": "portuguese",
+        "hobby": "tango"
+      }
+    },
+    {
+      "id": "bastian_ortega",
+      "name": "Bastián Ortega",
+      "network": "glass_serpent",
+      "traits": {
+        "specialty": "pickpocket",
+        "vehicle": "yacht",
+        "mark": "scar",
+        "language": "portuguese",
+        "hobby": "tango"
+      }
+    },
+    {
+      "id": "camila_reyes",
+      "name": "Camila Reyes",
+      "network": "glass_serpent",
+      "traits": {
+        "specialty": "hacking",
+        "vehicle": "convertible",
+        "mark": "scar",
+        "language": "french",
+        "hobby": "chess"
+      }
+    },
+    {
+      "id": "duarte_sousa",
+      "name": "Duarte Sousa",
+      "network": "glass_serpent",
+      "traits": {
+        "specialty": "art_theft",
+        "vehicle": "motorcycle",
+        "mark": "tattoo",
+        "language": "german",
+        "hobby": "photography"
+      }
+    },
+    {
+      "id": "akira_mori",
+      "name": "Akira Mori",
+      "network": "glass_serpent",
+      "traits": {
+        "specialty": "smuggling",
+        "vehicle": "motorcycle",
+        "mark": "tattoo",
+        "language": "german",
+        "hobby": "poker"
+      }
+    },
+    {
+      "id": "esteban_ruiz",
+      "name": "Esteban Ruiz",
+      "network": "glass_serpent",
+      "traits": {
+        "specialty": "hacking",
+        "vehicle": "convertible",
+        "mark": "scar",
+        "language": "french",
+        "hobby": "poker"
+      }
+    },
+    {
+      "id": "helena_kostas",
+      "name": "Helena Kostas",
+      "network": "glass_serpent",
+      "traits": {
+        "specialty": "pickpocket",
+        "vehicle": "yacht",
+        "mark": "scar",
+        "language": "german",
+        "hobby": "golf"
+      }
+    },
+    {
+      "id": "omar_benali",
+      "name": "Omar Benali",
+      "network": "glass_serpent",
+      "traits": {
+        "specialty": "forgery",
+        "vehicle": "vintage_car",
+        "mark": "tattoo",
+        "language": "japanese",
+        "hobby": "photography"
+      }
+    }
   ]
 }

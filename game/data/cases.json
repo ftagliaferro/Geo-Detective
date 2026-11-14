@@ -4,29 +4,592 @@
       "id": "case_01",
       "number": 1,
       "network": "paper_saints",
+      "network_name": {
+        "es": "Los Santos de Papel",
+        "en": "The Paper Saints"
+      },
       "title": {
         "es": "Caso 1: La firma perfecta",
         "en": "Case 1: The Perfect Signature"
       },
       "crime": {
-        "es": "Una red de cheques falsificados vació las cuentas de un banco en Buenos Aires. Cada cheque tenía una firma impecable. Los Santos de Papel están detrás.",
-        "en": "A forged-cheque ring emptied accounts at a bank in Buenos Aires. Every cheque carried a flawless signature. The Paper Saints are behind it."
+        "es": "Una red de cheques falsificados vació las cuentas de un banco en Buenos Aires. Cada cheque tenía una firma impecable.",
+        "en": "A forged-cheque ring emptied accounts at a bank in Buenos Aires. Every cheque carried a flawless signature."
       },
-      "hours": 96,
+      "hours": 85,
+      "radius_km": 1000,
+      "tiers": [
+        1,
+        1
+      ],
+      "cctv_hint_free": true,
       "route": [
         "buenos_aires",
         "lisbon",
         "budapest"
       ],
-      "culprit": "valentina_roca",
+      "culprit": "dimitri_vask",
+      "trait_order": [
+        "specialty",
+        "hobby",
+        "mark",
+        "vehicle",
+        "language"
+      ]
+    },
+    {
+      "id": "case_02",
+      "number": 2,
+      "network": "paper_saints",
+      "network_name": {
+        "es": "Los Santos de Papel",
+        "en": "The Paper Saints"
+      },
+      "title": {
+        "es": "Caso 2: El falso piloto",
+        "en": "Case 2: The Fake Pilot"
+      },
+      "crime": {
+        "es": "Un supuesto piloto de aerolínea cobró cheques de viaje falsos en tres aeropuertos de Madrid en una sola tarde.",
+        "en": "A so-called airline pilot cashed fake traveller's cheques at three Madrid airport desks in a single afternoon."
+      },
+      "hours": 75,
+      "radius_km": 1000,
+      "tiers": [
+        1,
+        1
+      ],
+      "cctv_hint_free": true,
+      "route": [
+        "madrid",
+        "paris",
+        "amsterdam",
+        "london"
+      ],
+      "culprit": "lucia_ferraz",
+      "trait_order": [
+        "mark",
+        "specialty",
+        "hobby",
+        "language",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "case_03",
+      "number": 3,
+      "network": "paper_saints",
+      "network_name": {
+        "es": "Los Santos de Papel",
+        "en": "The Paper Saints"
+      },
+      "title": {
+        "es": "Caso 3: La imprenta fantasma",
+        "en": "Case 3: The Ghost Press"
+      },
+      "crime": {
+        "es": "Apareció una imprenta clandestina en Nueva York que fabricaba bonos del Tesoro perfectos. La jefa de los Santos de Papel dejó su firma.",
+        "en": "A secret press in New York was printing flawless Treasury bonds. The Paper Saints' leader left her signature."
+      },
+      "hours": 130,
+      "radius_km": 900,
+      "tiers": [
+        1,
+        2
+      ],
+      "cctv_hint_free": true,
+      "route": [
+        "new_york",
+        "havana",
+        "mexico_city",
+        "rome",
+        "vienna"
+      ],
+      "culprit": "valentina_la_firma_roca",
+      "trait_order": [
+        "mark",
+        "specialty",
+        "vehicle",
+        "hobby",
+        "language"
+      ]
+    },
+    {
+      "id": "case_04",
+      "number": 4,
+      "network": "blue_harbour",
+      "network_name": {
+        "es": "Sindicato Puerto Azul",
+        "en": "Blue Harbour Syndicate"
+      },
+      "title": {
+        "es": "Caso 4: Contenedor 47",
+        "en": "Case 4: Container 47"
+      },
+      "crime": {
+        "es": "Un contenedor con marfil falso y documentos adulterados desapareció del puerto de Ciudad del Cabo.",
+        "en": "A container of fake ivory and doctored papers vanished from the port of Cape Town."
+      },
+      "hours": 85,
+      "radius_km": 800,
+      "tiers": [
+        1,
+        2
+      ],
+      "cctv_hint_free": false,
+      "route": [
+        "cape_town",
+        "lagos",
+        "marrakech",
+        "athens"
+      ],
+      "culprit": "sasha_ilinskaya",
+      "trait_order": [
+        "specialty",
+        "mark",
+        "hobby",
+        "language",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "case_05",
+      "number": 5,
+      "network": "blue_harbour",
+      "network_name": {
+        "es": "Sindicato Puerto Azul",
+        "en": "Blue Harbour Syndicate"
+      },
+      "title": {
+        "es": "Caso 5: Ruta de las especias",
+        "en": "Case 5: The Spice Route"
+      },
+      "crime": {
+        "es": "Un barco de bandera falsa zarpó de Río con un cargamento que nadie declaró.",
+        "en": "A ship under a false flag left Rio carrying undeclared cargo."
+      },
+      "hours": 115,
+      "radius_km": 800,
+      "tiers": [
+        2,
+        2
+      ],
+      "cctv_hint_free": false,
+      "route": [
+        "rio",
+        "lisbon",
+        "istanbul",
+        "dubai",
+        "mumbai"
+      ],
+      "culprit": "tomas_quiroga",
+      "trait_order": [
+        "hobby",
+        "mark",
+        "specialty",
+        "language",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "case_06",
+      "number": 6,
+      "network": "blue_harbour",
+      "network_name": {
+        "es": "Sindicato Puerto Azul",
+        "en": "Blue Harbour Syndicate"
+      },
+      "title": {
+        "es": "Caso 6: El capitán del Pacífico",
+        "en": "Case 6: The Pacific Captain"
+      },
+      "crime": {
+        "es": "El jefe del Sindicato Puerto Azul cerró un trato millonario en Singapur y cruzó el Pacífico antes del amanecer.",
+        "en": "The Blue Harbour boss sealed a million-dollar deal in Singapore and crossed the Pacific before dawn."
+      },
+      "hours": 150,
+      "radius_km": 750,
+      "tiers": [
+        2,
+        2
+      ],
+      "cctv_hint_free": false,
+      "route": [
+        "singapore",
+        "hong_kong",
+        "sydney",
+        "auckland",
+        "santiago",
+        "lima"
+      ],
+      "culprit": "kofi_mensah_lund",
+      "trait_order": [
+        "language",
+        "mark",
+        "vehicle",
+        "hobby",
+        "specialty"
+      ]
+    },
+    {
+      "id": "case_07",
+      "number": 7,
+      "network": "zero_signal",
+      "network_name": {
+        "es": "Señal Cero",
+        "en": "Zero Signal"
+      },
+      "title": {
+        "es": "Caso 7: Pantalla negra",
+        "en": "Case 7: Black Screen"
+      },
+      "crime": {
+        "es": "Un ataque informático apagó las pantallas de la bolsa de Seúl durante diez minutos. Alguien ganó una fortuna.",
+        "en": "A cyberattack blanked the Seoul stock exchange screens for ten minutes. Someone made a fortune."
+      },
+      "hours": 105,
+      "radius_km": 650,
+      "tiers": [
+        2,
+        2
+      ],
+      "cctv_hint_free": false,
+      "route": [
+        "seoul",
+        "tokyo",
+        "toronto",
+        "reykjavik",
+        "stockholm"
+      ],
+      "culprit": "yuna_seo",
+      "trait_order": [
+        "hobby",
+        "vehicle",
+        "mark",
+        "specialty",
+        "language"
+      ]
+    },
+    {
+      "id": "case_08",
+      "number": 8,
+      "network": "zero_signal",
+      "network_name": {
+        "es": "Señal Cero",
+        "en": "Zero Signal"
+      },
+      "title": {
+        "es": "Caso 8: Monedero frío",
+        "en": "Case 8: Cold Wallet"
+      },
+      "crime": {
+        "es": "Robaron las claves de un monedero cripto con millones de una empresa berlinesa.",
+        "en": "The keys to a crypto wallet holding millions were stolen from a Berlin company."
+      },
+      "hours": 95,
+      "radius_km": 650,
+      "tiers": [
+        2,
+        3
+      ],
+      "cctv_hint_free": false,
+      "route": [
+        "berlin",
+        "moscow",
+        "beijing",
+        "bangkok",
+        "singapore"
+      ],
+      "culprit": "lars_ekdahl",
       "trait_order": [
         "vehicle",
         "mark",
+        "hobby",
+        "language",
+        "specialty"
+      ]
+    },
+    {
+      "id": "case_09",
+      "number": 9,
+      "network": "zero_signal",
+      "network_name": {
+        "es": "Señal Cero",
+        "en": "Zero Signal"
+      },
+      "title": {
+        "es": "Caso 9: La voz clonada",
+        "en": "Case 9: The Cloned Voice"
+      },
+      "crime": {
+        "es": "Con una voz clonada por computadora, alguien ordenó una transferencia gigante desde un estudio de Los Ángeles. Es obra del líder de Señal Cero.",
+        "en": "Using a computer-cloned voice, someone ordered a huge transfer from a Los Angeles studio. It's the work of Zero Signal's leader."
+      },
+      "hours": 125,
+      "radius_km": 600,
+      "tiers": [
+        2,
+        3
+      ],
+      "cctv_hint_free": false,
+      "route": [
+        "los_angeles",
+        "new_york",
+        "london",
+        "dubai",
+        "nairobi",
+        "cairo"
+      ],
+      "culprit": "glitch_okafor",
+      "trait_order": [
+        "specialty",
+        "mark",
+        "vehicle",
+        "language",
+        "hobby"
+      ]
+    },
+    {
+      "id": "case_10",
+      "number": 10,
+      "network": "velvet_hands",
+      "network_name": {
+        "es": "Manos de Terciopelo",
+        "en": "Velvet Hands"
+      },
+      "title": {
+        "es": "Caso 10: El cuadro cambiado",
+        "en": "Case 10: The Swapped Painting"
+      },
+      "crime": {
+        "es": "En un museo de París descubrieron que un cuadro famoso era una copia. El original lleva días de viaje.",
+        "en": "A Paris museum discovered a famous painting was a copy. The original has been travelling for days."
+      },
+      "hours": 70,
+      "radius_km": 500,
+      "tiers": [
+        2,
+        3
+      ],
+      "cctv_hint_free": false,
+      "route": [
+        "paris",
+        "rome",
+        "athens",
+        "cairo",
+        "istanbul"
+      ],
+      "culprit": "felix_marchetti",
+      "trait_order": [
+        "hobby",
+        "vehicle",
+        "language",
+        "mark",
+        "specialty"
+      ]
+    },
+    {
+      "id": "case_11",
+      "number": 11,
+      "network": "velvet_hands",
+      "network_name": {
+        "es": "Manos de Terciopelo",
+        "en": "Velvet Hands"
+      },
+      "title": {
+        "es": "Caso 11: El violín dormido",
+        "en": "Case 11: The Sleeping Violin"
+      },
+      "crime": {
+        "es": "Un violín de trescientos años desapareció de una bóveda en Viena durante un concierto.",
+        "en": "A three-hundred-year-old violin vanished from a Vienna vault during a concert."
+      },
+      "hours": 110,
+      "radius_km": 500,
+      "tiers": [
+        3,
+        3
+      ],
+      "cctv_hint_free": false,
+      "route": [
+        "vienna",
+        "budapest",
+        "moscow",
+        "beijing",
+        "tokyo",
+        "sydney"
+      ],
+      "culprit": "ottilie_strand",
+      "trait_order": [
+        "hobby",
+        "mark",
+        "vehicle",
+        "specialty",
+        "language"
+      ]
+    },
+    {
+      "id": "case_12",
+      "number": 12,
+      "network": "velvet_hands",
+      "network_name": {
+        "es": "Manos de Terciopelo",
+        "en": "Velvet Hands"
+      },
+      "title": {
+        "es": "Caso 12: La máscara de jade",
+        "en": "Case 12: The Jade Mask"
+      },
+      "crime": {
+        "es": "Una máscara de jade prehispánica fue robada de un museo en Ciudad de México. La condesa de las Manos de Terciopelo está detrás.",
+        "en": "A pre-Hispanic jade mask was stolen from a Mexico City museum. The Velvet Hands' countess is behind it."
+      },
+      "hours": 105,
+      "radius_km": 450,
+      "tiers": [
+        3,
+        3
+      ],
+      "cctv_hint_free": false,
+      "route": [
+        "mexico_city",
+        "lima",
+        "bogota",
+        "havana",
+        "madrid",
+        "amsterdam"
+      ],
+      "culprit": "contessa_aurelia_bianchi",
+      "trait_order": [
+        "vehicle",
+        "mark",
+        "specialty",
+        "hobby",
+        "language"
+      ]
+    },
+    {
+      "id": "case_13",
+      "number": 13,
+      "network": "glass_serpent",
+      "network_name": {
+        "es": "El Cartel de la Serpiente de Cristal",
+        "en": "The Glass Serpent Cartel"
+      },
+      "title": {
+        "es": "Caso 13: Primera mordida",
+        "en": "Case 13: First Bite"
+      },
+      "crime": {
+        "es": "Un contador del cartel de la Serpiente de Cristal desapareció de Bogotá con los libros de la organización.",
+        "en": "A Glass Serpent Cartel accountant vanished from Bogotá with the organisation's books."
+      },
+      "hours": 110,
+      "radius_km": 400,
+      "tiers": [
+        3,
+        3
+      ],
+      "cctv_hint_free": false,
+      "route": [
+        "bogota",
+        "mexico_city",
+        "los_angeles",
+        "tokyo",
+        "hong_kong",
+        "mumbai"
+      ],
+      "culprit": "bastian_ortega",
+      "trait_order": [
+        "mark",
         "language",
         "hobby",
-        "specialty"
+        "specialty",
+        "vehicle"
+      ]
+    },
+    {
+      "id": "case_14",
+      "number": 14,
+      "network": "glass_serpent",
+      "network_name": {
+        "es": "El Cartel de la Serpiente de Cristal",
+        "en": "The Glass Serpent Cartel"
+      },
+      "title": {
+        "es": "Caso 14: Lavado en siete pasos",
+        "en": "Case 14: Laundered in Seven Steps"
+      },
+      "crime": {
+        "es": "Una red de casas de cambio en Lima mueve dinero del cartel por medio mundo.",
+        "en": "A network of exchange houses in Lima is moving cartel money across half the world."
+      },
+      "hours": 120,
+      "radius_km": 400,
+      "tiers": [
+        3,
+        3
       ],
-      "radius_km": 1000
+      "cctv_hint_free": false,
+      "route": [
+        "lima",
+        "santiago",
+        "buenos_aires",
+        "cape_town",
+        "nairobi",
+        "dubai",
+        "moscow"
+      ],
+      "culprit": "camila_reyes",
+      "trait_order": [
+        "specialty",
+        "mark",
+        "language",
+        "vehicle",
+        "hobby"
+      ]
+    },
+    {
+      "id": "case_15",
+      "number": 15,
+      "network": "glass_serpent",
+      "network_name": {
+        "es": "El Cartel de la Serpiente de Cristal",
+        "en": "The Glass Serpent Cartel"
+      },
+      "title": {
+        "es": "Caso 15: La Serpiente de Cristal",
+        "en": "Case 15: The Glass Serpent"
+      },
+      "crime": {
+        "es": "La jefa del cartel salió de Río en un vuelo privado. Es ahora o nunca: atrapá a La Serpiente.",
+        "en": "The cartel boss left Rio on a private flight. It's now or never: catch the Serpent."
+      },
+      "hours": 125,
+      "radius_km": 350,
+      "tiers": [
+        3,
+        3
+      ],
+      "cctv_hint_free": false,
+      "route": [
+        "rio",
+        "lagos",
+        "marrakech",
+        "madrid",
+        "london",
+        "reykjavik",
+        "toronto",
+        "new_york"
+      ],
+      "culprit": "leonor_la_serpiente_vidal",
+      "trait_order": [
+        "language",
+        "mark",
+        "specialty",
+        "hobby",
+        "vehicle"
+      ]
     }
   ]
 }

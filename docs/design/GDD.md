@@ -1,6 +1,6 @@
 # Game Design Document — Geo Detective *(working title)*
 
-> Version 0.2 — 2026-11-14 · Status: core twist applied (ADR-0006)
+> Version 0.3 — 2026-11-14 · Status: full campaign (ADR-0006, ADR-0007)
 
 ## 1. Pitch
 You are a field agent of a fictional international task force. Crime networks — cartels, con artists, hackers, traffickers — are moving across the world. Follow their trail city by city, read the clues (people, places, street scenes), build the suspect's profile and issue the arrest order **before the clock runs out**.
@@ -35,15 +35,15 @@ Five fictional crime networks × 3 cases each; the 3rd case of each arc is the n
 
 | Arc | Network (working name) | Crime | Cases | Hops | Suspects |
 |---|---|---|---|---|---|
-| 1 | *The Paper Saints* | Forgers & con artists | 1–3 | 3–4 | 4 |
-| 2 | *Blue Harbour Syndicate* | Smuggling routes | 4–6 | 4–5 | 6 |
-| 3 | *Zero Signal* | Cyber-crime & crypto scams | 7–9 | 5 | 6 |
-| 4 | *Velvet Hands* | Art & antiquities traffic | 10–12 | 5–6 | 8 |
-| 5 | *The Cartel of the Glass Serpent* | Cartel finale | 13–15 | 6–7 | 8 |
+| 1 | *The Paper Saints* | Forgers & con artists | 1–3 | 3–5 | 6 |
+| 2 | *Blue Harbour Syndicate* | Smuggling routes | 4–6 | 4–6 | 6 |
+| 3 | *Zero Signal* | Cyber-crime & crypto scams | 7–9 | 5–6 | 6 |
+| 4 | *Velvet Hands* | Art & antiquities traffic | 10–12 | 5–6 | 6 |
+| 5 | *The Glass Serpent Cartel* | Cartel finale | 13–15 | 6–8 | 8 |
 
 *Names are placeholders and will be checked against existing trademarks/fiction before release (ADR-0003).*
 
-**Difficulty curve**
+**Difficulty curve** (see ADR-0007 for the exact levers)
 - Cases 1–3: famous landmarks & flags, hints free, generous time. Tutorial inside case 1.
 - Cases 4–9: currencies, languages, food; street look without free hints.
 - Cases 10–15: scripts, regional details, decoy clues, tighter time.

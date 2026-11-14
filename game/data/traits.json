@@ -32,6 +32,58 @@
               "en": "Cards stolen from tourists used one after another at the same hotel."
             }
           ]
+        },
+        {
+          "id": "smuggling",
+          "label": {
+            "es": "Contrabando",
+            "en": "Smuggling"
+          },
+          "clues": [
+            {
+              "es": "Pago en efectivo por el alquiler de un contenedor en el puerto.",
+              "en": "Cash payment to rent a shipping container at the port."
+            }
+          ]
+        },
+        {
+          "id": "hacking",
+          "label": {
+            "es": "Hackeo",
+            "en": "Hacking"
+          },
+          "clues": [
+            {
+              "es": "Compra de servidores anónimos pagados con cripto.",
+              "en": "Anonymous servers bought with crypto."
+            }
+          ]
+        },
+        {
+          "id": "art_theft",
+          "label": {
+            "es": "Robo de arte",
+            "en": "Art theft"
+          },
+          "clues": [
+            {
+              "es": "Factura de una empresa que embala cuadros para museos.",
+              "en": "Invoice from a company that crates paintings for museums."
+            }
+          ]
+        },
+        {
+          "id": "con_artist",
+          "label": {
+            "es": "Estafa",
+            "en": "Con artistry"
+          },
+          "clues": [
+            {
+              "es": "Reserva de un uniforme de piloto en una casa de disfraces.",
+              "en": "Booking of a pilot's uniform at a costume shop."
+            }
+          ]
         }
       ]
     },
@@ -65,6 +117,45 @@
             {
               "es": "Pago del alquiler de una moto deportiva negra.",
               "en": "Payment for renting a black sports motorcycle."
+            }
+          ]
+        },
+        {
+          "id": "yacht",
+          "label": {
+            "es": "Yate",
+            "en": "Yacht"
+          },
+          "clues": [
+            {
+              "es": "Amarre pagado por una semana en un club náutico.",
+              "en": "A week's mooring paid at a yacht club."
+            }
+          ]
+        },
+        {
+          "id": "private_jet",
+          "label": {
+            "es": "Jet privado",
+            "en": "Private jet"
+          },
+          "clues": [
+            {
+              "es": "Combustible de aviación cargado a una cuenta en un paraíso fiscal.",
+              "en": "Jet fuel charged to an offshore account."
+            }
+          ]
+        },
+        {
+          "id": "vintage_car",
+          "label": {
+            "es": "Auto antiguo",
+            "en": "Vintage car"
+          },
+          "clues": [
+            {
+              "es": "Repuestos para un auto de colección de los años 60.",
+              "en": "Spare parts for a 1960s classic car."
             }
           ]
         }
@@ -106,13 +197,39 @@
         {
           "id": "tattoo",
           "label": {
-            "es": "Tatuaje de pluma",
-            "en": "Quill tattoo"
+            "es": "Tatuaje",
+            "en": "Tattoo"
           },
           "clues": [
             {
-              "es": "Pago en un estudio de tatuajes: retoque de una pluma en la muñeca.",
-              "en": "Tattoo studio payment: touch-up of a quill on the wrist."
+              "es": "Pago en un estudio de tatuajes: retoque en la muñeca.",
+              "en": "Tattoo studio payment: touch-up on the wrist."
+            }
+          ]
+        },
+        {
+          "id": "glasses",
+          "label": {
+            "es": "Anteojos redondos",
+            "en": "Round glasses"
+          },
+          "clues": [
+            {
+              "es": "Compra de anteojos redondos con marco de carey.",
+              "en": "Purchase of round tortoiseshell glasses."
+            }
+          ]
+        },
+        {
+          "id": "red_scarf",
+          "label": {
+            "es": "Pañuelo rojo",
+            "en": "Red scarf"
+          },
+          "clues": [
+            {
+              "es": "Compra de un pañuelo de seda rojo en una tienda de lujo.",
+              "en": "Purchase of a red silk scarf at a luxury shop."
             }
           ]
         }
@@ -159,8 +276,8 @@
           },
           "clues": [
             {
-              "es": "Pago de un curso… para disimular su acento portugués.",
-              "en": "Payment for a course… to hide a Portuguese accent."
+              "es": "Pago de un curso para disimular su acento portugués.",
+              "en": "Payment for a course to hide a Portuguese accent."
             }
           ]
         },
@@ -174,6 +291,32 @@
             {
               "es": "Compra de libros en francés en el aeropuerto.",
               "en": "Purchase of French books at the airport."
+            }
+          ]
+        },
+        {
+          "id": "russian",
+          "label": {
+            "es": "Ruso",
+            "en": "Russian"
+          },
+          "clues": [
+            {
+              "es": "Transferencia a un traductor de ruso.",
+              "en": "Transfer to a Russian translator."
+            }
+          ]
+        },
+        {
+          "id": "japanese",
+          "label": {
+            "es": "Japonés",
+            "en": "Japanese"
+          },
+          "clues": [
+            {
+              "es": "Compra de manga en japonés sin traducir.",
+              "en": "Purchase of untranslated Japanese manga."
             }
           ]
         }
@@ -222,6 +365,45 @@
             {
               "es": "Reserva pagada en un club de golf.",
               "en": "Paid booking at a golf club."
+            }
+          ]
+        },
+        {
+          "id": "tango",
+          "label": {
+            "es": "Tango",
+            "en": "Tango"
+          },
+          "clues": [
+            {
+              "es": "Clases de tango pagadas por adelantado.",
+              "en": "Tango lessons paid in advance."
+            }
+          ]
+        },
+        {
+          "id": "poker",
+          "label": {
+            "es": "Póker",
+            "en": "Poker"
+          },
+          "clues": [
+            {
+              "es": "Fichas compradas en un casino a medianoche.",
+              "en": "Chips bought at a casino at midnight."
+            }
+          ]
+        },
+        {
+          "id": "photography",
+          "label": {
+            "es": "Fotografía",
+            "en": "Photography"
+          },
+          "clues": [
+            {
+              "es": "Compra de un teleobjetivo de alta gama.",
+              "en": "Purchase of a high-end telephoto lens."
             }
           ]
         }
