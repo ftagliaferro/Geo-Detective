@@ -17,4 +17,4 @@ Ship v1.1: 15 cases, ES/EN, PC + Android + Web (itch.io), then iOS; ads + remove
 
 ## Open questions
 - Final game title
-- Rewarded ad "+6 hours"?
+

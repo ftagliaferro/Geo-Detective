@@ -68,7 +68,7 @@ Python tools validate everything (routes reachable, clues exist for each hop, li
 ## 6. Monetization (ADR-0001 scope)
 - **Free version:** AdMob banner on menu, map/globe and results screens. Never over clues or during the chase.
 - **"Remove ads"** one-time purchase (≈ USD 2.99), restorable.
-- *Proposed, not decided:* optional rewarded ad "+6 hours" when time runs low.
+- **Rewarded ad "+6 hours"** (optional, player-initiated) when time runs low; max once per case. Paid version gets it free once per case.
 
 ## 7. Platforms & tech
 - Godot 4 / GDScript, single project → Windows, Linux, Android, Web (itch.io); iOS via GitHub Actions macOS.
@@ -84,8 +84,8 @@ Case 1 playable end-to-end in the browser: 3 cities, 4 suspects, witness + infor
 
 ## 10. Open questions
 - Final title & agency name.
-- Rewarded ad "+6 hours": yes/no.
-- Chase controls on PC (keyboard) vs mobile (swipe).
+
+- ~~Chase controls~~ → decided: PC uses arrows/WASD **and** mouse drag; mobile uses swipe. Mouse drag and swipe share one input path, so it is one implementation.
 
 ---
 ## 🇪🇸 Resumen
