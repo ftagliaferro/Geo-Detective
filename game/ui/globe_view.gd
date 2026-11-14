@@ -5,8 +5,8 @@ signal pin_dropped(lat: float, lon: float)
 
 const Geo = preload("res://core/geo.gd")
 const TEXTURE := preload("res://assets/globe/world.png")
-const C_PINK := Color("ff3d7f")
-const C_CYAN := Color("31e1f7")
+const C_PINK := Color("c0392b")
+const C_CYAN := Color("2c3e50")
 const DRAG_SPEED := 0.006
 const TAP_SLOP := 8.0
 
@@ -64,7 +64,7 @@ func _init() -> void:
 	mat.roughness = 1.0
 	mat.emission_enabled = true
 	mat.emission_texture = TEXTURE
-	mat.emission_energy_multiplier = 0.45
+	mat.emission_energy_multiplier = 0.2
 	var globe := MeshInstance3D.new()
 	globe.mesh = sphere
 	globe.material_override = mat
@@ -79,7 +79,7 @@ func _init() -> void:
 	var halo_mat := StandardMaterial3D.new()
 	halo_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	halo_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	halo_mat.albedo_color = Color(C_CYAN, 0.12)
+	halo_mat.albedo_color = Color(1, 1, 1, 0.06)
 	halo_mat.cull_mode = BaseMaterial3D.CULL_FRONT
 	var halo := MeshInstance3D.new()
 	halo.mesh = halo_mesh

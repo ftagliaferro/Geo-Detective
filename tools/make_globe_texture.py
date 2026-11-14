@@ -2,7 +2,7 @@
 """Render the stylized equirectangular world texture used by the 3D globe.
 
 Source: Natural Earth 1:110m countries (public domain), fetched once and cached.
-Style: retro-neon — dark ocean, lat/lon grid, navy land, cyan coastlines.
+Style: vintage atlas — muted blue ocean, parchment land, sepia borders.
 
 Usage:  python3 tools/make_globe_texture.py [--size 2048]
 """
@@ -13,7 +13,7 @@ import json
 import urllib.request
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
 CACHE = ROOT / "tools" / ".cache" / "ne_110m_admin_0_countries.geojson"
@@ -21,10 +21,10 @@ OUT = ROOT / "game" / "assets" / "globe" / "world.png"
 SOURCE = ("https://raw.githubusercontent.com/nvkelso/natural-earth-vector/"
           "master/geojson/ne_110m_admin_0_countries.geojson")
 
-OCEAN = (9, 14, 34)
-GRID = (28, 48, 92)
-LAND = (30, 40, 84)
-COAST = (49, 225, 247)
+OCEAN = (104, 146, 176)
+GRID = (130, 166, 192)
+LAND = (226, 214, 178)
+COAST = (96, 78, 52)
 
 
 def load_geojson() -> dict:
@@ -61,15 +61,8 @@ def render(size: int) -> Image.Image:
              for f in load_geojson()["features"] for ring in rings(f["geometry"])]
     for pts in polys:
         d.polygon(pts, fill=LAND)
-    glow = Image.new("RGB", (w, h), (0, 0, 0))
-    gd = ImageDraw.Draw(glow)
     for pts in polys:
-        gd.line(pts + [pts[0]], fill=COAST, width=max(2, size // 700))
-    blurred = glow.filter(ImageFilter.GaussianBlur(size / 900))
-    img = Image.composite(blurred, img, blurred.convert("L").point(lambda v: min(255, v * 3)))
-    sharp = ImageDraw.Draw(img)
-    for pts in polys:
-        sharp.line(pts + [pts[0]], fill=COAST, width=1)
+        d.line(pts + [pts[0]], fill=COAST, width=max(1, size // 1400))
     return img
 
 

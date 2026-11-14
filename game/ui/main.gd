@@ -14,35 +14,21 @@ const BG_SHADER := """
 shader_type canvas_item;
 void fragment() {
 	vec2 uv = UV;
-	vec3 col = mix(vec3(0.035, 0.04, 0.09), vec3(0.11, 0.04, 0.16), uv.y * 0.9 + 0.05 * sin(TIME * 0.3 + uv.x * 3.0));
-	float horizon = 0.64;
-	if (uv.y > horizon) {
-		float d = uv.y - horizon;
-		vec2 g = vec2((uv.x - 0.5) / d * 0.12, 0.06 / d + TIME * 0.12);
-		vec2 f = abs(fract(g) - 0.5);
-		float line = smoothstep(0.46, 0.5, max(f.x, f.y));
-		col += vec3(1.0, 0.24, 0.5) * line * 0.22 * smoothstep(0.0, 0.25, d);
-	}
-	col += vec3(1.0, 0.3, 0.6) * 0.08 * smoothstep(0.08, 0.0, abs(uv.y - horizon));
-	float v = smoothstep(1.15, 0.35, length(uv - 0.5) * 1.35);
-	COLOR = vec4(col * v, 1.0);
+	vec3 col = mix(vec3(0.16, 0.18, 0.20), vec3(0.10, 0.11, 0.13), uv.y);
+	float v = smoothstep(1.2, 0.3, length(uv - 0.5) * 1.3);
+	COLOR = vec4(col * (0.75 + 0.25 * v), 1.0);
 }
 """
 
-const SCANLINE_SHADER := """
-shader_type canvas_item;
-void fragment() {
-	float s = sin(FRAGCOORD.y * 3.14159) * 0.5 + 0.5;
-	COLOR = vec4(0.0, 0.0, 0.0, s * 0.06);
-}
-"""
 
-const C_BG := Color("0b0d16")
-const C_PANEL := Color("12152a")
-const C_PINK := Color("ff3d7f")
-const C_CYAN := Color("31e1f7")
-const C_TEXT := Color("ece9e4")
-const C_MUTED := Color("8a90a8")
+
+# Classic detective-dossier palette: charcoal, paper, stamp red, brass.
+const C_BG := Color("1f2328")
+const C_PANEL := Color("2b3036")
+const C_PINK := Color("c0392b")   # stamp red (primary accent)
+const C_CYAN := Color("d9a441")   # brass / amber (secondary accent)
+const C_TEXT := Color("ece7dc")
+const C_MUTED := Color("9aa0a6")
 const C_PAPER := Color("e9dfc6")
 const C_INK := Color("1c1a17")
 const C_CORK := Color("8a5a33")
@@ -157,11 +143,6 @@ func _build_layout() -> void:
 	ad_bar.add_child(ad_label)
 	root.add_child(ad_bar)
 
-	var scan := ColorRect.new()
-	scan.set_anchors_preset(Control.PRESET_FULL_RECT)
-	scan.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	scan.material = _canvas_shader(SCANLINE_SHADER)
-	add_child(scan)
 
 
 func _canvas_shader(code: String) -> ShaderMaterial:
@@ -176,17 +157,17 @@ func _make_theme() -> Theme:
 	var th := Theme.new()
 	th.default_font_size = 20
 	var btn := StyleBoxFlat.new()
-	btn.bg_color = Color("1b1f38")
-	btn.border_color = C_PINK
-	btn.set_border_width_all(2)
+	btn.bg_color = Color("353b42")
+	btn.border_color = Color("5c646e")
+	btn.set_border_width_all(1)
 	btn.set_corner_radius_all(6)
 	btn.set_content_margin_all(12)
 	var hov := btn.duplicate()
-	hov.bg_color = Color("2a2f55")
+	hov.bg_color = Color("424a53")
 	hov.border_color = C_CYAN
 	var dis := btn.duplicate()
-	dis.bg_color = Color("14162a")
-	dis.border_color = Color("3a3f5a")
+	dis.bg_color = Color("2a2e33")
+	dis.border_color = Color("3b4148")
 	th.set_stylebox("normal", "Button", btn)
 	th.set_stylebox("hover", "Button", hov)
 	th.set_stylebox("pressed", "Button", hov)
@@ -196,8 +177,8 @@ func _make_theme() -> Theme:
 	th.set_color("font_hover_color", "Button", C_CYAN)
 	th.set_color("font_disabled_color", "Button", C_MUTED)
 	var panel := StyleBoxFlat.new()
-	panel.bg_color = Color(C_PANEL, 0.74)
-	panel.border_color = Color("2b3160")
+	panel.bg_color = Color(C_PANEL, 0.95)
+	panel.border_color = Color("434a52")
 	panel.set_border_width_all(1)
 	panel.set_corner_radius_all(8)
 	panel.set_content_margin_all(16)
@@ -284,8 +265,7 @@ func show_menu() -> void:
 	_chrome("", true)
 	var logo := _label(content, loc.s("game_title"), 60, C_PINK)
 	logo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	logo.add_theme_color_override("font_outline_color", Color("31e1f7"))
-	logo.add_theme_constant_override("outline_size", 2)
+	logo.add_theme_color_override("font_color", C_PAPER)
 	var tag := _label(content, loc.s("tagline"), 20, C_CYAN)
 	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var hero := GlobeView.new()
@@ -390,14 +370,13 @@ func _render_clue(clue: Dictionary) -> void:
 		var street: Dictionary = clue["street"]
 		var frame := PanelContainer.new()
 		frame.custom_minimum_size = Vector2(0, 280)
-		frame.add_theme_stylebox_override("panel", _flat_panel(Color("05070d"), Color("2b3160"), 2))
+		frame.add_theme_stylebox_override("panel", _flat_panel(Color("111316"), Color("434a52"), 2))
 		var img_path = street.get("image")
 		if img_path != null and ResourceLoader.exists(img_path):
 			var tr := TextureRect.new()
 			tr.texture = load(img_path)
 			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			tr.modulate = Color(0.85, 1.0, 0.9)
 			frame.add_child(tr)
 		else:
 			var l := Label.new()
@@ -561,7 +540,7 @@ func _suspect_card(sid: String) -> Control:
 		show_board(), false, v)
 	b.alignment = HORIZONTAL_ALIGNMENT_CENTER
 	b.add_theme_font_size_override("font_size", 15)
-	var bs := _flat_panel(Color("1b1f38"), C_PINK, 2)
+	var bs := _flat_panel(Color("353b42"), Color("5c646e"), 1)
 	bs.set_content_margin_all(4)
 	b.add_theme_stylebox_override("normal", bs)
 	v.add_theme_constant_override("separation", 0)

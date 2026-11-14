@@ -1,13 +1,14 @@
-## Arcade chase finale: synthwave low-poly 3-lane runner. Close the gap before time runs out.
+## Arcade chase finale: low-poly 3-lane city street at dusk. Close the gap before time runs out.
 ## Controls: arrows / A-D (event-driven, every press counts), swipe/drag, tap a side,
 ## or the on-screen arrow buttons.
 extends Control
 
 signal finished(caught: bool)
 
-const C_PINK := Color("ff3d7f")
-const C_CYAN := Color("31e1f7")
-const C_ORANGE := Color("ffb02e")
+const C_PLAYER := Color("2f4f7f")   # unmarked navy sedan
+const C_SUSPECT := Color("9e2b25")  # dark red getaway car
+const C_ORANGE := Color("e67e22")
+const C_HUD := Color("d9a441")
 const LANES := [-1.6, 0.0, 1.6]
 const DURATION := 30.0
 const START_GAP := 25.0
@@ -21,8 +22,8 @@ const FONT_TITLE := preload("res://assets/fonts/BebasNeue-Regular.ttf")
 
 const WINDOWS_SHADER := """
 shader_type spatial;
-uniform vec3 base_color : source_color = vec3(0.09, 0.10, 0.22);
-uniform vec3 lit_color : source_color = vec3(1.0, 0.75, 0.45);
+uniform vec3 base_color : source_color = vec3(0.55, 0.32, 0.25);
+uniform vec3 lit_color : source_color = vec3(1.0, 0.85, 0.6);
 uniform float seed = 0.0;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233)) + seed) * 43758.5453); }
 varying vec3 lpos;
@@ -33,41 +34,30 @@ void fragment() {
 	vec2 cell = floor(uv * vec2(1.6, 1.4));
 	vec2 f = fract(uv * vec2(1.6, 1.4));
 	float win = step(0.25, f.x) * step(f.x, 0.75) * step(0.3, f.y) * step(f.y, 0.75);
-	float on = step(0.55, hash(cell));
+	float on = step(0.75, hash(cell));
 	float roof = step(0.5, abs(lnorm.y));
-	ALBEDO = base_color;
-	EMISSION = lit_color * win * on * (1.0 - roof) * 1.6;
-	ROUGHNESS = 0.9;
+	vec3 glass = vec3(0.18, 0.22, 0.27);
+	ALBEDO = mix(base_color, glass, win * (1.0 - roof));
+	EMISSION = lit_color * win * on * (1.0 - roof) * 0.5;
+	ROUGHNESS = 0.85;
 }
 """
 
 const GRID_SHADER := """
 shader_type spatial;
-render_mode unshaded;
 uniform float scroll = 0.0;
 varying vec3 wpos;
 void vertex() { wpos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz; }
 void fragment() {
-	vec2 g = vec2(wpos.x, wpos.z + scroll) / 2.0;
+	vec2 g = vec2(wpos.x, wpos.z + scroll) / 1.5;
 	vec2 d = abs(fract(g - 0.5) - 0.5) / fwidth(g);
 	float line = 1.0 - min(min(d.x, d.y), 1.0);
-	ALBEDO = mix(vec3(0.04, 0.02, 0.09), vec3(1.0, 0.24, 0.5), line * 0.8);
+	ALBEDO = mix(vec3(0.58, 0.57, 0.54), vec3(0.42, 0.41, 0.39), line * 0.7);
+	ROUGHNESS = 0.95;
 }
 """
 
-const SUN_SHADER := """
-shader_type spatial;
-render_mode unshaded, cull_disabled;
-void fragment() {
-	vec2 p = UV * 2.0 - 1.0;
-	float r = length(p);
-	if (r > 1.0) discard;
-	float y = UV.y;
-	float bands = step(0.5, fract(y * 14.0)) + step(y, 0.55);
-	if (y > 0.55 && bands < 0.5) discard;
-	ALBEDO = mix(vec3(1.0, 0.85, 0.3), vec3(1.0, 0.2, 0.55), y);
-}
-"""
+
 
 var svc: SubViewportContainer
 var viewport: SubViewport
@@ -114,30 +104,28 @@ func _init() -> void:
 
 	var env := Environment.new()
 	var sky_mat := ProceduralSkyMaterial.new()
-	sky_mat.sky_top_color = Color("0b0420")
-	sky_mat.sky_horizon_color = Color("5a1650")
-	sky_mat.ground_horizon_color = Color("2a0a33")
-	sky_mat.ground_bottom_color = Color("05020c")
+	sky_mat.sky_top_color = Color("4f6d8f")
+	sky_mat.sky_horizon_color = Color("e3c7a1")
+	sky_mat.ground_horizon_color = Color("8a8378")
+	sky_mat.ground_bottom_color = Color("3d3b38")
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.55, 0.5, 0.85)
-	env.ambient_light_energy = 0.8
+	env.ambient_light_color = Color(0.85, 0.82, 0.78)
+	env.ambient_light_energy = 0.6
 	env.fog_enabled = true
-	env.fog_light_color = Color("3a1245")
-	env.fog_density = 0.012
-	env.glow_enabled = true
-	env.glow_intensity = 0.9
-	env.glow_bloom = 0.15
+	env.fog_light_color = Color("c9b8a0")
+	env.fog_density = 0.01
 	var we := WorldEnvironment.new()
 	we.environment = env
 	viewport.add_child(we)
 	var light := DirectionalLight3D.new()
 	light.rotation_degrees = Vector3(-40, 25, 0)
-	light.light_color = Color(1.0, 0.8, 0.9)
-	light.light_energy = 0.7
+	light.light_color = Color(1.0, 0.9, 0.78)
+	light.light_energy = 1.1
+	light.shadow_enabled = true
 	viewport.add_child(light)
 
 	camera = Camera3D.new()
@@ -146,18 +134,7 @@ func _init() -> void:
 	camera.fov = 70.0
 	viewport.add_child(camera)
 
-	# Synthwave sun on the horizon
-	var sun := MeshInstance3D.new()
-	var quad := QuadMesh.new()
-	quad.size = Vector2(60, 60)
-	sun.mesh = quad
-	var sun_mat := ShaderMaterial.new()
-	sun_mat.shader = _shader(SUN_SHADER)
-	sun.material_override = sun_mat
-	sun.position = Vector3(0, 14, -150)
-	viewport.add_child(sun)
-
-	# Neon grid ground on both sides
+	# Pavement on both sides
 	var ground := MeshInstance3D.new()
 	var plane := PlaneMesh.new()
 	plane.size = Vector2(200, 200)
@@ -168,22 +145,22 @@ func _init() -> void:
 	ground.position = Vector3(0, -0.02, -80)
 	viewport.add_child(ground)
 
-	var road := _box(Vector3(5.4, 0.06, 200), Color("15132a"))
+	var road := _box(Vector3(5.4, 0.06, 200), Color("3b3e43"))
 	road.position = Vector3(0, 0.0, -80)
 	for x in [-2.7, 2.7]:
-		var edge := _box(Vector3(0.08, 0.04, 200), C_PINK, 2.0)
+		var edge := _box(Vector3(0.1, 0.04, 200), Color("e8e4d8"))
 		edge.position = Vector3(x, 0.04, -80)
 	for i in range(20):
 		for x in [-0.8, 0.8]:
-			var d := _box(Vector3(0.08, 0.03, 1.6), C_CYAN, 1.5)
+			var d := _box(Vector3(0.1, 0.03, 1.6), Color("f0ece0"))
 			d.position = Vector3(x, 0.04, -i * 5.0)
 			dashes.append(d)
 
-	var player_car := _car(C_PINK)
+	var player_car := _car(C_PLAYER)
 	player = player_car[0]
 	player_body_mat = player_car[1]
 	player.position = Vector3(LANES[lane], 0, 0)
-	suspect = _car(C_CYAN)[0]
+	suspect = _car(C_SUSPECT)[0]
 	suspect.position = Vector3(0, 0, -2.0 - START_GAP * 0.6)
 
 	var shader := _shader(WINDOWS_SHADER)
@@ -198,7 +175,7 @@ func _init() -> void:
 		var mat := ShaderMaterial.new()
 		mat.shader = shader
 		mat.set_shader_parameter("seed", float(i) * 3.7)
-		mat.set_shader_parameter("lit_color", [Color(1.0, 0.75, 0.45), Color(0.4, 0.9, 1.0), Color(1.0, 0.4, 0.7)][i % 3])
+		mat.set_shader_parameter("base_color", [Color("8b4a3c"), Color("c4b293"), Color("8d949b"), Color("a8826a")][i % 4])
 		mi.material_override = mat
 		mi.position = Vector3(side * (4.6 + w / 2.0), h / 2.0, -float(i / 2) * 7.0)
 		viewport.add_child(mi)
@@ -235,11 +212,8 @@ func _car(color: Color) -> Array:
 	viewport.add_child(root)
 	var body_mat := StandardMaterial3D.new()
 	body_mat.albedo_color = color
-	body_mat.metallic = 0.4
-	body_mat.roughness = 0.35
-	body_mat.emission_enabled = true
-	body_mat.emission = color
-	body_mat.emission_energy_multiplier = 0.25
+	body_mat.metallic = 0.3
+	body_mat.roughness = 0.45
 	var parts := [
 		[Vector3(1.0, 0.32, 1.8), Vector3(0, 0.34, 0), body_mat],
 		[Vector3(0.78, 0.28, 0.9), Vector3(0, 0.62, 0.1), null],
@@ -274,7 +248,7 @@ func _car(color: Color) -> Array:
 	tail_mat.albedo_color = Color("ff2030")
 	tail_mat.emission_enabled = true
 	tail_mat.emission = Color("ff2030")
-	tail_mat.emission_energy_multiplier = 3.0
+	tail_mat.emission_energy_multiplier = 1.2
 	for tx in [-0.35, 0.35]:
 		var t := MeshInstance3D.new()
 		var tb := BoxMesh.new()
@@ -305,7 +279,7 @@ func _build_hud() -> void:
 	gap_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	gap_bar.fill_mode = ProgressBar.FILL_END_TO_BEGIN
 	var fill := StyleBoxFlat.new()
-	fill.bg_color = C_CYAN
+	fill.bg_color = C_HUD
 	fill.set_corner_radius_all(4)
 	var bg := StyleBoxFlat.new()
 	bg.bg_color = Color(0, 0, 0, 0.5)
@@ -324,7 +298,7 @@ func _build_hud() -> void:
 		b.add_theme_font_size_override("font_size", 36)
 		var sb := StyleBoxFlat.new()
 		sb.bg_color = Color(0.05, 0.05, 0.12, 0.55)
-		sb.border_color = C_CYAN
+		sb.border_color = Color("c9c3b6")
 		sb.set_border_width_all(2)
 		sb.set_corner_radius_all(42)
 		b.add_theme_stylebox_override("normal", sb)
@@ -348,7 +322,7 @@ func _hud_label(parent: Control) -> Label:
 	l.add_theme_font_override("font", FONT_TITLE)
 	l.add_theme_font_size_override("font_size", 34)
 	l.add_theme_color_override("font_color", Color.WHITE)
-	l.add_theme_color_override("font_outline_color", Color(0.1, 0, 0.2))
+	l.add_theme_color_override("font_outline_color", Color(0.1, 0.1, 0.1))
 	l.add_theme_constant_override("outline_size", 8)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(l)
@@ -398,7 +372,7 @@ func _process(delta: float) -> void:
 		elif o.position.z > 8.0:
 			_remove(o)
 	flash = maxf(0.0, flash - delta)
-	player_body_mat.albedo_color = Color.WHITE if fmod(flash, 0.1) > 0.05 else C_PINK
+	player_body_mat.albedo_color = Color.WHITE if fmod(flash, 0.1) > 0.05 else C_PLAYER
 	if gap <= 0.0:
 		_end(true)
 	elif time_left <= 0.0:
@@ -413,7 +387,7 @@ func _spawn() -> void:
 	lanes.shuffle()
 	var count := rng.randi_range(1, max_blocks)
 	for i in range(count):
-		var o := _box(Vector3(1.2, 0.7, 0.5), C_ORANGE, 1.4)
+		var o := _box(Vector3(1.2, 0.7, 0.5), C_ORANGE)
 		o.position = Vector3(LANES[lanes[i]], 0.35, -80.0)
 		obstacles.append(o)
 
