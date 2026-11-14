@@ -17,4 +17,4 @@ Ship v1.1: 15 cases, ES/EN, PC + Android + Web (itch.io), then iOS; ads + remove
 
 ## Open questions
 - Final game title
-- Final repository name
+- Street imagery source (ADR-0005)
