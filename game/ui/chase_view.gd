@@ -84,6 +84,13 @@ var scroll := 0.0
 var _press := Vector2.ZERO
 var _pressed := false
 var labels := {"time": "Time", "gap": "Gap", "help": ""}
+## "pursue" (detective chases the suspect) or "escape" (police car chases you).
+var mode := "pursue"
+const ESCAPE_GAP := 12.0
+const ESCAPE_CLOSE_RATE := 0.25
+const ESCAPE_HIT := 3.5
+const ESCAPE_DURATION := 25.0
+var siren_t := 0.0
 
 
 func _init() -> void:
@@ -329,6 +336,33 @@ func _hud_label(parent: Control) -> Label:
 	return l
 
 
+## Switch to escape mode: the suspect car becomes a police car behind you.
+func set_escape_mode() -> void:
+	mode = "escape"
+	gap = ESCAPE_GAP
+	time_left = ESCAPE_DURATION
+	var police := _car(Color("e8e8e8"))
+	suspect.queue_free()
+	suspect = police[0]
+	var bar_mat := StandardMaterial3D.new()
+	bar_mat.albedo_color = Color("2050ff")
+	bar_mat.emission_enabled = true
+	bar_mat.emission = Color("2050ff")
+	bar_mat.emission_energy_multiplier = 2.0
+	var bar := MeshInstance3D.new()
+	var bm := BoxMesh.new()
+	bm.size = Vector3(0.5, 0.08, 0.18)
+	bar.mesh = bm
+	bar.position = Vector3(0, 0.8, 0.1)
+	bar.material_override = bar_mat
+	bar.name = "Siren"
+	suspect.add_child(bar)
+	suspect.position = Vector3(LANES[lane], 0, gap * 0.35)
+	gap_bar.max_value = ESCAPE_GAP + 4.0
+	gap_bar.fill_mode = ProgressBar.FILL_BEGIN_TO_END
+	_update_hud()
+
+
 func start(seed_value: int = 0) -> void:
 	rng.seed = seed_value if seed_value != 0 else randi()
 	running = true
@@ -346,14 +380,23 @@ func _process(delta: float) -> void:
 		return
 	elapsed += delta
 	time_left -= delta
-	gap -= CLOSE_RATE * delta
+	gap -= (ESCAPE_CLOSE_RATE if mode == "escape" else CLOSE_RATE) * delta
 	spawn_t -= delta
 	if spawn_t <= 0.0:
 		spawn_t = SPAWN_EVERY
 		_spawn()
-	var sl: int = int(elapsed / 2.5) % 3
-	suspect.position.x = lerpf(suspect.position.x, LANES[sl], minf(1.0, delta * 4.0))
-	suspect.position.z = -2.0 - maxf(gap, 0.0) * 0.6
+	if mode == "escape":
+		# police car follows your lane from behind; closer as the gap shrinks
+		suspect.position.x = lerpf(suspect.position.x, player.position.x, minf(1.0, delta * 2.5))
+		suspect.position.z = 1.6 + maxf(gap, 0.0) * 0.35
+		siren_t += delta
+		var siren := suspect.get_node_or_null("Siren") as MeshInstance3D
+		if siren:
+			(siren.material_override as StandardMaterial3D).emission = Color("2050ff") if fmod(siren_t, 0.4) < 0.2 else Color("ff2030")
+	else:
+		var sl: int = int(elapsed / 2.5) % 3
+		suspect.position.x = lerpf(suspect.position.x, LANES[sl], minf(1.0, delta * 4.0))
+		suspect.position.z = -2.0 - maxf(gap, 0.0) * 0.6
 	var dz := SPEED * delta
 	for b in buildings:
 		b.position.z += dz
@@ -366,14 +409,19 @@ func _process(delta: float) -> void:
 	for o in obstacles.duplicate():
 		o.position.z += dz
 		if absf(o.position.z) < 1.0 and absf(o.position.x - player.position.x) < HIT_HALF_WIDTH:
-			gap += HIT_PENALTY
+			gap += -ESCAPE_HIT if mode == "escape" else HIT_PENALTY
 			flash = 0.35
 			_remove(o)
 		elif o.position.z > 8.0:
 			_remove(o)
 	flash = maxf(0.0, flash - delta)
 	player_body_mat.albedo_color = Color.WHITE if fmod(flash, 0.1) > 0.05 else C_PLAYER
-	if gap <= 0.0:
+	if mode == "escape":
+		if gap <= 0.0:
+			_end(false)   # police caught you
+		elif time_left <= 0.0:
+			_end(true)    # you got away
+	elif gap <= 0.0:
 		_end(true)
 	elif time_left <= 0.0:
 		_end(false)

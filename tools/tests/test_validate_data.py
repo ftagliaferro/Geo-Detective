@@ -48,3 +48,11 @@ class TierTest(unittest.TestCase):
         d = copy.deepcopy(vd.load(vd.DEFAULT_DIR))
         d["cases"]["case_02"]["tiers"] = [3, 1]
         self.assertTrue(any("tiers" in e for e in vd.validate(d)))
+
+
+class EscapeTest(unittest.TestCase):
+    def test_escape_without_clues_detected(self):
+        d = copy.deepcopy(vd.load(vd.DEFAULT_DIR))
+        d["escapes"]["escape_01"]["route"][1] = "tokyo_missing"
+        d["cities"]["tokyo_missing"] = {"id": "tokyo_missing", "name": {"es": "x", "en": "x"}, "country": {"es": "x", "en": "x"}, "lat": 0, "lon": 0, "clues": []}
+        self.assertTrue(any("no clues" in e for e in vd.validate(d)))

@@ -7,6 +7,7 @@ const CaseState = preload("res://core/case_state.gd")
 const Geo = preload("res://core/geo.gd")
 const Loc = preload("res://core/loc.gd")
 const Progress = preload("res://core/progress.gd")
+const EscapeState = preload("res://core/escape_state.gd")
 const GlobeView = preload("res://ui/globe_view.gd")
 const ChaseView = preload("res://ui/chase_view.gd")
 const SuspectPortrait = preload("res://ui/suspect_portrait.gd")
@@ -56,6 +57,11 @@ var recorded := false
 var promoted := false
 var flying := false
 var screen := "menu"
+# fugitive mode
+var esc
+var current_escape := "escape_01"
+var esc_flight: Dictionary = {}
+var esc_pin: Vector2 = Vector2.INF
 
 var title_label: Label
 var clock_box: HBoxContainer
@@ -195,11 +201,15 @@ func _chrome(title: String, show_ad: bool) -> void:
 	_clear()
 	title_label.text = title
 	lang_btn.text = loc.s("lang_button")
-	clock_box.visible = state != null
+	clock_box.visible = state != null or esc != null
 	if state:
 		clock_label.text = loc.s("hours", {"used": state.hours_used, "budget": state.budget})
 		clock_bar.max_value = state.budget
 		clock_bar.value = maxi(0, state.hours_left())
+	elif esc:
+		clock_label.text = loc.s("lead_short", {"h": int(floor(maxf(0.0, esc.lead())))})
+		clock_bar.max_value = 30
+		clock_bar.value = clampf(esc.lead(), 0.0, 30.0)
 	ad_bar.visible = show_ad
 	ad_label.text = loc.s("ad_placeholder")
 
@@ -216,6 +226,12 @@ func _refresh() -> void:
 		"board": show_board()
 		"chase": show_chase()
 		"results": show_results()
+		"escapes": show_escapes()
+		"esc_briefing": show_escape_briefing()
+		"esc_city": show_escape_city()
+		"esc_travel": show_escape_travel()
+		"esc_chase": show_escape_chase()
+		"esc_results": show_escape_results()
 
 
 func _label(parent: Control, text: String, size := 18, color := C_TEXT, font: Font = null) -> Label:
@@ -338,8 +354,12 @@ func _city(id: String) -> String:
 	return loc.t(data.cities[id]["name"])
 
 
+func _max_stars() -> int:
+	return (data.cases.size() + data.escapes.size()) * 3
+
+
 func _rank_line() -> String:
-	return loc.s("rank_line", {"rank": loc.t(progress.rank()), "stars": progress.total_stars(), "max": data.cases.size() * 3})
+	return loc.s("rank_line", {"rank": loc.t(progress.rank()), "stars": progress.total_stars(), "max": _max_stars()})
 
 
 # ======================================================================
@@ -349,23 +369,30 @@ func _rank_line() -> String:
 func show_menu() -> void:
 	screen = "menu"
 	state = null
+	esc = null
 	_chrome("", true)
 	var row := _hbox(body, 24)
 	var left := _vbox(row, 12)
 	left.custom_minimum_size = Vector2(440, 0)
 	left.alignment = BoxContainer.ALIGNMENT_CENTER
-	_title(left, loc.s("game_title"), 84, C_PAPER)
-	_label(left, loc.s("tagline"), 19, C_BRASS)
+	_title(left, loc.s("game_title"), 64, C_PAPER)
+	_label(left, loc.s("tagline"), 16, C_BRASS)
 	var card := _panel(left, Color("2f343a"), C_BRASS)
 	_label(card, loc.s("your_rank"), 14, C_MUTED)
-	_title(card, loc.t(progress.rank()), 34, C_BRASS)
-	_label(card, loc.s("stars_total", {"stars": progress.total_stars(), "max": data.cases.size() * 3}), 15, C_TEXT)
+	_title(card, loc.t(progress.rank()), 28, C_BRASS)
+	_label(card, loc.s("stars_total", {"stars": progress.total_stars(), "max": _max_stars()}), 15, C_TEXT)
+	_label(left, loc.s("mode_detective"), 14, C_MUTED)
 	var next := _next_case()
+	var modes := _hbox(left, 8)
 	if next != "":
-		_button(left, loc.s("continue_case", {"title": loc.t(data.cases[next]["title"])}), func():
+		var cb := _button(modes, loc.s("play_detective"), func():
 			current_case = next
 			_start_case(), "primary", false, "cuffs")
-	_button(left, loc.s("cases"), show_cases, "secondary", false, "board")
+		cb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var cs := _button(modes, loc.s("cases"), show_cases, "secondary", false, "board")
+	cs.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_label(left, loc.s("mode_fugitive"), 14, C_MUTED)
+	_button(left, loc.s("play_fugitive"), show_escapes, "primary", false, "money")
 	_button(left, loc.s("howto"), show_howto, "secondary", false, "notebook")
 	_label(left, "Pre-alpha", 12, C_MUTED)
 
@@ -399,6 +426,7 @@ func _next_case() -> String:
 func show_cases() -> void:
 	screen = "cases"
 	state = null
+	esc = null
 	_chrome(loc.s("cases"), true)
 	var col := _scroll(body)
 	_label(col, _rank_line() + " — " + loc.s("cases_help"), 15, C_MUTED)
@@ -448,8 +476,8 @@ func show_howto() -> void:
 	state = null
 	_chrome(loc.s("howto"), true)
 	var col := _scroll(body)
-	var icons := ["notebook", "wiretap", "globe", "board", "cuffs"]
-	for i in range(1, 6):
+	var icons := ["notebook", "wiretap", "globe", "board", "cuffs", "money"]
+	for i in range(1, 7):
 		var p := _panel(col)
 		var h := _hbox(p, 16)
 		h.add_child(_icon(icons[i - 1], C_BRASS, 48))
@@ -465,6 +493,7 @@ func show_howto() -> void:
 # ======================================================================
 
 func _start_case() -> void:
+	esc = null
 	state = CaseState.new(data, current_case, randi() % 100000 + 1)
 	notebook.clear()
 	evidence.clear()
@@ -981,3 +1010,387 @@ func show_results() -> void:
 		_button(bh, loc.s("next_case", {"title": loc.t(nxt["title"])}), func():
 			current_case = nxt["id"]
 			_start_case(), "primary")
+
+
+# ======================================================================
+# Fugitive mode (ADR-0010): you are the thief, an AI inspector follows you
+# ======================================================================
+
+func _escapes_by_number() -> Dictionary:
+	var by := {}
+	for eid in data.escapes:
+		by[int(data.escapes[eid]["number"])] = data.escapes[eid]
+	return by
+
+
+func _escape_unlocked(n: int) -> bool:
+	var by := _escapes_by_number()
+	return n <= 1 or (by.has(n - 1) and progress.is_solved(by[n - 1]["id"]))
+
+
+func show_escapes() -> void:
+	screen = "escapes"
+	state = null
+	esc = null
+	_chrome(loc.s("play_fugitive"), true)
+	var col := _scroll(body)
+	_label(col, loc.s("escapes_help"), 16, C_MUTED)
+	var by := _escapes_by_number()
+	var nums: Array = by.keys()
+	nums.sort()
+	var row: HBoxContainer
+	for i in range(nums.size()):
+		if i % 3 == 0:
+			row = _hbox(col, 12)
+		var ed: Dictionary = by[nums[i]]
+		var unlocked := _escape_unlocked(nums[i])
+		var b := Button.new()
+		b.focus_mode = Control.FOCUS_NONE
+		b.disabled = not unlocked
+		b.custom_minimum_size = Vector2(0, 150)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.pressed.connect(func():
+			current_escape = ed["id"]
+			_start_escape())
+		row.add_child(b)
+		var v := VBoxContainer.new()
+		v.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		v.set_anchors_preset(Control.PRESET_FULL_RECT)
+		v.offset_left = 14
+		v.offset_top = 10
+		v.offset_right = -14
+		v.offset_bottom = -10
+		b.add_child(v)
+		_label(v, loc.t(ed["network_name"]).to_upper(), 13, C_BRASS)
+		_title(v, loc.t(ed["title"]), 24, C_PAPER if unlocked else C_MUTED)
+		_label(v, loc.s("escape_meta", {"from": _city(ed["route"][0]), "stops": ed["route"].size()}), 14, C_MUTED)
+		if unlocked:
+			var stars := StarRow.new()
+			stars.setup(progress.best(ed["id"]), 22)
+			stars.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			v.add_child(stars)
+		else:
+			_label(v, loc.s("locked_escape"), 14, C_MUTED)
+	_button(col, loc.s("menu"), show_menu)
+
+
+func _start_escape() -> void:
+	state = null
+	esc = EscapeState.new(data, current_escape, randi() % 100000 + 1)
+	esc_flight = {}
+	esc_pin = Vector2.INF
+	recorded = false
+	promoted = false
+	chase_result = ""
+	show_escape_briefing()
+
+
+func show_escape_briefing() -> void:
+	screen = "esc_briefing"
+	var ed: Dictionary = esc.def
+	_chrome(loc.s("esc_briefing"), false)
+	var center := CenterContainer.new()
+	body.add_child(center)
+	var paper := PanelContainer.new()
+	paper.custom_minimum_size = Vector2(900, 0)
+	paper.add_theme_stylebox_override("panel", _style(Color("23262b"), C_BRASS, 2, 6, 28))
+	center.add_child(paper)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 10)
+	paper.add_child(v)
+	var head := _hbox(v, 12)
+	var hv := _vbox(head, 2)
+	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_label(hv, loc.t(ed["network_name"]).to_upper(), 15, C_BRASS)
+	_title(hv, loc.t(ed["title"]), 44, C_PAPER)
+	head.add_child(_icon("money", C_BRASS, 56))
+	_label(v, loc.t(ed["heist"]), 20, C_TEXT)
+	var chips := _hbox(v, 8)
+	_chip(chips, loc.s("chip_cities", {"n": ed["route"].size()}))
+	_chip(chips, loc.s("chip_radius", {"km": int(ed["radius_km"])}))
+	_chip(chips, loc.s("chip_head_start", {"h": int(ed["head_start"])}))
+	_chip(chips, loc.s("chip_inspector", {"h": int(ed["inspector_hours"])}), C_WHO)
+	_label(v, loc.s("objective"), 16, C_RED)
+	for i in range(1, 5):
+		_label(v, "•  " + loc.s("esc_objective_%d" % i), 17, C_TEXT)
+	var bh := _hbox(v, 10)
+	bh.alignment = BoxContainer.ALIGNMENT_END
+	_button(bh, loc.s("back"), show_escapes)
+	_button(bh, loc.s("start_escape"), show_escape_city, "primary", false, "money")
+
+
+func _lead_color(h: float) -> Color:
+	if h < 6.0:
+		return C_RED
+	if h < 12.0:
+		return C_BRASS
+	return Color("7fbf6f")
+
+
+func show_escape_city() -> void:
+	if esc.status != "playing":
+		_after_escape_move()
+		return
+	screen = "esc_city"
+	var c: Dictionary = data.cities[esc.current]
+	_chrome(loc.t(esc.def["title"]), false)
+	var col := _vbox(body, 10)
+
+	var banner := CityBanner.new()
+	banner.custom_minimum_size = Vector2(0, 120)
+	banner.setup(c["lat"], c["lon"])
+	col.add_child(banner)
+	var bv := VBoxContainer.new()
+	bv.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bv.offset_left = 22
+	bv.offset_top = 6
+	bv.add_theme_constant_override("separation", 0)
+	bv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	banner.add_child(bv)
+	_title(bv, loc.t(c["name"]), 54, C_PAPER)
+	var sub := _hbox(bv, 10)
+	_label(sub, loc.t(c["country"]), 18, C_TEXT)
+	if esc.on_route():
+		_chip(sub, loc.s("esc_status_route", {"n": esc.stop + 1, "total": esc.route().size()}), Color("7fbf6f"))
+	else:
+		_chip(sub, loc.s("esc_status_wrong"), C_RED)
+	if not esc_flight.is_empty():
+		_label(bv, loc.s("esc_flight_hit" if esc_flight["hit"] else "esc_flight_miss", {"city": _city(esc_flight["city"])}), 15, C_BRASS)
+
+	# lead meter
+	var lead: float = esc.lead()
+	var strip := PanelContainer.new()
+	strip.add_theme_stylebox_override("panel", _style(Color("2a2420"), _lead_color(lead), 1, 8, 10))
+	col.add_child(strip)
+	var sh := _hbox(strip, 14)
+	_title(sh, loc.s("lead_title"), 22, _lead_color(lead))
+	_title(sh, loc.s("lead_hours", {"h": int(floor(lead))}), 30, _lead_color(lead))
+	var lt := _label(sh, loc.s("lead_explain", {"city": _city(esc.current)}), 15, C_TEXT)
+	lt.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+
+	var cards := _hbox(col, 8)
+	cards.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	for action in EscapeState.ACTIONS:
+		_escape_card(cards, action)
+
+	var bar := _hbox(col, 10)
+	_button(bar, loc.s("abandon"), show_escapes, "secondary").custom_minimum_size = Vector2(200, 0)
+	_spacer(bar, false)
+	_button(bar, loc.s("flee"), show_escape_travel, "primary", false, "globe").custom_minimum_size = Vector2(320, 0)
+
+
+const ESC_ICON := {"message": "wiretap", "message2": "contact", "map": "globe", "clean": "notebook", "decoy": "board"}
+
+
+func _escape_card(parent: Control, action: String) -> void:
+	var leg_rev: Dictionary = esc.revealed.get(esc.stop, {})
+	var here: Dictionary = esc.path[-1]
+	var done := false
+	match action:
+		"message", "message2", "map":
+			done = leg_rev.has(action)
+		"clean":
+			done = here["clean"]
+		"decoy":
+			done = here["decoy"]
+	var p := PanelContainer.new()
+	p.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	p.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	p.add_theme_stylebox_override("panel", _style(Color(C_CARD, 0.97), C_BRASS if done else Color("4a525c"), 1, 10, 10))
+	parent.add_child(p)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 6)
+	p.add_child(v)
+	var head := _hbox(v, 8)
+	head.add_child(_icon(ESC_ICON[action], C_BRASS if done else C_TEXT, 30))
+	var hv := _vbox(head, 0)
+	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_title(hv, loc.s("esc_" + action), 20, C_PAPER)
+	var q := "q_go" if action in ["message", "message2", "map"] else "q_slow"
+	_label(hv, loc.s(q), 12, C_BRASS if q == "q_go" else C_WHO)
+	if done:
+		var sc := ScrollContainer.new()
+		sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		sc.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		v.add_child(sc)
+		var txt := ""
+		match action:
+			"message", "message2":
+				txt = "«" + loc.t(leg_rev[action]["text"]) + "»"
+			"map":
+				var names: Array = []
+				for code in leg_rev["map"]["countries"]:
+					names.append(loc.t(data.countries[code]["name"]))
+				txt = loc.s("esc_map_done", {"list": ", ".join(names)})
+			"clean":
+				txt = loc.s("esc_clean_done", {"h": EscapeState.CLEAN_BONUS})
+			"decoy":
+				txt = loc.s("esc_decoy_done", {"h": EscapeState.DECOY_BONUS})
+		var l := _label(sc, txt, 14, C_PAPER, FONT_MONO)
+		l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		return
+	var desc: String = loc.s("esc_desc_" + action)
+	if action == "decoy":
+		desc += " " + loc.s("esc_decoys_left", {"n": esc.decoys_left})
+	_label(v, desc, 13, C_MUTED)
+	var mid := CenterContainer.new()
+	mid.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	mid.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	v.add_child(mid)
+	mid.add_child(_icon(ESC_ICON[action], Color(C_TEXT, 0.07), 90))
+	var can: bool = esc.can_act(action)
+	_button(v, loc.s("esc_do", {"h": EscapeState.COST[action]}), func():
+		esc.act(action)
+		show_escape_city(), "secondary", not can)
+
+
+func show_escape_travel() -> void:
+	screen = "esc_travel"
+	_chrome(loc.s("flee"), true)
+	var row := _hbox(body, 12)
+	var gp := _panel(row, Color("23272c"))
+	(gp.get_parent() as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var globe := GlobeView.new()
+	globe.name = "TravelGlobe"
+	gp.add_child(globe)
+	var here: Dictionary = data.cities[esc.current]
+	globe.focus(here["lat"], here["lon"])
+	globe.add_country_labels(data.countries, loc.lang)
+	if esc_pin != Vector2.INF:
+		globe.set_pin(esc_pin.x, esc_pin.y)
+	var side := _side(row, 400)
+	_title(side, loc.s("globe_from", {"city": _city(esc.current)}), 26, C_PAPER)
+	_label(side, loc.s("esc_globe_help"), 14, C_MUTED)
+	var leg_rev: Dictionary = esc.revealed.get(esc.stop, {})
+	for m in ["message", "message2"]:
+		if leg_rev.has(m):
+			_label(side, "«" + loc.t(leg_rev[m]["text"]) + "»", 14, C_PAPER, FONT_MONO)
+	if leg_rev.has("map"):
+		_label(side, loc.s("esc_map_title"), 14, C_BRASS)
+		var grid := GridContainer.new()
+		grid.columns = 2
+		grid.add_theme_constant_override("h_separation", 6)
+		grid.add_theme_constant_override("v_separation", 6)
+		side.add_child(grid)
+		for code in leg_rev["map"]["countries"]:
+			var cc: Dictionary = data.countries[code]
+			var b := _button(grid, loc.t(cc["name"]), func(): globe.highlight_country(code, cc["lat"], cc["lon"]))
+			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			b.add_theme_font_size_override("font_size", 15)
+	else:
+		_label(side, loc.s("esc_no_map"), 13, C_MUTED)
+	var info := _label(side, "", 16, C_PAPER)
+	_spacer(side)
+	var fly := _button(side, loc.s("fly_here"), _on_escape_fly, "primary", true, "globe")
+	_button(side, loc.s("back"), show_escape_city)
+	var update_info := func():
+		if esc_pin == Vector2.INF:
+			info.text = loc.s("pin_none")
+			fly.disabled = true
+		else:
+			var km := Geo.distance_km(here["lat"], here["lon"], esc_pin.x, esc_pin.y)
+			info.text = loc.s("pin_at", {"lat": _fmt_lat(esc_pin.x), "lon": _fmt_lon(esc_pin.y), "hours": Geo.travel_hours(km)})
+			fly.disabled = false
+	update_info.call()
+	globe.pin_dropped.connect(func(lat: float, lon: float):
+		esc_pin = Vector2(lat, lon)
+		update_info.call())
+
+
+func _on_escape_fly() -> void:
+	if esc_pin == Vector2.INF or flying:
+		return
+	flying = true
+	var from: Dictionary = data.cities[esc.current]
+	esc_flight = esc.travel_to_pin(esc_pin.x, esc_pin.y)
+	esc_pin = Vector2.INF
+	var to: Dictionary = data.cities[esc.current]
+	var globe := body.find_child("TravelGlobe", true, false)
+	for b in body.find_children("*", "Button", true, false):
+		b.disabled = true
+	if globe:
+		globe.clear_pin()
+		globe.fly(from["lat"], from["lon"], to["lat"], to["lon"])
+		await globe.flight_done
+		await get_tree().create_timer(0.3).timeout
+	flying = false
+	_after_escape_move()
+
+
+func _after_escape_move() -> void:
+	match esc.status:
+		"playing": show_escape_city()
+		"chase": show_escape_chase()
+		_: show_escape_results()
+
+
+func show_escape_chase() -> void:
+	screen = "esc_chase"
+	_chrome(loc.s("esc_chase_title"), false)
+	var row := _hbox(body, 12)
+	var chase := ChaseView.new()
+	chase.labels = {"time": loc.s("chase_time"), "gap": loc.s("esc_chase_gap"), "help": ""}
+	row.add_child(chase)
+	chase.set_escape_mode()
+	var side := _side(row, 340)
+	_title(side, loc.s("esc_chase_title"), 30, C_RED)
+	_label(side, loc.s("esc_chase_text", {"city": _city(esc.current), "h": int(floor(maxf(0.0, esc.lead())))}), 17, C_PAPER)
+	_label(side, loc.s("esc_chase_help"), 14, C_MUTED)
+	_spacer(side)
+	var start_btn := _button(side, loc.s("esc_chase_start"), func(): pass, "primary", false, "money")
+	start_btn.pressed.connect(func():
+		start_btn.disabled = true
+		chase.start())
+	chase.finished.connect(func(ok: bool):
+		chase_result = "esc_chase_won" if ok else "esc_chase_lost"
+		esc.finish_chase(ok)
+		await get_tree().create_timer(0.8).timeout
+		show_escape_results())
+
+
+func show_escape_results() -> void:
+	screen = "esc_results"
+	_chrome(loc.s("results"), true)
+	if not recorded:
+		recorded = true
+		var old_rank: String = loc.t(progress.rank())
+		progress.record(esc.def["id"], esc.stars())
+		progress.save_file()
+		promoted = loc.t(progress.rank()) != old_rank
+	var center := CenterContainer.new()
+	body.add_child(center)
+	var paper := PanelContainer.new()
+	paper.custom_minimum_size = Vector2(840, 0)
+	paper.add_theme_stylebox_override("panel", _style(Color("23262b"), C_BRASS, 2, 6, 26))
+	center.add_child(paper)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 10)
+	paper.add_child(v)
+	var won: bool = esc.status == "escaped"
+	var head := _hbox(v, 16)
+	head.add_child(_icon("money" if won else "cuffs", C_BRASS if won else C_RED, 90))
+	var hv := _vbox(head, 4)
+	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_title(hv, loc.s("esc_stamp_won") if won else loc.s("esc_stamp_lost"), 54, Color("7fbf6f") if won else C_RED)
+	_label(hv, loc.s("esc_won_text" if won else "esc_lost_text", {"city": _city(esc.current)}), 18, C_TEXT)
+	if chase_result != "":
+		_label(hv, loc.s(chase_result), 16, C_TEXT)
+	var stars := StarRow.new()
+	stars.setup(esc.stars(), 34)
+	v.add_child(stars)
+	_label(v, loc.s("esc_stars_rule", {"h": int(EscapeState.COMFORT_LEAD)}), 13, C_MUTED)
+	_label(v, loc.s("esc_summary", {"h": int(floor(maxf(0.0, esc.lead()))), "wrong": esc.wrong_flights, "hours": esc.now}), 16, C_TEXT)
+	if promoted:
+		_title(v, loc.s("promoted", {"rank": loc.t(progress.rank())}), 30, C_BRASS)
+	_label(v, _rank_line(), 14, C_MUTED)
+	var bh := _hbox(v, 10)
+	bh.alignment = BoxContainer.ALIGNMENT_END
+	_button(bh, loc.s("menu"), show_menu)
+	_button(bh, loc.s("play_again"), _start_escape)
+	var by := _escapes_by_number()
+	var nxt = by.get(int(esc.def["number"]) + 1)
+	if won and nxt != null:
+		_button(bh, loc.s("next_case", {"title": loc.t(nxt["title"])}), func():
+			current_escape = nxt["id"]
+			_start_escape(), "primary")

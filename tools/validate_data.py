@@ -27,6 +27,7 @@ def load(data_dir: Path) -> dict:
         "suspects": {s["id"]: s for s in read("suspects.json")["suspects"]},
         "cases": {c["id"]: c for c in read("cases.json")["cases"]},
         "strings": read("i18n/strings.json")["strings"],
+        "escapes": {e["id"]: e for e in read("escapes.json")["escapes"]},
     }
 
 
@@ -120,6 +121,22 @@ def validate(d: dict) -> list[str]:
         pool = {sid: suspects[sid] for sid in group}
         if matching(pool, revealed) != [culprit]:
             errors.append(f"case {kid}: trail clues do not uniquely identify {culprit}")
+    for eid, e in d.get("escapes", {}).items():
+        _i18n(e["title"], f"escape {eid}.title", errors)
+        _i18n(e["heist"], f"escape {eid}.heist", errors)
+        route = e["route"]
+        if len(route) < 3 or len(set(route)) != len(route):
+            errors.append(f"escape {eid}: route needs 3+ distinct cities")
+        for city in route[1:]:
+            c = cities.get(city)
+            if not c or not c.get("clues"):
+                errors.append(f"escape {eid}: safe house {city} has no clues")
+            elif not c.get("country_code"):
+                errors.append(f"escape {eid}: {city} has no country_code for the smuggler's map")
+        if not 100 <= e.get("radius_km", 0) <= 3000:
+            errors.append(f"escape {eid}: radius_km out of range")
+        if not (1 <= e.get("head_start", 0) <= 48 and 1 <= e.get("inspector_hours", 0) <= 24):
+            errors.append(f"escape {eid}: head_start / inspector_hours out of range")
     return errors
 
 

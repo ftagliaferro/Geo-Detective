@@ -53,3 +53,45 @@ static func nearest_city(cities: Dictionary, lat: float, lon: float, exclude: Ar
 			best_km = km
 			best = id
 	return best
+
+
+## Shortlist of four countries: the target plus three decoys (shared by both modes).
+## Easy (max_tier <= 1): far-away decoys. Harder: the target's nearest neighbours.
+static func suggest_countries(countries: Dictionary, target: String, max_tier: int, rng: RandomNumberGenerator) -> Array:
+	if target == "" or not countries.has(target):
+		return []
+	var t: Dictionary = countries[target]
+	var candidates: Array = []
+	for cid in countries:
+		var c: Dictionary = countries[cid]
+		if cid != target and int(c["rank"]) <= 4:
+			candidates.append([distance_km(t["lat"], t["lon"], c["lat"], c["lon"]), cid])
+	candidates.sort()
+	var picks: Array = []
+	if max_tier <= 1:
+		var far := candidates.filter(func(x): return x[0] > 2500.0)
+		while picks.size() < 3 and not far.is_empty():
+			picks.append(far.pop_at(rng.randi_range(0, far.size() - 1))[1])
+	else:
+		var near := candidates.slice(0, 3 if max_tier >= 3 else 6)
+		while picks.size() < 3 and not near.is_empty():
+			picks.append(near.pop_at(rng.randi_range(0, near.size() - 1))[1])
+	picks.append(target)
+	for i in range(picks.size() - 1, 0, -1):
+		var j := rng.randi_range(0, i)
+		var tmp = picks[i]
+		picks[i] = picks[j]
+		picks[j] = tmp
+	return picks
+
+
+## Clues whose tier is within [lo, hi]; falls back to all clues if none match.
+static func clues_in_tiers(clues: Array, lo: int, hi: int) -> Array:
+	var out: Array = []
+	for c in clues:
+		var t: int = int(c.get("tier", 1))
+		if t >= lo and t <= hi:
+			out.append(c)
+	if out.is_empty():
+		out = clues.duplicate()
+	return out

@@ -1,6 +1,6 @@
 # Game Design Document — Geo Detective *(working title)*
 
-> Version 0.4 — 2026-11-14 · Status: full campaign, redesigned UI (ADR-0006…0009)
+> Version 0.5 — 2026-11-14 · Status: two modes — Detective & Fugitive (ADR-0006…0010)
 
 ## 1. Pitch
 You are a field agent of a fictional international task force. Crime networks — cartels, con artists, hackers, traffickers — are moving across the world. Follow their trail city by city, read the clues (people, places, street scenes), build the suspect's profile and issue the arrest order **before the clock runs out**.
@@ -49,6 +49,9 @@ Five fictional crime networks × 3 cases each; the 3rd case of each arc is the n
 - Cases 10–15: scripts, regional details, decoy clues, tighter time.
 
 **Ranks:** Rookie → Field Agent → Inspector → Senior Inspector → Commander → Director.
+
+## 3b. Fugitive mode (ADR-0010)
+You are the thief. Decode your boss's coded messages to find each safe house and drop the pin. **Inspector Rivas** follows: your *lead* shrinks with every hour you spend and grows each time you leave a city (she must investigate it). Tools: second message, smuggler's map (4 countries), clean tracks (+6 h), false lead (+10 h, ×2). Wrong pins cost you — she flies straight. Arrive with little lead and you must win an escape chase. 5 escapes, one per gang.
 
 ## 4. Content model (data-driven, engine-independent — ADR-0002)
 - `cities.json` — ~40 cities in v1: id, name (es/en), country, lat/lon, clue pools by category & difficulty, street-look image ids.

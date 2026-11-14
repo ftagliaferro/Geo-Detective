@@ -16,6 +16,7 @@ Ship v1.1: 15 cases, ES/EN, PC + Android + Web (itch.io), then iOS; ads + remove
 - [ ] 9. Python port (desktop/web demo)
 
 ## Done extra
+- [x] Fugitive mode (ADR-0010): 5 escapes vs AI inspector, escape chase, UI smoke test in CI
 - [x] Core twist (ADR-0006): pin-drop globe, forensic evidence, corkboard, arcade chase
 
 ## Open questions

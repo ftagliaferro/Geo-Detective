@@ -8,6 +8,7 @@ var suspects: Dictionary = {}
 var cases: Dictionary = {}
 var strings: Dictionary = {}
 var countries: Dictionary = {}
+var escapes: Dictionary = {}
 
 
 func load_all(base: String = "res://data") -> void:
@@ -25,6 +26,7 @@ func load_all(base: String = "res://data") -> void:
 	cases = _index(_read(base + "/cases.json")["cases"])
 	strings = _read(base + "/i18n/strings.json")["strings"]
 	countries = _index(_read(base + "/countries.json")["countries"])
+	escapes = _index(_read(base + "/escapes.json")["escapes"])
 
 
 static func _index(items: Array) -> Dictionary:

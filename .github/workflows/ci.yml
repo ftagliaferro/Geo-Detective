@@ -57,6 +57,12 @@ jobs:
       - name: Game logic tests
         run: ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path game --script res://tests/run_tests.gd
 
+      - name: UI smoke test (every screen, both modes)
+        run: |
+          ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path game --script res://tests/smoke_ui.gd 2>&1 | tee smoke.log
+          grep -q "UI smoke OK" smoke.log
+          ! grep -E "SCRIPT ERROR|Parse Error" smoke.log
+
       - name: Export Web build
         run: |
           mkdir -p build/web

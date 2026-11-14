@@ -8,6 +8,7 @@ const Geo = preload("res://core/geo.gd")
 const Loc = preload("res://core/loc.gd")
 const ChaseView = preload("res://ui/chase_view.gd")
 const Progress = preload("res://core/progress.gd")
+const EscapeState = preload("res://core/escape_state.gd")
 
 var passed := 0
 var failed := 0
@@ -316,3 +317,139 @@ func test_contact_gives_other_destination_clue() -> void:
 	var h: int = s.hours_used
 	s.visit("contact")
 	check(s.hours_used == h + 3, "contact costs 3 h")
+
+
+# ---------------- Fugitive mode ----------------
+
+func _epin(e, city: String) -> Dictionary:
+	var c: Dictionary = data.cities[city]
+	return e.travel_to_pin(c["lat"] + 0.3, c["lon"] + 0.3)
+
+
+func test_escape_starts_with_head_start() -> void:
+	var e = EscapeState.new(data, "escape_01", 1)
+	check(is_equal_approx(e.lead(), float(e.def["head_start"])), "lead starts at head start")
+
+
+func test_escape_actions_cost_time() -> void:
+	var e = EscapeState.new(data, "escape_01", 1)
+	var l0: float = e.lead()
+	var m: Dictionary = e.act("message")
+	check(m["kind"] == "message" and is_equal_approx(e.lead(), l0 - 1.0), "message costs 1 h of lead")
+	check(e.act("message").is_empty(), "same message cannot be bought twice")
+
+
+func test_escape_leaving_city_gains_inspector_time() -> void:
+	var e = EscapeState.new(data, "escape_01", 1)
+	var l0: float = e.lead()
+	_epin(e, e.route()[1])
+	check(is_equal_approx(e.lead(), l0 + float(e.def["inspector_hours"])), "leaving a city adds her investigation time")
+
+
+func test_escape_clean_and_decoy() -> void:
+	var a = EscapeState.new(data, "escape_01", 1)
+	var b = EscapeState.new(data, "escape_01", 1)
+	b.act("clean")
+	_epin(a, a.route()[1])
+	_epin(b, b.route()[1])
+	check(is_equal_approx(b.lead() - a.lead(), float(EscapeState.CLEAN_BONUS - EscapeState.COST["clean"])), "cleaning tracks nets +3 h")
+	var c = EscapeState.new(data, "escape_01", 1)
+	c.act("decoy")
+	_epin(c, c.route()[1])
+	check(is_equal_approx(c.lead() - a.lead(), float(EscapeState.DECOY_BONUS - EscapeState.COST["decoy"])), "false lead nets +8 h")
+	c.act("decoy")
+	_epin(c, c.route()[2])
+	check(c.decoys_left == 0 and not c.can_act("decoy"), "only two false leads per escape")
+
+
+func test_escape_wrong_pin_hurts() -> void:
+	var a = EscapeState.new(data, "escape_02", 1)
+	var b = EscapeState.new(data, "escape_02", 1)
+	_epin(a, a.route()[1])
+	b.travel_to_pin(35.6, 139.7)  # Tokyo, far off
+	check(b.status == "playing" or b.status == "caught", "wrong flight resolves")
+	if b.status == "playing":
+		_epin(b, b.route()[1])
+	check(b.wrong_flights == 1 and (b.status == "caught" or b.lead() < a.lead()), "a detour costs lead (she flies straight)")
+
+
+func test_escape_caught_when_dawdling() -> void:
+	var e = EscapeState.new(data, "escape_05", 1)
+	var guard := 0
+	while e.status == "playing" and guard < 30:
+		e.travel_to_pin(64.1, -21.9)  # Reykjavik detours
+		e.travel_to_pin(-36.8, 174.7)  # Auckland detours
+		guard += 1
+	check(e.status == "caught", "the inspector catches a fugitive who wanders")
+
+
+func test_every_escape_winnable() -> void:
+	for eid in data.escapes:
+		var e = EscapeState.new(data, eid, 3)
+		for i in range(e.last_stop()):
+			e.act("message")
+			if e.can_act("decoy"):
+				e.act("decoy")
+			_epin(e, e.route()[i + 1])
+		if e.status == "chase":
+			e.finish_chase(true)
+		check(e.status == "escaped", "%s: careful play escapes (lead %.1f)" % [eid, e.lead()])
+		check(e.stars() >= 2, "%s: clean run earns 2+ stars (got %d)" % [eid, e.stars()])
+
+
+func test_escape_map_contains_destination() -> void:
+	for eid in data.escapes:
+		var e = EscapeState.new(data, eid, 4)
+		for i in range(e.last_stop()):
+			var target: String = data.cities[e.route()[i + 1]]["country_code"]
+			check(target in e.leg_info[i]["map"]["countries"], "%s leg %d: map includes destination" % [eid, i])
+
+
+func test_escape_chase_when_close() -> void:
+	var e = EscapeState.new(data, "escape_05", 2)
+	for i in range(e.last_stop()):
+		e.act("message")
+		e.act("message2")
+		e.act("map")
+		if e.status != "playing":
+			break
+		_epin(e, e.route()[i + 1])
+		if e.status != "playing":
+			break
+	check(e.status in ["chase", "caught", "escaped"], "slow play ends in chase, capture or narrow escape")
+	if e.status == "chase":
+		check(e.finish_chase(false) == "caught" and e.stars() == 0, "losing the final chase means capture")
+
+
+func test_escape_chase_clean_run_survives() -> void:
+	var chase = ChaseView.new()
+	root.add_child(chase)
+	chase.set_escape_mode()
+	var result := [null]
+	chase.finished.connect(func(ok: bool): result[0] = ok)
+	chase.start(1)
+	var guard := 0
+	while chase.running and guard < 2000:
+		for o in chase.obstacles.duplicate():
+			chase._remove(o)
+		chase._process(0.05)
+		guard += 1
+	check(result[0] == true, "escape chase: clean driving gets away")
+	chase.queue_free()
+
+
+func test_escape_chase_crashes_get_caught() -> void:
+	var chase = ChaseView.new()
+	root.add_child(chase)
+	chase.set_escape_mode()
+	var result := [null]
+	chase.finished.connect(func(ok: bool): result[0] = ok)
+	chase.start(1)
+	var guard := 0
+	while chase.running and guard < 2000:
+		for o in chase.obstacles:
+			o.position.x = chase.player.position.x  # steer into every barrier
+		chase._process(0.05)
+		guard += 1
+	check(result[0] == false, "escape chase: crashing repeatedly gets you caught")
+	chase.queue_free()

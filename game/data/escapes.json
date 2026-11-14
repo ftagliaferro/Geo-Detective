@@ -1,0 +1,164 @@
+{
+  "escapes": [
+    {
+      "id": "escape_01",
+      "number": 1,
+      "network": "paper_saints",
+      "network_name": {
+        "es": "Los Santos de Papel",
+        "en": "The Paper Saints"
+      },
+      "title": {
+        "es": "Fuga 1: El primer golpe",
+        "en": "Escape 1: First Heist"
+      },
+      "heist": {
+        "es": "Robaste las planchas de impresión de un banco en Buenos Aires. El jefe de los Santos de Papel te espera en un piso franco al otro lado del océano.",
+        "en": "You stole a Buenos Aires bank's printing plates. The Paper Saints' boss waits for you at a safe house across the ocean."
+      },
+      "route": [
+        "buenos_aires",
+        "rio",
+        "lisbon",
+        "madrid"
+      ],
+      "tiers": [
+        1,
+        1
+      ],
+      "radius_km": 1000,
+      "head_start": 10,
+      "inspector_hours": 6
+    },
+    {
+      "id": "escape_02",
+      "number": 2,
+      "network": "blue_harbour",
+      "network_name": {
+        "es": "Sindicato Puerto Azul",
+        "en": "Blue Harbour Syndicate"
+      },
+      "title": {
+        "es": "Fuga 2: Diamantes del Cabo",
+        "en": "Escape 2: Cape Diamonds"
+      },
+      "heist": {
+        "es": "Sacaste una bolsa de diamantes del puerto de Ciudad del Cabo. El Sindicato Puerto Azul te va guiando de puerto en puerto.",
+        "en": "You smuggled a bag of diamonds out of Cape Town harbour. The Blue Harbour Syndicate guides you port by port."
+      },
+      "route": [
+        "cape_town",
+        "nairobi",
+        "cairo",
+        "athens",
+        "rome"
+      ],
+      "tiers": [
+        1,
+        2
+      ],
+      "radius_km": 850,
+      "head_start": 9,
+      "inspector_hours": 5
+    },
+    {
+      "id": "escape_03",
+      "number": 3,
+      "network": "zero_signal",
+      "network_name": {
+        "es": "Señal Cero",
+        "en": "Zero Signal"
+      },
+      "title": {
+        "es": "Fuga 3: Código fuente",
+        "en": "Escape 3: Source Code"
+      },
+      "heist": {
+        "es": "Copiaste el código de una empresa de Tokio en un disco cifrado. Señal Cero lo quiere entregado en mano.",
+        "en": "You copied a Tokyo company's code onto an encrypted drive. Zero Signal wants it delivered by hand."
+      },
+      "route": [
+        "tokyo",
+        "seoul",
+        "beijing",
+        "moscow",
+        "berlin",
+        "amsterdam"
+      ],
+      "tiers": [
+        2,
+        2
+      ],
+      "radius_km": 700,
+      "head_start": 8,
+      "inspector_hours": 5
+    },
+    {
+      "id": "escape_04",
+      "number": 4,
+      "network": "velvet_hands",
+      "network_name": {
+        "es": "Manos de Terciopelo",
+        "en": "Velvet Hands"
+      },
+      "title": {
+        "es": "Fuga 4: La partitura perdida",
+        "en": "Escape 4: The Lost Score"
+      },
+      "heist": {
+        "es": "Te llevaste una partitura original de una subasta en Nueva York. Las Manos de Terciopelo ya tienen comprador.",
+        "en": "You walked off with an original score from a New York auction. The Velvet Hands already have a buyer."
+      },
+      "route": [
+        "new_york",
+        "toronto",
+        "reykjavik",
+        "london",
+        "paris",
+        "marrakech",
+        "lagos"
+      ],
+      "tiers": [
+        2,
+        3
+      ],
+      "radius_km": 600,
+      "head_start": 8,
+      "inspector_hours": 4
+    },
+    {
+      "id": "escape_05",
+      "number": 5,
+      "network": "glass_serpent",
+      "network_name": {
+        "es": "El Cartel de la Serpiente de Cristal",
+        "en": "The Glass Serpent Cartel"
+      },
+      "title": {
+        "es": "Fuga 5: El último trabajo",
+        "en": "Escape 5: The Last Job"
+      },
+      "heist": {
+        "es": "Un último golpe para la Serpiente de Cristal: los libros contables del cartel, desde Sídney. Después, retiro.",
+        "en": "One last job for the Glass Serpent: the cartel's ledgers, out of Sydney. Then, retirement."
+      },
+      "route": [
+        "sydney",
+        "singapore",
+        "mumbai",
+        "dubai",
+        "istanbul",
+        "vienna",
+        "budapest",
+        "stockholm"
+      ],
+      "tiers": [
+        3,
+        3
+      ],
+      "radius_km": 450,
+      "head_start": 7,
+      "inspector_hours": 4
+    }
+  ]
+}

@@ -221,30 +221,8 @@ func _prepare() -> void:
 
 
 ## The "analyst" shortlist: the real destination country plus three decoys.
-## Easy cases use far-away decoys; harder cases use the target's neighbours.
 func _suggestions(target: String, max_tier: int) -> Array:
-	if target == "" or not data.countries.has(target):
-		return []
-	var t: Dictionary = data.countries[target]
-	var candidates: Array = []
-	for cid in data.countries:
-		var c: Dictionary = data.countries[cid]
-		if cid != target and int(c["rank"]) <= 4:
-			candidates.append([Geo.distance_km(t["lat"], t["lon"], c["lat"], c["lon"]), cid])
-	candidates.sort()
-	var picks: Array = []
-	if max_tier <= 1:
-		var far := candidates.filter(func(x): return x[0] > 2500.0)
-		while picks.size() < 3 and not far.is_empty():
-			picks.append(far.pop_at(rng.randi_range(0, far.size() - 1))[1])
-	else:
-		var near_n := 3 if max_tier >= 3 else 6
-		var near := candidates.slice(0, near_n)
-		while picks.size() < 3 and not near.is_empty():
-			picks.append(near.pop_at(rng.randi_range(0, near.size() - 1))[1])
-	picks.append(target)
-	_shuffle(picks)
-	return picks
+	return Geo.suggest_countries(data.countries, target, max_tier, rng)
 
 
 ## Suggested destination countries for the current leg ([] when travel is over).

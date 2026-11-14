@@ -359,3 +359,24 @@ CASES = [
      ("La Serpiente de Cristal", "The Glass Serpent"),
      ("La jefa del cartel salió de Río en un vuelo privado. Es ahora o nunca: atrapá a La Serpiente.", "The cartel boss left Rio on a private flight. It's now or never: catch the Serpent.")),
 ]
+
+# ---------------------------------------------------------------------------
+# Fugitive mode (ADR-0010): you are the thief, an AI inspector follows you.
+# number, gang, route, tiers, radius_km, head_start_h, inspector_investigation_h, titles, heist
+ESCAPES = [
+    (1, "paper_saints", ["buenos_aires", "rio", "lisbon", "madrid"], (1, 1), 1000, 10, 6,
+     ("El primer golpe", "First Heist"),
+     ("Robaste las planchas de impresión de un banco en Buenos Aires. El jefe de los Santos de Papel te espera en un piso franco al otro lado del océano.", "You stole a Buenos Aires bank's printing plates. The Paper Saints' boss waits for you at a safe house across the ocean.")),
+    (2, "blue_harbour", ["cape_town", "nairobi", "cairo", "athens", "rome"], (1, 2), 850, 9, 5,
+     ("Diamantes del Cabo", "Cape Diamonds"),
+     ("Sacaste una bolsa de diamantes del puerto de Ciudad del Cabo. El Sindicato Puerto Azul te va guiando de puerto en puerto.", "You smuggled a bag of diamonds out of Cape Town harbour. The Blue Harbour Syndicate guides you port by port.")),
+    (3, "zero_signal", ["tokyo", "seoul", "beijing", "moscow", "berlin", "amsterdam"], (2, 2), 700, 8, 5,
+     ("Código fuente", "Source Code"),
+     ("Copiaste el código de una empresa de Tokio en un disco cifrado. Señal Cero lo quiere entregado en mano.", "You copied a Tokyo company's code onto an encrypted drive. Zero Signal wants it delivered by hand.")),
+    (4, "velvet_hands", ["new_york", "toronto", "reykjavik", "london", "paris", "marrakech", "lagos"], (2, 3), 600, 8, 4,
+     ("La partitura perdida", "The Lost Score"),
+     ("Te llevaste una partitura original de una subasta en Nueva York. Las Manos de Terciopelo ya tienen comprador.", "You walked off with an original score from a New York auction. The Velvet Hands already have a buyer.")),
+    (5, "glass_serpent", ["sydney", "singapore", "mumbai", "dubai", "istanbul", "vienna", "budapest", "stockholm"], (3, 3), 450, 7, 4,
+     ("El último trabajo", "The Last Job"),
+     ("Un último golpe para la Serpiente de Cristal: los libros contables del cartel, desde Sídney. Después, retiro.", "One last job for the Glass Serpent: the cartel's ledgers, out of Sydney. Then, retirement.")),
+]

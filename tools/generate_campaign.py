@@ -18,7 +18,7 @@ import unicodedata
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from campaign_content import CASES, CLUES, NETWORKS, TRAIT_VALUES  # noqa: E402
+from campaign_content import CASES, CLUES, ESCAPES, NETWORKS, TRAIT_VALUES  # noqa: E402
 
 DATA = Path(__file__).resolve().parent.parent / "game" / "data"
 TRAITS = list(TRAIT_VALUES)
@@ -130,6 +130,16 @@ def main() -> None:
     (DATA / "traits.json").write_text(json.dumps(traits_json, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (DATA / "suspects.json").write_text(json.dumps({"suspects": suspects}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (DATA / "cases.json").write_text(json.dumps({"cases": cases_out}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    escapes = [{
+        "id": f"escape_{num:02d}", "number": num, "network": net,
+        "network_name": {"es": NETWORKS[net]["name"][0], "en": NETWORKS[net]["name"][1]},
+        "title": {"es": f"Fuga {num}: {title[0]}", "en": f"Escape {num}: {title[1]}"},
+        "heist": {"es": heist[0], "en": heist[1]},
+        "route": route, "tiers": list(tiers), "radius_km": radius,
+        "head_start": lag, "inspector_hours": inv,
+    } for num, net, route, tiers, radius, lag, inv, title, heist in ESCAPES]
+    (DATA / "escapes.json").write_text(json.dumps({"escapes": escapes}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"{len(escapes)} escapes")
     print(f"{len(cases_out)} cases, {len(suspects)} suspects, {sum(1 for c in cities['cities'] if c['id'] in CLUES)} cities with clues")
 
 

@@ -535,6 +535,246 @@
     "stars_rule": {
       "es": "Estrellas: resolver el caso · no errar ningún pin · ganar la persecución",
       "en": "Stars: solve the case · miss no pins · win the chase"
+    },
+    "mode_detective": {
+      "es": "MODO DETECTIVE · atrapá a las bandas",
+      "en": "DETECTIVE MODE · catch the gangs"
+    },
+    "mode_fugitive": {
+      "es": "MODO FUGITIVO · escapá vos",
+      "en": "FUGITIVE MODE · you are the one escaping"
+    },
+    "play_detective": {
+      "es": "Jugar",
+      "en": "Play"
+    },
+    "play_fugitive": {
+      "es": "Modo fugitivo",
+      "en": "Fugitive mode"
+    },
+    "escapes_help": {
+      "es": "Esta vez el ladrón sos vos. Descifrá los mensajes de tu jefe para llegar al piso franco antes de que la inspectora Rivas te alcance.",
+      "en": "This time you are the thief. Decode your boss's messages to reach the safe house before Inspector Rivas catches up."
+    },
+    "escape_meta": {
+      "es": "Desde {from} · {stops} ciudades",
+      "en": "From {from} · {stops} cities"
+    },
+    "locked_escape": {
+      "es": "[completá la fuga anterior]",
+      "en": "[finish the previous escape]"
+    },
+    "esc_briefing": {
+      "es": "El golpe",
+      "en": "The heist"
+    },
+    "chip_head_start": {
+      "es": "Ventaja inicial: {h} h",
+      "en": "Head start: {h} h"
+    },
+    "chip_inspector": {
+      "es": "La inspectora investiga {h} h por ciudad",
+      "en": "Inspector spends {h} h per city"
+    },
+    "esc_objective_1": {
+      "es": "En cada ciudad, el jefe te deja mensajes cifrados con pistas del próximo piso franco.",
+      "en": "In each city your boss leaves coded messages about the next safe house."
+    },
+    "esc_objective_2": {
+      "es": "Cada hora que pasás en una ciudad, la inspectora se acerca. Cada ciudad que dejás atrás la frena mientras investiga.",
+      "en": "Every hour you spend in a city, the inspector closes in. Every city you leave slows her down while she investigates."
+    },
+    "esc_objective_3": {
+      "es": "Borrá huellas o plantá pistas falsas para ganar tiempo. Si errás el pin, ella va directo y vos perdés horas.",
+      "en": "Clean your tracks or plant false leads to gain time. Miss the pin and she flies straight while you lose hours."
+    },
+    "esc_objective_4": {
+      "es": "Llegá al último piso franco. Si ella está muy cerca, vas a tener que escapar manejando.",
+      "en": "Reach the final safe house. If she is too close, you'll have to drive your way out."
+    },
+    "start_escape": {
+      "es": "Empezar la fuga",
+      "en": "Start the escape"
+    },
+    "esc_status_route": {
+      "es": "Piso franco {n} de {total}",
+      "en": "Safe house {n} of {total}"
+    },
+    "esc_status_wrong": {
+      "es": "Acá no hay piso franco",
+      "en": "No safe house here"
+    },
+    "esc_flight_hit": {
+      "es": "Llegaste al piso franco de {city}.",
+      "en": "You reached the safe house in {city}."
+    },
+    "esc_flight_miss": {
+      "es": "Aterrizaste en {city}, pero acá no hay nadie de la banda. Releé los mensajes.",
+      "en": "You landed in {city}, but there's no one from the gang here. Re-read the messages."
+    },
+    "lead_title": {
+      "es": "VENTAJA",
+      "en": "LEAD"
+    },
+    "lead_short": {
+      "es": "Ventaja: {h} h",
+      "en": "Lead: {h} h"
+    },
+    "lead_hours": {
+      "es": "{h} h",
+      "en": "{h} h"
+    },
+    "lead_explain": {
+      "es": "Es lo que le falta a la inspectora Rivas para llegar a {city}. Cada acción la acerca; irte la frena.",
+      "en": "That's how long until Inspector Rivas reaches {city}. Every action brings her closer; leaving slows her down."
+    },
+    "abandon": {
+      "es": "Abandonar",
+      "en": "Give up"
+    },
+    "flee": {
+      "es": "Huir: elegir destino",
+      "en": "Flee: pick a destination"
+    },
+    "q_go": {
+      "es": "¿A DÓNDE IR?",
+      "en": "WHERE TO GO?"
+    },
+    "q_slow": {
+      "es": "FRENAR A LA INSPECTORA",
+      "en": "SLOW THE INSPECTOR"
+    },
+    "esc_message": {
+      "es": "Mensaje del jefe",
+      "en": "Boss's message"
+    },
+    "esc_message2": {
+      "es": "Segundo mensaje",
+      "en": "Second message"
+    },
+    "esc_map": {
+      "es": "Mapa del contrabandista",
+      "en": "Smuggler's map"
+    },
+    "esc_clean": {
+      "es": "Borrar huellas",
+      "en": "Clean tracks"
+    },
+    "esc_decoy": {
+      "es": "Pista falsa",
+      "en": "False lead"
+    },
+    "esc_desc_message": {
+      "es": "Un mensaje cifrado con una pista del próximo piso franco.",
+      "en": "A coded message with a clue about the next safe house."
+    },
+    "esc_desc_message2": {
+      "es": "Otra pista, desde otro ángulo. Más cara.",
+      "en": "Another clue from a different angle. Pricier."
+    },
+    "esc_desc_map": {
+      "es": "Marca cuatro países posibles; uno es el correcto.",
+      "en": "Marks four possible countries; one is right."
+    },
+    "esc_desc_clean": {
+      "es": "La inspectora tardará más en investigar esta ciudad.",
+      "en": "The inspector will take longer to investigate this city."
+    },
+    "esc_desc_decoy": {
+      "es": "La mandás a otro lado: pierde mucho tiempo.",
+      "en": "Send her the wrong way: she loses a lot of time."
+    },
+    "esc_decoys_left": {
+      "es": "(te quedan {n})",
+      "en": "({n} left)"
+    },
+    "esc_do": {
+      "es": "Hacerlo ({h} h)",
+      "en": "Do it ({h} h)"
+    },
+    "esc_map_done": {
+      "es": "El destino está en uno de estos países: {list}.",
+      "en": "The destination is in one of these countries: {list}."
+    },
+    "esc_clean_done": {
+      "es": "Huellas borradas: la inspectora tardará +{h} h acá.",
+      "en": "Tracks cleaned: the inspector will need +{h} h here."
+    },
+    "esc_decoy_done": {
+      "es": "Pista falsa plantada: perderá +{h} h.",
+      "en": "False lead planted: she'll lose +{h} h."
+    },
+    "esc_globe_help": {
+      "es": "Usá los mensajes del jefe para encontrar el piso franco. Girá el globo y clavá el pin.",
+      "en": "Use your boss's messages to find the safe house. Spin the globe and drop the pin."
+    },
+    "esc_map_title": {
+      "es": "MAPA DEL CONTRABANDISTA:",
+      "en": "SMUGGLER'S MAP:"
+    },
+    "esc_no_map": {
+      "es": "Sin mapa del contrabandista: tenés que deducirlo solo con los mensajes.",
+      "en": "No smuggler's map: you'll have to work it out from the messages alone."
+    },
+    "esc_chase_title": {
+      "es": "¡TE ENCONTRARON!",
+      "en": "THEY FOUND YOU!"
+    },
+    "esc_chase_gap": {
+      "es": "Distancia",
+      "en": "Gap"
+    },
+    "esc_chase_text": {
+      "es": "Llegaste al último piso franco en {city}, pero con solo {h} h de ventaja la policía te vio. ¡Manejá hasta perderlos!",
+      "en": "You reached the last safe house in {city}, but with only {h} h of lead the police spotted you. Drive until you lose them!"
+    },
+    "esc_chase_help": {
+      "es": "Esquivá las vallas: cada choque deja que el patrullero se acerque. Aguantá hasta que se acabe el tiempo.",
+      "en": "Dodge the barriers: every crash lets the patrol car close in. Hold out until time runs out."
+    },
+    "esc_chase_start": {
+      "es": "¡Arrancar!",
+      "en": "Floor it!"
+    },
+    "esc_chase_won": {
+      "es": "Perdiste al patrullero en el tránsito.",
+      "en": "You lost the patrol car in traffic."
+    },
+    "esc_chase_lost": {
+      "es": "El patrullero te cerró el paso.",
+      "en": "The patrol car cut you off."
+    },
+    "esc_stamp_won": {
+      "es": "¡ESCAPASTE!",
+      "en": "YOU ESCAPED!"
+    },
+    "esc_stamp_lost": {
+      "es": "ATRAPADO",
+      "en": "CAUGHT"
+    },
+    "esc_won_text": {
+      "es": "Llegaste al piso franco de {city} con el botín. La banda te espera.",
+      "en": "You reached the safe house in {city} with the loot. The gang awaits."
+    },
+    "esc_lost_text": {
+      "es": "La inspectora Rivas te alcanzó en {city}.",
+      "en": "Inspector Rivas caught up with you in {city}."
+    },
+    "esc_stars_rule": {
+      "es": "Estrellas: escapar · sin vuelos errados · llegar sin persecución y con {h}+ h de ventaja",
+      "en": "Stars: escape · no wrong flights · arrive without a chase and with {h}+ h of lead"
+    },
+    "esc_summary": {
+      "es": "Ventaja final: {h} h · Vuelos errados: {wrong} · Horas de fuga: {hours}",
+      "en": "Final lead: {h} h · Wrong flights: {wrong} · Hours on the run: {hours}"
+    },
+    "howto_6_title": {
+      "es": "Modo fugitivo",
+      "en": "Fugitive mode"
+    },
+    "howto_6": {
+      "es": "Al revés: vos sos el ladrón. Descifrá los mensajes del jefe para llegar a cada piso franco y usá tus horas con cuidado: la inspectora se acerca mientras te quedás en una ciudad.",
+      "en": "The other way round: you are the thief. Decode your boss's messages to reach each safe house and spend your hours wisely: the inspector closes in while you linger."
     }
   }
 }
