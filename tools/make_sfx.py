@@ -71,6 +71,41 @@ def save(name: str, samples: list[float]) -> None:
         w.writeframes(b"".join(struct.pack("<h", int(s * scale * 32767)) for s in samples))
 
 
+def save_music() -> None:
+    """A 16-bar noir/jazz loop in D minor: walking bass, soft chords, brushed hats."""
+    bpm = 96
+    beat = 60.0 / bpm
+    bars = 8
+    n = int(RATE * beat * 4 * bars)
+    out = [0.0] * n
+    def add(track, start_s, gain=1.0):
+        st = int(start_s * RATE)
+        for i, v in enumerate(track):
+            if st + i < n:
+                out[st + i] += v * gain
+    midi = lambda m: 440.0 * 2 ** ((m - 69) / 12)
+    # chord roots: Dm7 | Gm7 | Bbmaj7 | A7  (x2)
+    prog = [(50, [62, 65, 69, 72]), (55, [62, 65, 67, 70]), (46, [62, 65, 69, 70]), (45, [61, 64, 67, 69])]
+    walk = [[0, 3, 5, 7], [0, 2, 3, 5], [0, 4, 7, 9], [0, 4, 7, -1]]
+    for bar in range(bars):
+        root, chord = prog[bar % 4]
+        t0 = bar * 4 * beat
+        for k, step in enumerate(walk[bar % 4]):
+            add(tone(midi(root + step - 12), beat * 0.9, "tri", 0.55, 0.01, 0.5), t0 + k * beat)
+        for m in chord:
+            add(tone(midi(m), beat * 1.6, "sine", 0.07, 0.05, 0.6), t0 + beat * 1.0)
+            add(tone(midi(m), beat * 1.2, "sine", 0.05, 0.05, 0.6), t0 + beat * 2.5)
+        for k in range(8):
+            swing = 0.0 if k % 2 == 0 else beat * 0.16
+            add(noise(0.05, 0.12 if k % 2 else 0.07, 1, 0.002, 0.9), t0 + k * beat / 2 + swing)
+    # gentle fade at both ends so the loop is seamless
+    fade = int(RATE * 0.02)
+    for i in range(fade):
+        out[i] *= i / fade
+        out[-1 - i] *= i / fade
+    save("music_noir", out)
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     save("click", mix(tone(1400, 0.035, "sine", 0.5, 0.002, 0.9), noise(0.01, 0.2, 1, 0.001, 0.9)))
@@ -88,6 +123,7 @@ def main() -> None:
     save("fail", mix(tone(392, 0.25, "tri", 0.45), tone(311, 0.45, "tri", 0.45), offsets=[0, 0.22]))
     save("hit", mix(noise(0.08, 0.7, 2, 0.001, 0.9), tone(160, 0.12, "sine", 0.6, 0.001, 0.9)))
     save("alert", mix(tone(988, 0.12, "square", 0.25), tone(988, 0.12, "square", 0.25), offsets=[0, 0.18]))
+    save_music()
     print("wrote", len(list(OUT.glob("*.wav"))), "sounds")
 
 

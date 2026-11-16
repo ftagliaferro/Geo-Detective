@@ -46,6 +46,7 @@ var current_case := "case_01"
 var current_escape := "escape_01"
 var notebook: Array = []
 var evidence: Array = []
+var known_traits: Dictionary = {}   # trait id -> value learned from evidence
 var last_flight: Dictionary = {}
 var crossed: Dictionary = {}
 var pin: Vector2 = Vector2.INF
@@ -649,6 +650,7 @@ func _start_case() -> void:
 	hours_before = -1
 	notebook.clear()
 	evidence.clear()
+	known_traits.clear()
 	last_flight = {}
 	crossed = {}
 	chase_result = ""
@@ -712,7 +714,7 @@ func _banner(parent: Control, city_id: String, height := 136.0) -> VBoxContainer
 	parent.add_child(wrap)
 	var banner := CityBanner.new()
 	banner.custom_minimum_size = Vector2(0, height)
-	banner.setup(c["lat"], c["lon"])
+	banner.setup(c["lat"], c["lon"], (c.get("street") if c.get("street") else {}).get("image"))
 	wrap.add_child(banner)
 	var bv := VBoxContainer.new()
 	bv.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -879,6 +881,8 @@ func _investigate(spot: String) -> void:
 	var kind := spot if clue.get("kind") != "deadend" else "note"
 	if kind == "wiretap" and clue.get("kind") != "dest":
 		kind = "note"   # final-city wiretap gives a trait: no tuning needed
+	if kind == "cctv" and clue.get("kind") != "street":
+		kind = "note"   # final-city camera reports a trait, not a photo
 	var rv := ClueReveal.new()
 	_show_overlay(rv)
 	var img = clue["street"].get("image") if clue.get("kind") == "street" else null
@@ -893,6 +897,7 @@ func _investigate(spot: String) -> void:
 			notebook.append(line)
 			if got.get("kind") == "trait":
 				evidence.append(line)
+				known_traits[got["trait"]] = got["value"]
 	busy = false
 	show_city()
 
@@ -1126,7 +1131,13 @@ func _suspect_card(sid: String) -> Control:
 		var val: String = s["traits"][tid]
 		var r := _hbox(v, 4)
 		_label(r, loc.t(tr["name"]) + ":", 11, Style.MUTED)
-		_label(r, loc.t(tr["values"][val]["label"]), 11, Style.INK if not is_out else Style.MUTED, "ui_bold")
+		var vcol: Color = Style.INK if not is_out else Style.MUTED
+		var mark := ""
+		if known_traits.has(tid) and not is_out:
+			var ok: bool = known_traits[tid] == val
+			vcol = Style.GREEN if ok else Style.ROSE
+			mark = "  ✓" if ok else "  ✗"
+		_label(r, loc.t(tr["values"][val]["label"]) + mark, 11, vcol, "ui_bold")
 	var b := Button.new()
 	b.text = loc.s("restore") if is_out else loc.s("cross_out")
 	b.focus_mode = Control.FOCUS_NONE
@@ -1171,8 +1182,30 @@ func show_chase() -> void:
 	_button(side, loc.s("back"), show_city)
 
 
-func _result_card(won: bool, stamp: String, line1: String, line2: String, stars_n: int, rule: String, summary: String, art: Control) -> VBoxContainer:
-	var v := _paper(body, 860)
+func _result_card(won: bool, stamp: String, line1: String, line2: String, stars_n: int, rule: String, summary: String, art: Control, route_pts: Array = [], misses: Array = []) -> VBoxContainer:
+	var outer := _hbox(body, 16)
+	outer.alignment = BoxContainer.ALIGNMENT_CENTER
+	var pc := PanelContainer.new()
+	pc.custom_minimum_size = Vector2(760, 0)
+	pc.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	pc.add_theme_stylebox_override("panel", Style.box(Style.SURFACE, 22, 28))
+	outer.add_child(pc)
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 12)
+	pc.add_child(v)
+	Fx.pop_in(pc)
+	if not route_pts.is_empty():
+		var rc := _card(outer, 10, Color("eaf4fc"))
+		var rp := rc.get_parent() as Control
+		rp.custom_minimum_size = Vector2(420, 420)
+		rp.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		_label(rc, loc.s("your_route"), 13, Style.NAVY, "ui_bold")
+		var g := GlobeView.new()
+		g.interactive = false
+		g.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		rc.add_child(g)
+		g.show_route(route_pts, misses)
+		Fx.pop_in(rp, 0.15)
 	var head := _hbox(v, 20)
 	head.add_child(art)
 	var hv := _vbox(head, 6)
@@ -1201,6 +1234,10 @@ func _result_card(won: bool, stamp: String, line1: String, line2: String, stars_
 	return v
 
 
+func _pts(city_ids: Array) -> Array:
+	return city_ids.map(func(id): return Vector2(data.cities[id]["lat"], data.cities[id]["lon"]))
+
+
 func show_results() -> void:
 	screen = "results"
 	_chrome(loc.s("results"), true)
@@ -1218,7 +1255,8 @@ func show_results() -> void:
 	var v := _result_card(won, loc.s("stamp_won") if won else loc.s("stamp_lost"),
 		loc.s("won", {"name": culprit["name"]}) if won else loc.s(state.status),
 		loc.s(chase_result) if (chase_result != "" and won) else "", state.stars(), loc.s("stars_rule"),
-		loc.s("summary", {"used": state.hours_used, "budget": state.budget, "misses": state.misses, "km": int(state.avg_precision_km())}), portrait)
+		loc.s("summary", {"used": state.hours_used, "budget": state.budget, "misses": state.misses, "km": int(state.avg_precision_km())}), portrait,
+		_pts(state.route().slice(0, state.stop + 1)))
 	var bh := _hbox(v, 10)
 	bh.alignment = BoxContainer.ALIGNMENT_END
 	_button(bh, loc.s("menu"), show_menu)
@@ -1555,7 +1593,9 @@ func show_escape_results() -> void:
 	var v := _result_card(won, loc.s("esc_stamp_won") if won else loc.s("esc_stamp_lost"),
 		loc.s("esc_won_text" if won else "esc_lost_text", {"city": _city(esc.current)}),
 		loc.s(chase_result) if chase_result != "" else "", esc.stars(), loc.s("esc_stars_rule", {"h": int(EscapeState.COMFORT_LEAD)}),
-		loc.s("esc_summary", {"h": int(floor(maxf(0.0, esc.lead()))), "wrong": esc.wrong_flights, "hours": esc.now}), art)
+		loc.s("esc_summary", {"h": int(floor(maxf(0.0, esc.lead()))), "wrong": esc.wrong_flights, "hours": esc.now}), art,
+		_pts(esc.path.filter(func(e): return e["on_route"]).map(func(e): return e["city"])),
+		_pts(esc.path.filter(func(e): return not e["on_route"]).map(func(e): return e["city"])))
 	var bh := _hbox(v, 10)
 	bh.alignment = BoxContainer.ALIGNMENT_END
 	_button(bh, loc.s("menu"), show_menu)

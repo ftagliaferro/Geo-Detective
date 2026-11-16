@@ -416,6 +416,7 @@ func _process(delta: float) -> void:
 			gap += -ESCAPE_HIT if mode == "escape" else HIT_PENALTY
 			flash = 0.35
 			preload("res://ui/sfx.gd").play("hit")
+			_shake()
 			_remove(o)
 		elif o.position.z > 8.0:
 			_remove(o)
@@ -493,3 +494,10 @@ func _gui_input(event: InputEvent) -> void:
 			else:
 				_move(1 if event.position.x > size.x / 2.0 else -1)
 		accept_event()
+
+
+func _shake() -> void:
+	var tw := create_tween()
+	for i in range(5):
+		tw.tween_property(camera, "h_offset", randf_range(-0.12, 0.12), 0.03)
+	tw.tween_property(camera, "h_offset", 0.0, 0.04)

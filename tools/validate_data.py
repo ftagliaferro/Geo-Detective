@@ -140,9 +140,20 @@ def validate(d: dict) -> list[str]:
     return errors
 
 
+def photo_warnings(d: dict) -> list[str]:
+    """Route cities without a CCTV photo (allowed, but worth knowing)."""
+    used = {c for k in d["cases"].values() for c in k["route"][1:]}
+    used |= {c for e in d.get("escapes", {}).values() for c in e["route"][1:]}
+    return sorted(c for c in used if not ((d["cities"].get(c, {}).get("street") or {}).get("image")))
+
+
 def main(argv: list[str]) -> int:
     data_dir = Path(argv[1]) if len(argv) > 1 else DEFAULT_DIR
-    errors = validate(load(data_dir))
+    d = load(data_dir)
+    missing = photo_warnings(d)
+    if missing:
+        print(f"WARNING: {len(missing)} destination(s) without street photo: {', '.join(missing)}")
+    errors = validate(d)
     for e in errors:
         print("ERROR:", e)
     print(f"{'OK' if not errors else 'FAILED'} — {len(errors)} error(s)")

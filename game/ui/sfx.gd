@@ -7,11 +7,16 @@ const NAMES := ["click", "tick", "pop", "static", "lock", "shutter", "coin", "wh
 const VOICES := 8
 
 static var instance: Node
-static var muted := false
+static var muted := false:
+	set(v):
+		muted = v
+		if instance and instance._music:
+			instance._music.stream_paused = v
 
 var _streams := {}
 var _players: Array = []
 var _next := 0
+var _music: AudioStreamPlayer
 
 
 func _ready() -> void:
@@ -24,6 +29,13 @@ func _ready() -> void:
 		var p := AudioStreamPlayer.new()
 		add_child(p)
 		_players.append(p)
+	_music = AudioStreamPlayer.new()
+	_music.volume_db = -14.0
+	add_child(_music)
+	if ResourceLoader.exists("res://assets/sfx/music_noir.wav"):
+		_music.stream = load("res://assets/sfx/music_noir.wav")
+		_music.play()
+		_music.stream_paused = muted
 
 
 static func play(name: String, volume_db := 0.0, pitch := 1.0) -> void:

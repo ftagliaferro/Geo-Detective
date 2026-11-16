@@ -8,11 +8,14 @@ static var _image: Image
 var lat := 0.0
 var lon := 0.0
 var tex: ImageTexture
+var photo: Texture2D
 
 
-func setup(p_lat: float, p_lon: float) -> void:
+func setup(p_lat: float, p_lon: float, photo_path = null) -> void:
 	lat = p_lat
 	lon = p_lon
+	if photo_path != null and ResourceLoader.exists(photo_path):
+		photo = load(photo_path)
 	if _image == null:
 		_image = WORLD.get_image()
 		if _image.is_compressed():
@@ -32,13 +35,22 @@ func setup(p_lat: float, p_lon: float) -> void:
 
 
 func _draw() -> void:
-	if tex:
+	if photo:
+		# cover-fit the city's street photo, anchored to the right half
+		var ps := photo.get_size()
+		var scale := maxf(size.x * 0.75 / ps.x, size.y / ps.y)
+		var dsz := ps * scale
+		draw_texture_rect(photo, Rect2(Vector2(size.x - dsz.x, (size.y - dsz.y) / 2.0), dsz), false)
+	elif tex:
 		draw_texture_rect(tex, Rect2(Vector2.ZERO, size), false)
 	# left-to-right dark gradient for legibility
 	var dark := Color(1, 1, 1, 0.96)
 	var clear := Color(1, 1, 1, 0.0)
-	draw_polygon(PackedVector2Array([Vector2.ZERO, Vector2(size.x * 0.7, 0), Vector2(size.x * 0.7, size.y), Vector2(0, size.y)]),
+	draw_rect(Rect2(0, 0, size.x * 0.25, size.y), dark)
+	draw_polygon(PackedVector2Array([Vector2(size.x * 0.25, 0), Vector2(size.x * 0.62, 0), Vector2(size.x * 0.62, size.y), Vector2(size.x * 0.25, size.y)]),
 		PackedColorArray([dark, clear, clear, dark]))
+	if photo:
+		return
 	var p: Vector2 = get_meta("pin", Vector2(0.5, 0.5)) * size
 	draw_circle(p, 16.0, Color(1.0, 0.35, 0.24, 0.18))
 	draw_circle(p, 9.0, Color(1, 1, 1))

@@ -113,8 +113,8 @@
       "en": "Catch them!"
     },
     "won": {
-      "es": "¡CASO RESUELTO! Capturaste a {name}.",
-      "en": "CASE CLOSED! You caught {name}."
+      "es": "Capturaste a {name}.",
+      "en": "You caught {name}."
     },
     "lost_time": {
       "es": "Se acabó el tiempo. La banda se te escapó.",
@@ -337,16 +337,16 @@
       "en": "2. Gather evidence in each city"
     },
     "howto_2": {
-      "es": "Escuchas y cámaras te dicen A DÓNDE fue el sospechoso. El rastro de dinero te dice QUIÉN es. Cada evidencia cuesta 2 horas.",
-      "en": "Wiretaps and CCTV tell you WHERE the suspect went. The money trail tells you WHO it is. Each piece of evidence costs 2 hours."
+      "es": "Escuchas, cámaras y contacto local te dicen A DÓNDE fue; el rastro de dinero, QUIÉN es. Cada fuente tiene su mini-juego: sintonizá la radio rápido y ahorrás una hora.",
+      "en": "Wiretaps, CCTV and the local contact tell you WHERE they went; the money trail tells you WHO it is. Each source has a mini-game: tune the radio fast and save an hour."
     },
     "howto_3_title": {
       "es": "3. Seguilo en el globo",
       "en": "3. Track them on the globe"
     },
     "howto_3": {
-      "es": "Girá el globo y clavá el pin donde creés que fue. El analista te sugiere cuatro países: uno es el correcto. Si errás, aterrizás en otra ciudad y perdés tiempo.",
-      "en": "Spin the globe and drop the pin where you think they went. The analyst suggests four countries: one is right. Miss, and you land elsewhere and lose time."
+      "es": "Girá el globo y clavá el pin donde creés que fue. El analista sugiere cuatro países. A veces vas a tener un avistamiento: tocá al sospechoso 3 veces y recuperás horas.",
+      "en": "Spin the globe and drop the pin where you think they went. The analyst suggests four countries. Sometimes you'll get a sighting: tap the suspect 3 times to win back hours."
     },
     "howto_4_title": {
       "es": "4. Tachá sospechosos en el pizarrón",
@@ -773,8 +773,8 @@
       "en": "Fugitive mode"
     },
     "howto_6": {
-      "es": "Al revés: vos sos el ladrón. Descifrá los mensajes del jefe para llegar a cada piso franco y usá tus horas con cuidado: la inspectora se acerca mientras te quedás en una ciudad.",
-      "en": "The other way round: you are the thief. Decode your boss's messages to reach each safe house and spend your hours wisely: the inspector closes in while you linger."
+      "es": "Al revés: vos sos el ladrón. Descifrá los mensajes del jefe, borrá huellas, plantá pistas falsas y pasá los controles de pasaporte sin ponerte nervioso: la inspectora se acerca mientras te quedás en una ciudad.",
+      "en": "The other way round: you are the thief. Decode your boss's messages, clean your tracks, plant false leads and get through passport control calmly: the inspector closes in while you linger."
     },
     "menu_title": {
       "es": "Inicio",
@@ -947,6 +947,10 @@
     "hero_escapes": {
       "es": "Esta vez, el que huye sos vos.",
       "en": "This time, you're the one on the run."
+    },
+    "your_route": {
+      "es": "TU RECORRIDO",
+      "en": "YOUR ROUTE"
     }
   }
 }

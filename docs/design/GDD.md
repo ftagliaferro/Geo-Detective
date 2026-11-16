@@ -1,6 +1,6 @@
 # Game Design Document — Geo Detective *(working title)*
 
-> Version 0.5 — 2026-11-14 · Status: two modes — Detective & Fugitive (ADR-0006…0010)
+> Version 0.6 — 2026-11-16 · Status: modern UI and action layer (ADR-0006…0011)
 
 ## 1. Pitch
 You are a field agent of a fictional international task force. Crime networks — cartels, con artists, hackers, traffickers — are moving across the world. Follow their trail city by city, read the clues (people, places, street scenes), build the suspect's profile and issue the arrest order **before the clock runs out**.
@@ -50,6 +50,12 @@ Five fictional crime networks × 3 cases each; the 3rd case of each arc is the n
 
 **Ranks:** Rookie → Field Agent → Inspector → Senior Inspector → Commander → Director.
 
+## 3a. Action layer (ADR-0011)
+- Every evidence source has a short interaction (wiretap tuning — fast saves 1 h; CCTV scan; contact dialogue; money receipts).
+- Cutscenes show the thief: heist, plane/car/rooftop escapes, arrest, safe house.
+- Sightings (detective) and passport control (fugitive) add reflex moments that move the clock.
+- Sound effects throughout; route recap globe on the results card.
+
 ## 3b. Fugitive mode (ADR-0010)
 You are the thief. Decode your boss's coded messages to find each safe house and drop the pin. **Inspector Rivas** follows: your *lead* shrinks with every hour you spend and grows each time you leave a city (she must investigate it). Tools: second message, smuggler's map (4 countries), clean tracks (+6 h), false lead (+10 h, ×2). Wrong pins cost you — she flies straight. Arrive with little lead and you must win an escape chase. 5 escapes, one per gang.
 
@@ -61,11 +67,12 @@ You are the thief. Decode your boss's coded messages to find each safe house and
 - `i18n/` — UI strings es/en.
 Python tools validate everything (routes reachable, clues exist for each hop, licenses present, both languages complete).
 
-## 5. Art & audio direction
-- Low-poly 3D globe with stylized continents; flight arcs in neon.
-- UI: noir dossier aesthetic — paper files, stamps, mugshot frames, CRT scanline filter (toggleable).
-- Arcade chase: low-poly city blocks, chunky retro lighting.
-- Music: synthwave/noir loops; original or CC0, logged in `CREDITS.md`.
+## 5. Art & audio direction (current — see ADR-0011)
+- Modern light UI: warm off-white background, white rounded cards, coral accent, navy ink; Outfit/Inter/JetBrains Mono.
+- Flat 3D globe (sky-blue ocean, warm white land) with country labels and flight arcs.
+- Code-drawn vector icons, mugshot portraits and cutscenes with a recurring thief character.
+- Arcade chase: bright pastel low-poly street.
+- Audio: original synthesized SFX; music still to do.
 - Godot Compatibility renderer — must run on low-end PCs, phones and browsers.
 
 ## 6. Monetization (ADR-0001 scope)

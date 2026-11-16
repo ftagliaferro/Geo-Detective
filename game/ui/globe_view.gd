@@ -379,3 +379,41 @@ func _draw_preview(a: Vector3, b: Vector3) -> void:
 			im.surface_add_vertex(a.slerp(b, t).normalized() * (1.0 + 0.1 * sin(PI * t)))
 	im.surface_end()
 	_preview.visible = true
+
+
+## Static recap of a whole journey: dashed arcs between stops and a dot per stop.
+## `points` = [Vector2(lat, lon), ...]; wrong stops can be passed in `misses`.
+func show_route(points: Array, misses: Array = []) -> void:
+	if points.is_empty():
+		return
+	var line_mat := StandardMaterial3D.new()
+	line_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	line_mat.albedo_color = C_PINK
+	var mi := MeshInstance3D.new()
+	var im := ImmediateMesh.new()
+	mi.mesh = im
+	mi.material_override = line_mat
+	pivot.add_child(mi)
+	im.surface_begin(Mesh.PRIMITIVE_LINES)
+	for k in range(points.size() - 1):
+		var a := Geo.lat_lon_to_vec(points[k].x, points[k].y)
+		var b := Geo.lat_lon_to_vec(points[k + 1].x, points[k + 1].y)
+		var steps := 30
+		for i in range(0, steps, 2):
+			for j in [i, i + 1]:
+				var t := float(j) / steps
+				im.surface_add_vertex(a.slerp(b, t).normalized() * (1.0 + 0.08 * sin(PI * t)))
+	im.surface_end()
+	for k in range(points.size()):
+		var dot := _marker(Color("1f2f4d") if k > 0 else C_PINK, 0.03)
+		dot.position = Geo.lat_lon_to_vec(points[k].x, points[k].y) * 1.01
+	for m in misses:
+		var x := _marker(Color("e5484d"), 0.022)
+		x.position = Geo.lat_lon_to_vec(m.x, m.y) * 1.01
+	# centre the view on the journey
+	var mid := Vector3.ZERO
+	for p in points:
+		mid += Geo.lat_lon_to_vec(p.x, p.y)
+	var ll := Geo.vec_to_lat_lon(mid if mid.length() > 0.01 else Geo.lat_lon_to_vec(points[0].x, points[0].y))
+	focus(ll.x, ll.y)
+	home_marker.visible = false

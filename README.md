@@ -3,7 +3,16 @@
 > An original 3D-arcade geography detective game with **two modes**: chase gangs around the world as a detective — or switch sides and escape an AI inspector as the thief.
 > Built with **Godot 4** for **PC, Android, iOS and Web**. Free with ads, one-time purchase to remove them.
 
-**Status:** 🟡 Pre-alpha — full 15-case campaign playable; art and audio in progress.
+**Status:** 🟡 Alpha — two full modes playable (15 cases + 5 escapes), modern UI, interactive clues, cutscenes and sound.
+
+## Screenshots
+| | |
+|---|---|
+| ![Menu](docs/screenshots/01_menu.png) | ![City](docs/screenshots/11_city_done.png) |
+| ![Wiretap tuning](docs/screenshots/07_wiretap_locked.png) | ![Globe](docs/screenshots/14_globe_highlight.png) |
+| ![Cutscene](docs/screenshots/04_cutscene_heist.png) | ![Fugitive](docs/screenshots/26_esc_city.png) |
+
+*Rendered automatically by `game/tests/screenshot_tour.gd` (xvfb + OpenGL).*
 
 ## Why this project
 A portfolio project documented end to end: design, technical decisions, development log, testing and store release. Every significant decision is recorded in [`docs/decisions/`](docs/decisions/) and every work session in [`docs/devlog/`](docs/devlog/).
@@ -16,6 +25,9 @@ A portfolio project documented end to end: design, technical decisions, developm
 - **Four evidence sources** per city: wiretaps, CCTV street photos (easy GeoGuessr-style), a local contact and the money trail
 - **Corkboard** deduction: cross out suspects, issue the arrest order
 - **Arcade chase** finale (keyboard, swipe or tap)
+- **Interactive evidence**: tune a radio, scan CCTV footage, talk to contacts, flip receipts
+- **Cutscenes** with a recurring thief character and **action events** (sightings, passport control)
+- Original synthesized **sound effects**; modern light UI (Outfit / Inter)
 - Built-in guidance: *How to play*, a *Next step* box and a notebook split into *Where?* / *Who?*
 - Spanish & English
 - Ads banner (AdMob) + "Remove ads" in-app purchase

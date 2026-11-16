@@ -72,6 +72,10 @@ def write_credits(doc: dict) -> None:
     lines += ["", "## Fonts",
               "- Bebas Neue — The Bebas Neue Project Authors · SIL Open Font License 1.1",
               "- Space Mono — The Space Mono Project Authors · SIL Open Font License 1.1",
+              "- Outfit — The Outfit Project Authors · SIL Open Font License 1.1",
+              "- Inter — The Inter Project Authors · SIL Open Font License 1.1",
+              "- JetBrains Mono — The JetBrains Mono Project Authors · SIL Open Font License 1.1",
+              "", "## Audio", "- All sound effects are original, synthesized by `tools/make_sfx.py`.",
               "", "## Engine", "- [Godot Engine](https://godotengine.org) — MIT license.", ""]
     CREDITS.write_text("\n".join(lines), encoding="utf-8")
 
