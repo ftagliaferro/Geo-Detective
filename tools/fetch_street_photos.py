@@ -100,8 +100,9 @@ def main() -> int:
         dest.write_bytes(_get(info["thumb"]))
         st["image"] = f"res://assets/street/{c['id']}.jpg"
         st["credit"] = {"artist": info["artist"], "license": info["license"], "url": info["url"]}
-        print(f"ok {c['id']}: {info['license']} — {info['artist']}")
-        time.sleep(5)
+        print(f"ok {c['id']}: {info['license']} — {info['artist']}", flush=True)
+        write_cities(doc)  # save progress after every photo
+        time.sleep(2)
     write_cities(doc)
     write_credits(doc)
     return 0
