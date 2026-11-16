@@ -63,6 +63,12 @@ jobs:
           grep -q "UI smoke OK" smoke.log
           ! grep -E "SCRIPT ERROR|Parse Error" smoke.log
 
+      - name: UI flow test (every chip, city and case, both modes and languages)
+        run: |
+          timeout 2400 ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path game --script res://tests/ui_flows.gd 2>&1 | tee flows.log
+          grep -q "UI flows: .* 0 failed" flows.log
+          ! grep -E "SCRIPT ERROR|Parse Error|FAIL:" flows.log
+
       - name: Export Web build
         run: |
           mkdir -p build/web

@@ -103,8 +103,11 @@ func test_cannot_arrest_before_final() -> void:
 
 func test_pin_within_radius_hits() -> void:
 	var s = CaseState.new(data, "case_01", 42)
-	var r: Dictionary = s.travel_to_pin(40.42, -3.70)  # Madrid, ~500 km from Lisbon
+	var r: Dictionary = s.travel_to_pin(38.57, -7.91)  # Evora countryside, ~110 km from Lisbon
 	check(r["hit"] and s.current == "lisbon" and s.stop == 1, "pin near Lisbon lands on trail")
+	var m = CaseState.new(data, "case_01", 42)
+	var r2: Dictionary = m.travel_to_pin(40.42, -3.70)  # on Madrid itself: you land in Madrid
+	check(not r2["hit"] and m.current == "madrid", "pin on another game city lands there")
 
 
 func test_pin_miss_lands_elsewhere() -> void:
@@ -304,11 +307,95 @@ func test_suggestions_include_destination() -> void:
 
 
 func test_hard_case_suggestions_are_neighbours() -> void:
+	# Hard cases: decoys are the target's nearest landable countries (not the one you are in).
 	var s = CaseState.new(data, "case_13", 5)
-	var target: Dictionary = data.countries[data.cities[s.route()[1]]["country_code"]]
-	for code in s.plan[0]["suggest"]:
-		var c: Dictionary = data.countries[code]
-		check(Geo.distance_km(target["lat"], target["lon"], c["lat"], c["lon"]) < 3500.0, "hard decoys are nearby (%s)" % code)
+	for i in range(s.last_stop()):
+		var here: String = data.cities[s.route()[i]]["country_code"]
+		var code: String = data.cities[s.route()[i + 1]]["country_code"]
+		var t: Dictionary = data.countries[code]
+		var ranked: Array = []
+		for c in Geo.landable_countries(data.cities, [here, code]):
+			ranked.append([Geo.distance_km(t["lat"], t["lon"], data.countries[c]["lat"], data.countries[c]["lon"]), c])
+		ranked.sort()
+		var nearest: Array = ranked.slice(0, 3).map(func(x): return x[1])
+		for d in s.plan[i]["suggest"]:
+			if d != code:
+				check(d in nearest, "case_13 leg %d: hard decoy %s is a nearest neighbour of %s" % [i, d, code])
+
+
+func _check_landable(label: String, sug: Array, here: String, target: String) -> void:
+	var landable: Array = Geo.landable_countries(data.cities, [])
+	check(sug.size() == 4, "%s: 4 suggestions (got %s)" % [label, sug])
+	check(target in sug, "%s: includes destination %s" % [label, target])
+	check(here == target or not here in sug, "%s: never suggests the country you are in (%s)" % [label, here])
+	var seen := {}
+	for c in sug:
+		check(c in landable, "%s: suggested %s has a city you can land in" % [label, c])
+		check(not seen.has(c), "%s: no duplicate %s" % [label, c])
+		seen[c] = true
+
+
+func _check_chip_landings(label: String, st, sug: Array) -> void:
+	var target: String = st.route()[st.stop + 1]
+	for code in sug:
+		var hits := 0
+		for cid in data.cities:
+			if data.cities[cid]["country_code"] != code or cid == st.current:
+				continue
+			var r: Dictionary = st.resolve_pin(data.cities[cid]["lat"], data.cities[cid]["lon"])
+			check(r["city"] == cid, "%s: picking %s/%s lands in %s" % [label, code, cid, r["city"]])
+			check(bool(r["hit"]) == (cid == target), "%s: %s hit=%s (target %s)" % [label, cid, r["hit"], target])
+			hits += 1
+		check(hits > 0, "%s: chip %s has a city to land in" % [label, code])
+
+
+func test_every_chip_lands_where_chosen() -> void:
+	for seed_value in [1, 5, 9]:
+		for cid in data.cases:
+			var s = CaseState.new(data, cid, seed_value)
+			for i in range(s.last_stop()):
+				_check_chip_landings("%s/%d leg %d" % [cid, seed_value, i], s, s.plan[i]["suggest"])
+				var nxt: Dictionary = data.cities[s.route()[i + 1]]
+				s.travel_to_pin(nxt["lat"], nxt["lon"])
+				check(s.stop == i + 1, "%s leg %d: flying to target advances" % [cid, i])
+		for eid in data.escapes:
+			var e = EscapeState.new(data, eid, seed_value)
+			for i in range(e.last_stop()):
+				_check_chip_landings("%s/%d leg %d" % [eid, seed_value, i], e, e.leg_info[i]["map"]["countries"])
+				e.now = 0
+				var nxt: Dictionary = data.cities[e.route()[i + 1]]
+				e.travel_to_pin(nxt["lat"], nxt["lon"])
+				check(e.stop == i + 1, "%s leg %d: fleeing to target advances" % [eid, i])
+
+
+func test_pin_on_decoy_neighbour_is_a_miss() -> void:
+	# Vienna and Budapest are 214 km apart: a pin on Budapest must land in Budapest.
+	for cid in data.cases:
+		var s = CaseState.new(data, cid, 1)
+		for i in range(s.last_stop()):
+			var tgt: String = s.route()[i + 1]
+			for other in data.cities:
+				if other == tgt or other == s.current:
+					continue
+				var c: Dictionary = data.cities[other]
+				var r: Dictionary = s.resolve_pin(c["lat"], c["lon"])
+				if r["city"] != other:
+					check(false, "%s leg %d: pin on %s landed in %s" % [cid, i, other, r["city"]])
+			s.travel_to_pin(data.cities[tgt]["lat"], data.cities[tgt]["lon"])
+
+
+func test_every_suggestion_is_landable() -> void:
+	for seed_value in [1, 2, 3, 7, 42]:
+		for cid in data.cases:
+			var s = CaseState.new(data, cid, seed_value)
+			for i in range(s.last_stop()):
+				_check_landable("%s/%d leg %d" % [cid, seed_value, i], s.plan[i]["suggest"],
+					data.cities[s.route()[i]]["country_code"], data.cities[s.route()[i + 1]]["country_code"])
+		for eid in data.escapes:
+			var e = EscapeState.new(data, eid, seed_value)
+			for i in range(e.route().size() - 1):
+				_check_landable("%s/%d leg %d" % [eid, seed_value, i], e.leg_info[i]["map"]["countries"],
+					data.cities[e.route()[i]]["country_code"], data.cities[e.route()[i + 1]]["country_code"])
 
 
 func test_contact_gives_other_destination_clue() -> void:

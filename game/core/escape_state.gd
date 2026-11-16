@@ -124,6 +124,12 @@ func flight_hours(city_id: String) -> int:
 
 func resolve_pin(lat: float, lon: float) -> Dictionary:
 	var target: String = route()[stop + 1] if stop < last_stop() else ""
+	var under := Geo.city_under_pin(data.cities, lat, lon, [current])
+	if under != "":
+		var cu: Dictionary = data.cities[under]
+		if under == target:
+			return {"city": under, "hit": true, "km_off": Geo.distance_km(lat, lon, cu["lat"], cu["lon"])}
+		return {"city": under, "hit": false, "km_off": -1.0}
 	if target != "":
 		var c: Dictionary = data.cities[target]
 		var km := Geo.distance_km(lat, lon, c["lat"], c["lon"])
@@ -211,5 +217,6 @@ func _prepare() -> void:
 		leg_info.append({
 			"message": {"kind": "message", "text": first},
 			"message2": {"kind": "message", "text": second_pool[rng.randi_range(0, second_pool.size() - 1)]},
-			"map": {"kind": "map", "countries": Geo.suggest_countries(data.countries, str(nxt.get("country_code", "")), int(tiers[1]), rng)},
+			"map": {"kind": "map", "countries": Geo.suggest_countries(data.countries, str(nxt.get("country_code", "")), int(tiers[1]), rng,
+				Geo.landable_countries(data.cities, [str(data.cities[route()[i]].get("country_code", ""))]))},
 		})

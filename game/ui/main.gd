@@ -1055,13 +1055,9 @@ func _country_chips(parent: Control, codes: Array, globe: Control) -> void:
 				globe.pin_dropped.emit(cc["lat"], cc["lon"]))
 
 
-## Name of a game city right under the pin (within 80 km), or "".
+## Game city right under the pin (same rule the flight uses), or "".
 func _city_at(p: Vector2) -> String:
-	for id in data.cities:
-		var c: Dictionary = data.cities[id]
-		if Geo.distance_km(p.x, p.y, c["lat"], c["lon"]) < 80.0:
-			return id
-	return ""
+	return Geo.city_under_pin(data.cities, p.x, p.y)
 
 
 func _wire_pin(globe: Control, here: Dictionary, info: Label, fly: Button, fugitive: bool) -> void:
@@ -1073,6 +1069,11 @@ func _wire_pin(globe: Control, here: Dictionary, info: Label, fly: Button, fugit
 		else:
 			var km := Geo.distance_km(here["lat"], here["lon"], p.x, p.y)
 			var cid := _city_at(p)
+			var here_id: String = esc.current if fugitive else state.current
+			if cid == here_id:
+				info.text = loc.s("pin_here", {"city": _city(cid)})
+				fly.disabled = true
+				return
 			if cid != "":
 				var cc: Dictionary = data.cities[cid]
 				info.text = loc.s("pin_city", {"city": loc.t(cc["name"]), "country": loc.t(cc["country"]), "hours": Geo.travel_hours(km)})
@@ -1113,7 +1114,7 @@ const TRAIL_SCENES := ["plane", "car", "rooftop"]
 
 
 func _on_fly() -> void:
-	if pin == Vector2.INF or flying:
+	if pin == Vector2.INF or flying or _city_at(pin) == state.current:
 		return
 	flying = true
 	var prev_city: String = state.current
@@ -1610,7 +1611,7 @@ func show_escape_travel() -> void:
 
 
 func _on_escape_fly() -> void:
-	if esc_pin == Vector2.INF or flying:
+	if esc_pin == Vector2.INF or flying or _city_at(esc_pin) == esc.current:
 		return
 	flying = true
 	var from: Dictionary = data.cities[esc.current]

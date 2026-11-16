@@ -136,6 +136,13 @@ func resolve_pin(lat: float, lon: float) -> Dictionary:
 		targets.append(route()[stop + 1])
 	if not on_trail():
 		targets.append(route()[stop])  # flying back to the last good city also works
+	# A pin on a game city always lands in that city (picking a decoy never "hits").
+	var under := Geo.city_under_pin(data.cities, lat, lon, [current])
+	if under != "":
+		if under in targets:
+			var cu: Dictionary = data.cities[under]
+			return {"city": under, "hit": true, "km_off": Geo.distance_km(lat, lon, cu["lat"], cu["lon"])}
+		return {"city": under, "hit": false, "km_off": -1.0}
 	for t in targets:
 		var c: Dictionary = data.cities[t]
 		var km := Geo.distance_km(lat, lon, c["lat"], c["lon"])
@@ -236,7 +243,7 @@ func _prepare() -> void:
 				var extra: Dictionary = pool[rng.randi_range(0, pool.size() - 1)] if not pool.is_empty() else first
 				p["money"] = {"kind": "dest", "source": "money", "text": extra}
 			p["cctv"] = {"kind": "street", "city": nxt_id, "street": nxt["street"], "hint_locked": not free_hint}
-			p["suggest"] = _suggestions(str(nxt.get("country_code", "")), int(tiers[1]))
+			p["suggest"] = _suggestions(str(nxt.get("country_code", "")), int(tiers[1]), route()[i])
 			p["sighting"] = i > 0 and (i % 2 == 1 or rng.randf() < 0.3)
 		else:
 			for j in range(SPOTS.size()):
@@ -251,8 +258,9 @@ func _prepare() -> void:
 
 
 ## The "analyst" shortlist: the real destination country plus three decoys.
-func _suggestions(target: String, max_tier: int) -> Array:
-	return Geo.suggest_countries(data.countries, target, max_tier, rng)
+func _suggestions(target: String, max_tier: int, here_city: String = "") -> Array:
+	var here_code := str(data.cities[here_city].get("country_code", "")) if data.cities.has(here_city) else ""
+	return Geo.suggest_countries(data.countries, target, max_tier, rng, Geo.landable_countries(data.cities, [here_code]))
 
 
 ## Suggested destination countries for the current leg ([] when travel is over).

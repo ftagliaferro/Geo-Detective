@@ -960,6 +960,10 @@
       "es": "Destino: {city}, {country} · vuelo aprox. {hours} h",
       "en": "Destination: {city}, {country} · flight approx. {hours} h"
     },
+    "pin_here": {
+      "es": "Ya estás en {city}. Elegí otro destino.",
+      "en": "You are already in {city}. Pick another destination."
+    },
     "jump": {
       "es": "SALTAR",
       "en": "JUMP"

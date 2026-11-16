@@ -64,4 +64,8 @@ python3 -m unittest discover -s tools/tests
 # Game logic tests (Godot 4.4.1)
 godot --headless --path game --import
 godot --headless --path game --script res://tests/run_tests.gd
+
+# UI tests: smoke test of every screen, then every chip/city/case played through the real UI
+godot --headless --path game --script res://tests/smoke_ui.gd
+godot --headless --path game --script res://tests/ui_flows.gd
 ```

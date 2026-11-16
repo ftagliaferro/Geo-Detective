@@ -88,10 +88,13 @@ func _finish() -> void:
 
 
 func _globe_pick_suggestion() -> void:
-	var globe = main.body.find_child("TravelGlobe", true, false)
+	# Press the real analyst chip for the destination, like a player would.
 	var target: String = main.data.cities[main.state.route()[1]]["country_code"]
-	var c: Dictionary = main.data.countries[target]
-	globe.highlight_country(target, c["lat"], c["lon"])
+	var name: String = main.loc.t(main.data.countries[target]["name"])
+	for b in main.body.find_children("*", "Button", true, false):
+		if b.text.strip_edges() == name:
+			b.pressed.emit()
+			return
 
 
 func _fly_correct() -> void:
