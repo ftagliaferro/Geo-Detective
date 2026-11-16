@@ -93,11 +93,16 @@ def main() -> int:
         dest = OUT_DIR / f"{c['id']}.jpg"
         if dest.exists() and st.get("credit") and not args.force:
             continue
-        info = file_info(st["source"])
-        if not info["license"].startswith(ALLOWED):
-            print(f"SKIP {c['id']}: license {info['license']!r} not allowed")
+        try:
+            info = file_info(st["source"])
+            if not info["license"].startswith(ALLOWED):
+                print(f"SKIP {c['id']}: license {info['license']!r} not allowed")
+                continue
+            dest.write_bytes(_get(info["thumb"]))
+        except Exception as e:  # rate limits etc.: skip now, retry on the next run
+            print(f"retry-later {c['id']}: {e}", flush=True)
+            time.sleep(30)
             continue
-        dest.write_bytes(_get(info["thumb"]))
         st["image"] = f"res://assets/street/{c['id']}.jpg"
         st["credit"] = {"artist": info["artist"], "license": info["license"], "url": info["url"]}
         print(f"ok {c['id']}: {info['license']} — {info['artist']}", flush=True)
