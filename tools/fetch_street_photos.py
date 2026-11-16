@@ -2,7 +2,7 @@
 """Download curated CCTV/street photos from Wikimedia Commons and record credits.
 
 Each city with a `street.source` (a Commons file title) gets:
-  - game/assets/street/<city_id>.jpg  (960 px wide thumbnail)
+  - game/assets/street/<city_id>.jpg  (1024 px wide thumbnail, a standard Wikimedia size)
   - street.image  = res:// path
   - street.credit = {artist, license, url}
 and CREDITS.md is regenerated. Only free licenses are accepted (ADR-0003, ADR-0005).
@@ -45,7 +45,7 @@ def _get(url: str, tries: int = 4) -> bytes:
 
 def file_info(title: str) -> dict:
     params = {"action": "query", "format": "json", "titles": title, "prop": "imageinfo",
-              "iiprop": "url|extmetadata", "iiurlwidth": 960}
+              "iiprop": "url|extmetadata", "iiurlwidth": 1024}
     data = json.loads(_get(API + "?" + urllib.parse.urlencode(params)))
     page = next(iter(data["query"]["pages"].values()))
     ii = page["imageinfo"][0]

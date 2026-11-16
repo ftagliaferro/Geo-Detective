@@ -11,6 +11,7 @@
 | ![Menu](docs/screenshots/01_menu.png) | ![City](docs/screenshots/11_city_done.png) |
 | ![Wiretap tuning](docs/screenshots/07_wiretap_locked.png) | ![Globe](docs/screenshots/14_globe_highlight.png) |
 | ![Cutscene](docs/screenshots/04_cutscene_heist.png) | ![Fugitive](docs/screenshots/26_esc_city.png) |
+| ![CCTV](docs/screenshots/08_cctv.png) | ![Board](docs/screenshots/20_board.png) |
 
 *Rendered automatically by `game/tests/screenshot_tour.gd` (xvfb + OpenGL).*
 
