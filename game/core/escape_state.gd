@@ -19,6 +19,7 @@ const DECOY_BONUS := 10
 const MAX_DECOYS := 2
 const CHASE_THRESHOLD := 10.0   # arrive at the safe house with less lead -> final chase
 const COMFORT_LEAD := 12.0      # star for arriving with at least this lead
+const CHECKPOINT_DELAY := 3     # hours lost if passport control stops you
 
 var data
 var def: Dictionary
@@ -33,6 +34,8 @@ var decoys_left := MAX_DECOYS
 var wrong_flights := 0
 var status := "playing"       # playing | escaped | caught | chase
 var chase_needed := false
+var checkpoints: Dictionary = {}       # leg index -> true when that arrival has passport control
+var checkpoints_done: Dictionary = {}
 
 
 func _init(p_data, escape_id: String, p_seed: int = 0) -> void:
@@ -93,10 +96,10 @@ func can_act(action: String) -> bool:
 	return not here["decoy"] and decoys_left > 0
 
 
-func act(action: String) -> Dictionary:
+func act(action: String, discount := 0) -> Dictionary:
 	if not can_act(action):
 		return {}
-	now += int(COST[action])
+	now += maxi(1, int(COST[action]) - discount)
 	var payload: Dictionary = {}
 	match action:
 		"message", "message2", "map":
@@ -147,6 +150,22 @@ func travel_to_pin(lat: float, lon: float) -> Dictionary:
 	return r
 
 
+## Passport control on arrival at some safe houses (ADR-0011).
+func has_checkpoint() -> bool:
+	return status == "playing" and on_route() and checkpoints.get(stop, false) and not checkpoints_done.has(stop)
+
+
+func resolve_checkpoint(passed: bool) -> int:
+	if not has_checkpoint():
+		return 0
+	checkpoints_done[stop] = passed
+	if passed:
+		return 0
+	now += CHECKPOINT_DELAY
+	_check()
+	return CHECKPOINT_DELAY
+
+
 ## Resolve the optional final chase (player drives the getaway car).
 func finish_chase(escaped: bool) -> String:
 	if status == "chase":
@@ -179,6 +198,8 @@ func _flight(a: String, b: String) -> int:
 func _prepare() -> void:
 	var tiers: Array = def["tiers"]
 	leg_info.clear()
+	for i in range(1, last_stop()):
+		checkpoints[i] = i % 2 == 0 or rng.randf() < 0.35
 	for i in range(last_stop()):
 		var nxt: Dictionary = data.cities[route()[i + 1]]
 		var pool := Geo.clues_in_tiers(nxt["clues"], int(tiers[0]), int(tiers[1]))

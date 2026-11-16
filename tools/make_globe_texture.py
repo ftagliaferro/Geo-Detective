@@ -2,7 +2,7 @@
 """Render the stylized equirectangular world texture used by the 3D globe.
 
 Source: Natural Earth 1:110m countries (public domain), fetched once and cached.
-Style: vintage atlas — muted blue ocean, parchment land, sepia borders.
+Style: modern flat map — soft sky-blue ocean, warm white land, light taupe borders.
 
 Usage:  python3 tools/make_globe_texture.py [--size 2048]
 """
@@ -21,10 +21,10 @@ OUT = ROOT / "game" / "assets" / "globe" / "world.png"
 SOURCE = ("https://raw.githubusercontent.com/nvkelso/natural-earth-vector/"
           "master/geojson/ne_110m_admin_0_countries.geojson")
 
-OCEAN = (104, 146, 176)
-GRID = (130, 166, 192)
-LAND = (226, 214, 178)
-COAST = (96, 78, 52)
+OCEAN = (143, 196, 232)
+GRID = (164, 210, 240)
+LAND = (251, 247, 239)
+COAST = (176, 163, 140)
 
 
 def load_geojson() -> dict:

@@ -1,14 +1,14 @@
-## Arcade chase finale: low-poly 3-lane city street at dusk. Close the gap before time runs out.
+## Arcade chase finale: bright low-poly 3-lane city street (modern pastel palette). Close the gap before time runs out.
 ## Controls: arrows / A-D (event-driven, every press counts), swipe/drag, tap a side,
 ## or the on-screen arrow buttons.
 extends Control
 
 signal finished(caught: bool)
 
-const C_PLAYER := Color("2f4f7f")   # unmarked navy sedan
-const C_SUSPECT := Color("9e2b25")  # dark red getaway car
+const C_PLAYER := Color("1f2f4d")   # unmarked navy sedan
+const C_SUSPECT := Color("ff5a3c")  # coral getaway car (the thief's colour)
 const C_ORANGE := Color("e67e22")
-const C_HUD := Color("d9a441")
+const C_HUD := Color("ff5a3c")
 const LANES := [-1.6, 0.0, 1.6]
 const DURATION := 30.0
 const START_GAP := 25.0
@@ -22,8 +22,8 @@ const FONT_TITLE := preload("res://assets/fonts/BebasNeue-Regular.ttf")
 
 const WINDOWS_SHADER := """
 shader_type spatial;
-uniform vec3 base_color : source_color = vec3(0.55, 0.32, 0.25);
-uniform vec3 lit_color : source_color = vec3(1.0, 0.85, 0.6);
+uniform vec3 base_color : source_color = vec3(0.95, 0.76, 0.31);
+uniform vec3 lit_color : source_color = vec3(1.0, 1.0, 1.0);
 uniform float seed = 0.0;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233)) + seed) * 43758.5453); }
 varying vec3 lpos;
@@ -36,9 +36,9 @@ void fragment() {
 	float win = step(0.25, f.x) * step(f.x, 0.75) * step(0.3, f.y) * step(f.y, 0.75);
 	float on = step(0.75, hash(cell));
 	float roof = step(0.5, abs(lnorm.y));
-	vec3 glass = vec3(0.18, 0.22, 0.27);
+	vec3 glass = vec3(0.62, 0.82, 0.95);
 	ALBEDO = mix(base_color, glass, win * (1.0 - roof));
-	EMISSION = lit_color * win * on * (1.0 - roof) * 0.5;
+	EMISSION = lit_color * win * on * (1.0 - roof) * 0.15;
 	ROUGHNESS = 0.85;
 }
 """
@@ -52,7 +52,7 @@ void fragment() {
 	vec2 g = vec2(wpos.x, wpos.z + scroll) / 1.5;
 	vec2 d = abs(fract(g - 0.5) - 0.5) / fwidth(g);
 	float line = 1.0 - min(min(d.x, d.y), 1.0);
-	ALBEDO = mix(vec3(0.58, 0.57, 0.54), vec3(0.42, 0.41, 0.39), line * 0.7);
+	ALBEDO = mix(vec3(0.86, 0.84, 0.80), vec3(0.72, 0.70, 0.66), line * 0.7);
 	ROUGHNESS = 0.95;
 }
 """
@@ -111,26 +111,26 @@ func _init() -> void:
 
 	var env := Environment.new()
 	var sky_mat := ProceduralSkyMaterial.new()
-	sky_mat.sky_top_color = Color("4f6d8f")
-	sky_mat.sky_horizon_color = Color("e3c7a1")
-	sky_mat.ground_horizon_color = Color("8a8378")
-	sky_mat.ground_bottom_color = Color("3d3b38")
+	sky_mat.sky_top_color = Color("6fb3ff")
+	sky_mat.sky_horizon_color = Color("e8f3ff")
+	sky_mat.ground_horizon_color = Color("d9d3c8")
+	sky_mat.ground_bottom_color = Color("a8a296")
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.85, 0.82, 0.78)
-	env.ambient_light_energy = 0.6
+	env.ambient_light_color = Color(0.92, 0.94, 1.0)
+	env.ambient_light_energy = 0.75
 	env.fog_enabled = true
-	env.fog_light_color = Color("c9b8a0")
-	env.fog_density = 0.01
+	env.fog_light_color = Color("e8f3ff")
+	env.fog_density = 0.008
 	var we := WorldEnvironment.new()
 	we.environment = env
 	viewport.add_child(we)
 	var light := DirectionalLight3D.new()
 	light.rotation_degrees = Vector3(-40, 25, 0)
-	light.light_color = Color(1.0, 0.9, 0.78)
+	light.light_color = Color(1.0, 0.97, 0.92)
 	light.light_energy = 1.1
 	light.shadow_enabled = true
 	viewport.add_child(light)
@@ -152,7 +152,7 @@ func _init() -> void:
 	ground.position = Vector3(0, -0.02, -80)
 	viewport.add_child(ground)
 
-	var road := _box(Vector3(5.4, 0.06, 200), Color("3b3e43"))
+	var road := _box(Vector3(5.4, 0.06, 200), Color("4a5160"))
 	road.position = Vector3(0, 0.0, -80)
 	for x in [-2.7, 2.7]:
 		var edge := _box(Vector3(0.1, 0.04, 200), Color("e8e4d8"))
@@ -182,7 +182,7 @@ func _init() -> void:
 		var mat := ShaderMaterial.new()
 		mat.shader = shader
 		mat.set_shader_parameter("seed", float(i) * 3.7)
-		mat.set_shader_parameter("base_color", [Color("8b4a3c"), Color("c4b293"), Color("8d949b"), Color("a8826a")][i % 4])
+		mat.set_shader_parameter("base_color", [Color("f2c14e"), Color("f78154"), Color("4d9078"), Color("5fa8d3"), Color("f4ede0"), Color("e07a5f")][i % 6])
 		mi.material_override = mat
 		mi.position = Vector3(side * (4.6 + w / 2.0), h / 2.0, -float(i / 2) * 7.0)
 		viewport.add_child(mi)
@@ -300,12 +300,15 @@ func _build_hud() -> void:
 		var b := Button.new()
 		b.text = "<" if dir < 0 else ">"
 		b.add_theme_font_override("font", FONT_TITLE)
+		b.add_theme_color_override("font_color", Color("1b2433"))
+		b.add_theme_color_override("font_hover_color", Color("1b2433"))
+		b.add_theme_color_override("font_pressed_color", Color("ff5a3c"))
 		b.focus_mode = Control.FOCUS_NONE
 		b.custom_minimum_size = Vector2(84, 84)
 		b.add_theme_font_size_override("font_size", 36)
 		var sb := StyleBoxFlat.new()
-		sb.bg_color = Color(0.05, 0.05, 0.12, 0.55)
-		sb.border_color = Color("c9c3b6")
+		sb.bg_color = Color(1, 1, 1, 0.85)
+		sb.border_color = Color("1b2433")
 		sb.set_border_width_all(2)
 		sb.set_corner_radius_all(42)
 		b.add_theme_stylebox_override("normal", sb)
@@ -329,7 +332,7 @@ func _hud_label(parent: Control) -> Label:
 	l.add_theme_font_override("font", FONT_TITLE)
 	l.add_theme_font_size_override("font_size", 34)
 	l.add_theme_color_override("font_color", Color.WHITE)
-	l.add_theme_color_override("font_outline_color", Color(0.1, 0.1, 0.1))
+	l.add_theme_color_override("font_outline_color", Color("1b2433"))
 	l.add_theme_constant_override("outline_size", 8)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	parent.add_child(l)
@@ -357,7 +360,7 @@ func set_escape_mode() -> void:
 	bar.material_override = bar_mat
 	bar.name = "Siren"
 	suspect.add_child(bar)
-	suspect.position = Vector3(LANES[lane], 0, gap * 0.35)
+	suspect.position = Vector3(LANES[lane], 0, 1.3 + gap * 0.2)
 	gap_bar.max_value = ESCAPE_GAP + 4.0
 	gap_bar.fill_mode = ProgressBar.FILL_BEGIN_TO_END
 	_update_hud()
@@ -366,6 +369,7 @@ func set_escape_mode() -> void:
 func start(seed_value: int = 0) -> void:
 	rng.seed = seed_value if seed_value != 0 else randi()
 	running = true
+	preload("res://ui/sfx.gd").play("siren" if mode == "escape" else "whoosh", -4.0)
 	if is_inside_tree():
 		get_viewport().gui_release_focus()
 
@@ -388,7 +392,7 @@ func _process(delta: float) -> void:
 	if mode == "escape":
 		# police car follows your lane from behind; closer as the gap shrinks
 		suspect.position.x = lerpf(suspect.position.x, player.position.x, minf(1.0, delta * 2.5))
-		suspect.position.z = 1.6 + maxf(gap, 0.0) * 0.35
+		suspect.position.z = 1.3 + maxf(gap, 0.0) * 0.2
 		siren_t += delta
 		var siren := suspect.get_node_or_null("Siren") as MeshInstance3D
 		if siren:
@@ -411,6 +415,7 @@ func _process(delta: float) -> void:
 		if absf(o.position.z) < 1.0 and absf(o.position.x - player.position.x) < HIT_HALF_WIDTH:
 			gap += -ESCAPE_HIT if mode == "escape" else HIT_PENALTY
 			flash = 0.35
+			preload("res://ui/sfx.gd").play("hit")
 			_remove(o)
 		elif o.position.z > 8.0:
 			_remove(o)

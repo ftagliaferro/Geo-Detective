@@ -35,12 +35,13 @@ func _draw() -> void:
 	if tex:
 		draw_texture_rect(tex, Rect2(Vector2.ZERO, size), false)
 	# left-to-right dark gradient for legibility
-	var dark := Color(0.11, 0.12, 0.14, 0.94)
-	var clear := Color(0.11, 0.12, 0.14, 0.0)
+	var dark := Color(1, 1, 1, 0.96)
+	var clear := Color(1, 1, 1, 0.0)
 	draw_polygon(PackedVector2Array([Vector2.ZERO, Vector2(size.x * 0.7, 0), Vector2(size.x * 0.7, size.y), Vector2(0, size.y)]),
 		PackedColorArray([dark, clear, clear, dark]))
 	var p: Vector2 = get_meta("pin", Vector2(0.5, 0.5)) * size
-	draw_circle(p, 9.0, Color(0, 0, 0, 0.35))
-	draw_circle(p, 7.0, Color("c0392b"))
+	draw_circle(p, 16.0, Color(1.0, 0.35, 0.24, 0.18))
+	draw_circle(p, 9.0, Color(1, 1, 1))
+	draw_circle(p, 7.0, Color("ff5a3c"))
 	draw_circle(p, 2.5, Color.WHITE)
-	draw_rect(Rect2(Vector2.ZERO, size), Color("5c646e"), false, 1.0)
+

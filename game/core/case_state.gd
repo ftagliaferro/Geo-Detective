@@ -9,6 +9,7 @@ const SPOTS := ["wiretap", "cctv", "contact", "money"]
 const SPOT_HOURS := 2
 const SPOT_COST := {"wiretap": 2, "cctv": 2, "contact": 3, "money": 2}
 const ENHANCE_HOURS := 1
+const SIGHTING_REFUND := 3
 
 var data
 var case_def: Dictionary
@@ -25,6 +26,7 @@ var precision_km: Array = []   # km off for each successful pin
 var chase_caught: bool = false
 var status: String = "playing"  # playing | won | lost_time | lost_wrong | lost_nowarrant
 var plan: Array = []
+var sightings_done: Dictionary = {}
 
 
 func _init(p_data, case_id: String, p_seed: int = 0) -> void:
@@ -61,13 +63,22 @@ func hours_left() -> int:
 	return budget - hours_used
 
 
+## What a spot would reveal, without spending time (used to animate the reveal first).
+func peek(spot: String) -> Dictionary:
+	if visited.has(spot):
+		return visited[spot]
+	if on_trail():
+		return plan[stop][spot]
+	return {"kind": "deadend"}
+
+
 ## Investigate an evidence source in the current city. Repeat visits are free.
-func visit(spot: String) -> Dictionary:
+func visit(spot: String, discount := 0) -> Dictionary:
 	if status != "playing" or not spot in SPOTS:
 		return {}
 	if visited.has(spot):
 		return visited[spot]
-	hours_used += int(SPOT_COST.get(spot, SPOT_HOURS))
+	hours_used += maxi(1, int(SPOT_COST.get(spot, SPOT_HOURS)) - discount)
 	var clue: Dictionary
 	if on_trail():
 		clue = plan[stop][spot]
@@ -91,6 +102,24 @@ func enhance_cctv() -> Dictionary:
 	visited["cctv"] = c
 	_check_time()
 	return c
+
+
+## Quick-reaction "sighting" event available in this city (ADR-0011).
+func has_sighting() -> bool:
+	return status == "playing" and on_trail() and stop > 0 and stop < last_stop() \
+		and plan[stop].get("sighting", false) and not sightings_done.has(stop)
+
+
+## Resolve the sighting: success gives hours back (you learn their moves faster).
+func resolve_sighting(success: bool) -> int:
+	if not has_sighting():
+		return 0
+	sightings_done[stop] = success
+	if success:
+		var back := mini(SIGHTING_REFUND, hours_used)
+		hours_used -= back
+		return back
+	return 0
 
 
 func flight_hours(city_id: String) -> int:
@@ -208,6 +237,7 @@ func _prepare() -> void:
 				p["money"] = {"kind": "dest", "source": "money", "text": extra}
 			p["cctv"] = {"kind": "street", "city": nxt_id, "street": nxt["street"], "hint_locked": not free_hint}
 			p["suggest"] = _suggestions(str(nxt.get("country_code", "")), int(tiers[1]))
+			p["sighting"] = i > 0 and (i % 2 == 1 or rng.randf() < 0.3)
 		else:
 			for j in range(SPOTS.size()):
 				var idx: int = mini(last_stop(), order.size()) + j

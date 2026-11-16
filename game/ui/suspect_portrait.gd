@@ -4,7 +4,7 @@ extends Control
 
 const SKIN := [Color("f1d3b3"), Color("e0b48c"), Color("c68e63"), Color("8d5a3b"), Color("5c3a24")]
 const HAIR := [Color("1d1a17"), Color("4a3123"), Color("8a5a2b"), Color("c9a16b"), Color("9a9a9a"), Color("6b1f1a")]
-const COAT := [Color("2f3b4a"), Color("4a3b2f"), Color("3d4a3a"), Color("5a5a5a"), Color("2a2a33"), Color("6a4a3a")]
+const COAT := [Color("1f2f4d"), Color("4d9078"), Color("f78154"), Color("5fa8d3"), Color("3a3f4b"), Color("b5838d")]
 
 var suspect: Dictionary = {}
 var crossed := false
@@ -23,11 +23,11 @@ func _pick(arr: Array, salt: int) -> Variant:
 func _draw() -> void:
 	var w := size.x
 	var h := size.y
-	draw_rect(Rect2(Vector2.ZERO, size), Color("cfd3d6"))
+	draw_rect(Rect2(Vector2.ZERO, size), Color("e6edf5"))
 	# height chart lines, like a booking photo
 	for i in range(1, 6):
 		var y := h * i / 6.0
-		draw_line(Vector2(0, y), Vector2(w, y), Color(0, 0, 0, 0.12), 1.0)
+		draw_line(Vector2(0, y), Vector2(w, y), Color(0.11, 0.14, 0.2, 0.07), 1.0)
 	var traits: Dictionary = suspect.get("traits", {})
 	var skin: Color = _pick(SKIN, 1)
 	var hair: Color = _pick(HAIR, 2)

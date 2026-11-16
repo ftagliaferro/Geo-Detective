@@ -453,3 +453,55 @@ func test_escape_chase_crashes_get_caught() -> void:
 		guard += 1
 	check(result[0] == false, "escape chase: crashing repeatedly gets you caught")
 	chase.queue_free()
+
+
+# ---------------- Action events (ADR-0011) ----------------
+
+func test_wiretap_discount() -> void:
+	var s = CaseState.new(data, "case_01", 1)
+	s.visit("wiretap", 1)
+	check(s.hours_used == 1, "fast tuning makes the wiretap cost 1 h")
+	s.visit("contact", 9)
+	check(s.hours_used == 2, "discounts never go below 1 h")
+
+
+func test_sightings_scheduled_and_refund() -> void:
+	var any := false
+	for cid in data.cases:
+		var s = CaseState.new(data, cid, 2)
+		for i in range(s.last_stop()):
+			if s.plan[i].get("sighting", false):
+				any = true
+				check(i > 0, "%s: no sighting in the crime city" % cid)
+	check(any, "some legs have sightings")
+	var s2 = CaseState.new(data, "case_05", 2)
+	var leg := -1
+	for i in range(1, s2.last_stop()):
+		if s2.plan[i]["sighting"]:
+			leg = i
+			break
+	for i in range(leg):
+		for spot in CaseState.SPOTS:
+			s2.visit(spot)
+		_pin(s2, s2.route()[i + 1])
+	check(s2.has_sighting(), "sighting available on arrival")
+	var h: int = s2.hours_used
+	check(s2.resolve_sighting(true) == 3 and s2.hours_used == h - 3, "winning a sighting refunds 3 h")
+	check(not s2.has_sighting(), "sighting is once per city")
+
+
+func test_checkpoint_penalty() -> void:
+	var e = EscapeState.new(data, "escape_03", 2)
+	var leg := -1
+	for i in range(1, e.last_stop()):
+		if e.checkpoints.get(i, false):
+			leg = i
+			break
+	check(leg > 0, "escape has passport controls")
+	for i in range(leg):
+		e.act("message")
+		_epin(e, e.route()[i + 1])
+	check(e.has_checkpoint(), "checkpoint on arrival")
+	var t0: int = e.now
+	check(e.resolve_checkpoint(false) == 3 and e.now == t0 + 3, "failing passport control costs 3 h")
+	check(not e.has_checkpoint(), "checkpoint resolved once")

@@ -6,8 +6,8 @@ signal flight_done
 
 const Geo = preload("res://core/geo.gd")
 const TEXTURE := preload("res://assets/globe/world.png")
-const C_PINK := Color("c0392b")
-const C_CYAN := Color("2c3e50")
+const C_PINK := Color("ff5a3c")
+const C_CYAN := Color("1f2f4d")
 const DRAG_SPEED := 0.006
 const TAP_SLOP := 8.0
 
@@ -27,8 +27,9 @@ var labels: Dictionary = {}      # country id -> Label3D
 var label_rank: Dictionary = {}  # country id -> label rank
 var highlighted := ""
 var _spin_tween: Tween
-const INK := Color("3a2f22")
-const LABEL_FONT := preload("res://assets/fonts/BebasNeue-Regular.ttf")
+var _preview: MeshInstance3D
+const INK := Color("1b2433")
+const Style = preload("res://ui/style.gd")
 
 
 func _init() -> void:
@@ -50,14 +51,14 @@ func _init() -> void:
 
 	var light := DirectionalLight3D.new()
 	light.rotation_degrees = Vector3(-25, 35, 0)
-	light.light_energy = 0.9
+	light.light_energy = 0.45
 	viewport.add_child(light)
 	var env := WorldEnvironment.new()
 	env.environment = Environment.new()
 	env.environment.background_mode = Environment.BG_CLEAR_COLOR
 	env.environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.environment.ambient_light_color = Color(0.75, 0.8, 1.0)
-	env.environment.ambient_light_energy = 0.7
+	env.environment.ambient_light_color = Color(1, 1, 1)
+	env.environment.ambient_light_energy = 0.55
 	viewport.add_child(env)
 
 	pivot = Node3D.new()
@@ -71,7 +72,7 @@ func _init() -> void:
 	mat.roughness = 1.0
 	mat.emission_enabled = true
 	mat.emission_texture = TEXTURE
-	mat.emission_energy_multiplier = 0.2
+	mat.emission_energy_multiplier = 0.5
 	var globe := MeshInstance3D.new()
 	globe.mesh = sphere
 	globe.material_override = mat
@@ -86,7 +87,7 @@ func _init() -> void:
 	var halo_mat := StandardMaterial3D.new()
 	halo_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	halo_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	halo_mat.albedo_color = Color(1, 1, 1, 0.06)
+	halo_mat.albedo_color = Color(1, 1, 1, 0.0)
 	halo_mat.cull_mode = BaseMaterial3D.CULL_FRONT
 	var halo := MeshInstance3D.new()
 	halo.mesh = halo_mesh
@@ -138,13 +139,13 @@ func add_country_labels(countries: Dictionary, lang: String) -> void:
 	for id in countries:
 		var c: Dictionary = countries[id]
 		var l := Label3D.new()
-		l.text = str(c["name"].get(lang, c["name"]["en"])).to_upper()
-		l.font = LABEL_FONT
+		l.text = str(c["name"].get(lang, c["name"]["en"]))
+		l.font = Style.font("display_md")
 		l.font_size = 46
-		l.pixel_size = 0.0009
+		l.pixel_size = 0.0008
 		l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		l.modulate = INK
-		l.outline_modulate = Color(0.96, 0.93, 0.85, 0.9)
+		l.outline_modulate = Color(1, 1, 1, 0.92)
 		l.outline_size = 10
 		l.position = Geo.lat_lon_to_vec(c["lat"], c["lon"]) * 1.01
 		pivot.add_child(l)
@@ -156,14 +157,32 @@ func _update_labels() -> void:
 	if labels.is_empty():
 		return
 	var z := camera.position.z
-	var max_rank := 2 if z > 3.1 else (3 if z > 2.5 else (4 if z > 2.15 else 6))
+	var max_rank := 2 if z > 3.1 else (3 if z > 2.6 else (4 if z > 2.2 else 6))
 	var cam_dir := camera.global_position.normalized()
-	for id in labels:
+	# Greedy screen-space decluttering: important (low-rank) names first,
+	# skip any label that would overlap one already placed.
+	var placed: Array = []
+	var order: Array = labels.keys()
+	order.sort_custom(func(a, b): return (0 if a == highlighted else int(label_rank[a])) < (0 if b == highlighted else int(label_rank[b])))
+	for id in order:
 		var l: Label3D = labels[id]
-		var facing := (pivot.global_transform.basis * l.position).normalized().dot(cam_dir)
+		var world := pivot.global_transform * l.position
+		var facing := world.normalized().dot(cam_dir)
 		var wanted: bool = id == highlighted or int(label_rank[id]) <= max_rank
-		l.visible = wanted and facing > 0.42
-
+		if not wanted or facing < 0.3:
+			l.visible = false
+			continue
+		var sp := camera.unproject_position(world)
+		var half := Vector2(l.text.length() * 4.2 + 8.0, 12.0)
+		var rect := Rect2(sp - half, half * 2.0)
+		var clash := false
+		for r in placed:
+			if rect.intersects(r):
+				clash = true
+				break
+		l.visible = not clash or id == highlighted
+		if l.visible:
+			placed.append(rect)
 
 ## Spin smoothly to a country, mark its name in red and pulse it.
 func highlight_country(id: String, lat: float, lon: float) -> void:
@@ -270,6 +289,8 @@ func focus(lat: float, lon: float) -> void:
 
 func clear_pin() -> void:
 	pin_marker.visible = false
+	if _preview:
+		_preview.visible = false
 
 
 func set_pin(lat: float, lon: float) -> void:
@@ -277,6 +298,7 @@ func set_pin(lat: float, lon: float) -> void:
 	pin_marker.position = v
 	pin_marker.basis = Basis(Quaternion(Vector3.UP, v.normalized()))
 	pin_marker.visible = true
+	_draw_preview(home_marker.position.normalized(), v)
 
 
 func _apply() -> void:
@@ -332,3 +354,28 @@ func _pick(pos: Vector2) -> void:
 	var ll := Geo.vec_to_lat_lon(local)
 	set_pin(ll.x, ll.y)
 	pin_dropped.emit(ll.x, ll.y)
+
+
+## Dashed preview arc from "you are here" to the dropped pin.
+func _draw_preview(a: Vector3, b: Vector3) -> void:
+	if a.length() < 0.5:
+		return
+	if _preview == null:
+		_preview = MeshInstance3D.new()
+		_preview.mesh = ImmediateMesh.new()
+		var m := StandardMaterial3D.new()
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		m.albedo_color = Color(C_PINK, 0.85)
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		_preview.material_override = m
+		pivot.add_child(_preview)
+	var im := _preview.mesh as ImmediateMesh
+	im.clear_surfaces()
+	im.surface_begin(Mesh.PRIMITIVE_LINES)
+	var steps := 40
+	for i in range(0, steps, 2):
+		for k in [i, i + 1]:
+			var t := float(k) / steps
+			im.surface_add_vertex(a.slerp(b, t).normalized() * (1.0 + 0.1 * sin(PI * t)))
+	im.surface_end()
+	_preview.visible = true

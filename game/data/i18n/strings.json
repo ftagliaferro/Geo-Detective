@@ -549,8 +549,8 @@
       "en": "Play"
     },
     "play_fugitive": {
-      "es": "Modo fugitivo",
-      "en": "Fugitive mode"
+      "es": "Escapar",
+      "en": "Escape"
     },
     "escapes_help": {
       "es": "Esta vez el ladrón sos vos. Descifrá los mensajes de tu jefe para llegar al piso franco antes de que la inspectora Rivas te alcance.",
@@ -775,6 +775,178 @@
     "howto_6": {
       "es": "Al revés: vos sos el ladrón. Descifrá los mensajes del jefe para llegar a cada piso franco y usá tus horas con cuidado: la inspectora se acerca mientras te quedás en una ciudad.",
       "en": "The other way round: you are the thief. Decode your boss's messages to reach each safe house and spend your hours wisely: the inspector closes in while you linger."
+    },
+    "menu_title": {
+      "es": "Inicio",
+      "en": "Home"
+    },
+    "mode_detective_name": {
+      "es": "Detective",
+      "en": "Detective"
+    },
+    "mode_detective_desc": {
+      "es": "Seguí a cinco bandas por el mundo y atrapá a sus jefes.",
+      "en": "Track five gangs around the world and catch their bosses."
+    },
+    "mode_fugitive_name": {
+      "es": "Fugitivo",
+      "en": "Fugitive"
+    },
+    "mode_fugitive_desc": {
+      "es": "Cambiá de lado: escapá de la inspectora Rivas con el botín.",
+      "en": "Switch sides: escape Inspector Rivas with the loot."
+    },
+    "departing": {
+      "es": "SALÍS DESDE",
+      "en": "DEPARTING FROM"
+    },
+    "reveal_continue": {
+      "es": "Anotar y seguir",
+      "en": "Note it and continue"
+    },
+    "tune_hint": {
+      "es": "Mové el dial hasta que tu onda (azul) coincida con la señal interceptada. Si lo lográs rápido, ahorrás una hora.",
+      "en": "Move the dial until your wave (blue) matches the intercepted signal. Do it fast and you save an hour."
+    },
+    "tune_search": {
+      "es": "Buscando la frecuencia…",
+      "en": "Searching for the frequency…"
+    },
+    "tune_close": {
+      "es": "¡Casi! Mantené el dial…",
+      "en": "Almost! Hold the dial…"
+    },
+    "tune_locked": {
+      "es": "Señal fijada. Transcripción:",
+      "en": "Signal locked. Transcript:"
+    },
+    "tune_locked_bonus": {
+      "es": "¡Sintonía perfecta! Te costó 1 hora menos.",
+      "en": "Perfect tuning! It cost you 1 hour less."
+    },
+    "contact_who": {
+      "es": "Tu contacto en {city} dice:",
+      "en": "Your contact in {city} says:"
+    },
+    "receipt_1": {
+      "es": "Tarjeta clonada",
+      "en": "Cloned card"
+    },
+    "receipt_2": {
+      "es": "Transferencia",
+      "en": "Wire transfer"
+    },
+    "receipt_3": {
+      "es": "Recibo clave",
+      "en": "Key receipt"
+    },
+    "boss_who": {
+      "es": "JEFE · cifrado de extremo a extremo",
+      "en": "BOSS · end-to-end encrypted"
+    },
+    "cork_evidence_title": {
+      "es": "Lo que sabés",
+      "en": "What you know"
+    },
+    "sighting_title": {
+      "es": "¡AVISTAMIENTO!",
+      "en": "SIGHTING!"
+    },
+    "sighting_hint": {
+      "es": "El sospechoso se esconde en una calle de {city}. Tocalo 3 veces cuando se asome, antes de que escape.",
+      "en": "The suspect is hiding on a street in {city}. Tap them 3 times when they peek out, before they get away."
+    },
+    "sighting_status": {
+      "es": "Avistamientos: %d / %d",
+      "en": "Sightings: %d / %d"
+    },
+    "sighting_win": {
+      "es": "¡Lo tenés vigilado! Recuperás {h} horas.",
+      "en": "You've got them in sight! You win back {h} hours."
+    },
+    "sighting_lose": {
+      "es": "Se te perdió entre la gente.",
+      "en": "They slipped into the crowd."
+    },
+    "checkpoint_title": {
+      "es": "CONTROL DE PASAPORTES",
+      "en": "PASSPORT CONTROL"
+    },
+    "checkpoint_hint": {
+      "es": "Migraciones en {city}. Pasá cuando la aguja esté en la zona verde (botón o barra espaciadora).",
+      "en": "Immigration in {city}. Go when the needle is in the green zone (button or space bar)."
+    },
+    "checkpoint_action": {
+      "es": "Pasar el control",
+      "en": "Go through"
+    },
+    "checkpoint_status": {
+      "es": "Mantené la calma…",
+      "en": "Stay calm…"
+    },
+    "checkpoint_win": {
+      "es": "Pasaste sin que nadie sospeche.",
+      "en": "You got through without raising suspicion."
+    },
+    "checkpoint_lose": {
+      "es": "Te hicieron preguntas: perdiste {h} horas.",
+      "en": "They asked questions: you lost {h} hours."
+    },
+    "cut_heist": {
+      "es": "{city}: el golpe ya está hecho. El ladrón huye por los techos.",
+      "en": "{city}: the job is done. The thief flees across the rooftops."
+    },
+    "cut_trail_plane": {
+      "es": "Testigos: el sospechoso tomó un vuelo de {from} a {city}.",
+      "en": "Witnesses: the suspect flew from {from} to {city}."
+    },
+    "cut_trail_car": {
+      "es": "El sospechoso cruzó {city} a toda velocidad. Vas bien.",
+      "en": "The suspect sped through {city}. You're on the trail."
+    },
+    "cut_trail_rooftop": {
+      "es": "Lo vieron saltar techos en {city}. Está cerca.",
+      "en": "Seen jumping rooftops in {city}. They're close."
+    },
+    "cut_arrest": {
+      "es": "¡Capturaste a {name}!",
+      "en": "You caught {name}!"
+    },
+    "cut_esc_heist": {
+      "es": "{city}: tenés el botín. Ahora, a desaparecer.",
+      "en": "{city}: you've got the loot. Now, disappear."
+    },
+    "cut_esc_flee": {
+      "es": "Despegás rumbo a {city}. La inspectora sigue tu rastro.",
+      "en": "Taking off for {city}. The inspector is on your trail."
+    },
+    "cut_esc_wrong": {
+      "es": "Llegaste a {city}… pero acá no te espera nadie.",
+      "en": "You reached {city}… but nobody is waiting for you here."
+    },
+    "cut_safehouse": {
+      "es": "Piso franco en {city}. La puerta se cierra detrás de vos.",
+      "en": "Safe house in {city}. The door shuts behind you."
+    },
+    "cut_esc_arrest": {
+      "es": "La inspectora Rivas te alcanzó en {city}.",
+      "en": "Inspector Rivas caught up with you in {city}."
+    },
+    "sound_on": {
+      "es": "Sonido: sí",
+      "en": "Sound: on"
+    },
+    "sound_off": {
+      "es": "Sonido: no",
+      "en": "Sound: off"
+    },
+    "hero_cases": {
+      "es": "Cinco bandas. Quince casos. Un solo detective.",
+      "en": "Five gangs. Fifteen cases. One detective."
+    },
+    "hero_escapes": {
+      "es": "Esta vez, el que huye sos vos.",
+      "en": "This time, you're the one on the run."
     }
   }
 }
