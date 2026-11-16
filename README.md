@@ -22,11 +22,11 @@ A portfolio project documented end to end: design, technical decisions, developm
 - **Two modes:** *Detective* (15 cases) and *Fugitive* (5 escapes against an AI inspector who closes in as you spend time)
 - 15 hand-crafted cases across 5 gangs, routes of 4–11 cities, saved progress and detective ranks
 - Stylized low-poly 3D globe + arcade/retro UI
-- **Pin-drop pursuit** on a labelled 3D globe with an analyst shortlist of four countries — precision matters
+- **Pin-drop pursuit** on a labelled 3D globe with marked cities — or travel by picking one of the analyst's four countries
 - **Four evidence sources** per city: wiretaps, CCTV street photos (easy GeoGuessr-style), a local contact and the money trail
 - **Corkboard** deduction: cross out suspects, issue the arrest order
-- **Arcade chase** finale (keyboard, swipe or tap)
-- **Interactive evidence**: tune a radio, scan CCTV footage, talk to contacts, flip receipts
+- **Arrest finales**: car chase, canal boat chase or rooftop foot chase (keyboard, swipe or tap)
+- **Interactive evidence** with 8 mini-games: tune a radio, match a voiceprint, focus CCTV, interrogate contacts, order transactions…
 - **Cutscenes** with a recurring thief character and **action events** (sightings, passport control)
 - Original synthesized **sound effects**; modern light UI (Outfit / Inter)
 - Built-in guidance: *How to play*, a *Next step* box and a notebook split into *Where?* / *Who?*

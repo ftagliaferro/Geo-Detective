@@ -28,6 +28,9 @@ var label_rank: Dictionary = {}  # country id -> label rank
 var highlighted := ""
 var _spin_tween: Tween
 var _preview: MeshInstance3D
+var city_pos: Dictionary = {}    # city id -> Vector2(lat, lon)
+const CITY_RANK := 1.5           # city names win over most country names
+const SNAP_PX := 26.0
 const INK := Color("1b2433")
 const Style = preload("res://ui/style.gd")
 
@@ -153,6 +156,57 @@ func add_country_labels(countries: Dictionary, lang: String) -> void:
 		label_rank[id] = int(c["rank"])
 
 
+## Mark the game's cities: a dot plus a small name (decluttered with the countries).
+func add_city_markers(cities: Dictionary, lang: String) -> void:
+	for id in cities:
+		var c: Dictionary = cities[id]
+		var v := Geo.lat_lon_to_vec(c["lat"], c["lon"])
+		var dot := _marker(C_PINK, 0.014)
+		dot.position = v * 1.004
+		var l := Label3D.new()
+		l.text = str(c["name"].get(lang, c["name"]["en"]))
+		l.font = Style.font("ui_bold")
+		l.font_size = 34
+		l.pixel_size = 0.0008
+		l.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		l.modulate = C_PINK.darkened(0.25)
+		l.outline_modulate = Color(1, 1, 1, 0.95)
+		l.outline_size = 9
+		l.offset = Vector2(0, -26)
+		l.position = v * 1.01
+		pivot.add_child(l)
+		var key := "city:" + str(id)
+		labels[key] = l
+		label_rank[key] = CITY_RANK
+		city_pos[id] = Vector2(c["lat"], c["lon"])
+
+
+## Put the pin exactly on a city and spin to it.
+func select_city(id: String) -> void:
+	if not city_pos.has(id):
+		return
+	var p: Vector2 = city_pos[id]
+	set_pin(p.x, p.y)
+	spin_to(p.x, p.y)
+	pin_dropped.emit(p.x, p.y)
+
+
+func _nearest_city_on_screen(pos: Vector2) -> String:
+	var best := ""
+	var best_d := SNAP_PX
+	var cam_dir := camera.global_position.normalized()
+	for id in city_pos:
+		var p: Vector2 = city_pos[id]
+		var world := pivot.global_transform * (Geo.lat_lon_to_vec(p.x, p.y) * 1.004)
+		if world.normalized().dot(cam_dir) < 0.2:
+			continue
+		var d := camera.unproject_position(world).distance_to(pos)
+		if d < best_d:
+			best_d = d
+			best = id
+	return best
+
+
 func _update_labels() -> void:
 	if labels.is_empty():
 		return
@@ -163,18 +217,18 @@ func _update_labels() -> void:
 	# skip any label that would overlap one already placed.
 	var placed: Array = []
 	var order: Array = labels.keys()
-	order.sort_custom(func(a, b): return (0 if a == highlighted else int(label_rank[a])) < (0 if b == highlighted else int(label_rank[b])))
+	order.sort_custom(func(a, b): return (0.0 if a == highlighted else float(label_rank[a])) < (0.0 if b == highlighted else float(label_rank[b])))
 	for id in order:
 		var l: Label3D = labels[id]
 		var world := pivot.global_transform * l.position
 		var facing := world.normalized().dot(cam_dir)
-		var wanted: bool = id == highlighted or int(label_rank[id]) <= max_rank
+		var wanted: bool = id == highlighted or float(label_rank[id]) <= max_rank
 		if not wanted or facing < 0.3:
 			l.visible = false
 			continue
 		var sp := camera.unproject_position(world)
 		var half := Vector2(l.text.length() * 4.2 + 8.0, 12.0)
-		var rect := Rect2(sp - half, half * 2.0)
+		var rect := Rect2(sp - half + Vector2(0, l.offset.y * 0.5), half * 2.0)
 		var clash := false
 		for r in placed:
 			if rect.intersects(r):
@@ -352,6 +406,9 @@ func _pick(pos: Vector2) -> void:
 	var hit := origin + dir * (-b - sqrt(disc))
 	var local := pivot.global_transform.affine_inverse() * hit
 	var ll := Geo.vec_to_lat_lon(local)
+	var snap := _nearest_city_on_screen(pos)
+	if snap != "":
+		ll = city_pos[snap]   # tapping near a city dot drops the pin right on it
 	set_pin(ll.x, ll.y)
 	pin_dropped.emit(ll.x, ll.y)
 

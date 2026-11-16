@@ -21,6 +21,8 @@ const ClueReveal = preload("res://ui/clue_reveal.gd")
 const Cutscene = preload("res://ui/cutscene.gd")
 const Minigame = preload("res://ui/minigame.gd")
 const Sfx = preload("res://ui/sfx.gd")
+const RoofChase = preload("res://ui/roof_chase.gd")
+const WATER_CITIES := ["amsterdam", "stockholm", "sydney", "istanbul", "hong_kong", "singapore", "rio", "cape_town", "lisbon"]
 
 const BG_SHADER := """
 shader_type canvas_item;
@@ -866,11 +868,31 @@ func _reveal_texts(spot: String, clue: Dictionary) -> Dictionary:
 		"pending": loc.s("cctv_pending"), "cam": "CAM-%02d" % (state.stop + 3),
 		"who": loc.s("contact_who", {"city": _city(state.current)}),
 		"receipts": [loc.s("receipt_1"), loc.s("receipt_2"), loc.s("receipt_3")],
+		"game_bonus": loc.s("game_bonus"), "game_done": loc.s("game_done"),
+		"game_hint_voice": loc.s("game_hint_voice"), "game_hint_focus": loc.s("game_hint_focus"),
+		"game_hint_interrogate": "", "game_hint_order": loc.s("game_hint_order"),
+		"voice_hint": loc.s("voice_hint"), "voice_ref": loc.s("voice_ref"), "focus_hint": loc.s("focus_hint"),
+		"order_hint": loc.s("order_hint"), "interro_status": loc.s("interro_status"),
+		"mood_nervous": loc.s("mood_nervous"), "mood_greedy": loc.s("mood_greedy"), "mood_proud": loc.s("mood_proud"),
+		"tone_nervous": loc.s("tone_nervous"), "tone_greedy": loc.s("tone_greedy"), "tone_proud": loc.s("tone_proud"),
 	}
 	if clue.get("kind") == "street" and clue["street"].has("credit"):
 		var cr: Dictionary = clue["street"]["credit"]
 		t["credit"] = loc.s("photo_credit", {"artist": cr["artist"], "license": cr["license"]})
 	return t
+
+
+## Alternate between the classic reveal and a second interactive mini-game (ADR-0012).
+const VARIANTS := {"wiretap": ["", "voice"], "cctv": ["", "focus"], "contact": ["", "interrogate"], "money": ["", "order"]}
+
+
+func _pick_variant(kind: String, img) -> String:
+	if not VARIANTS.has(kind):
+		return ""
+	if kind == "cctv" and (img == null or not ResourceLoader.exists(img)):
+		return ""
+	var opts: Array = VARIANTS[kind]
+	return opts[randi() % opts.size()]
 
 
 func _investigate(spot: String) -> void:
@@ -887,10 +909,10 @@ func _investigate(spot: String) -> void:
 	_show_overlay(rv)
 	var img = clue["street"].get("image") if clue.get("kind") == "street" else null
 	var portrait := {"id": "contact_" + state.current + str(state.stop), "traits": {}}
-	rv.setup(kind, _reveal_texts(spot, clue), img, portrait)
+	rv.setup(kind, _reveal_texts(spot, clue), img, portrait, _pick_variant(kind, img))
 	var bonus: bool = await rv.done
 	_close_overlay()
-	var got: Dictionary = state.visit(spot, 1 if bonus and spot == "wiretap" else 0)
+	var got: Dictionary = state.visit(spot, 1 if bonus else 0)
 	if not got.is_empty():
 		var line := _clue_text(got, spot)
 		if not line in notebook:
@@ -948,6 +970,7 @@ func _globe_screen(title_city: String, help: String, chips: Array, on_back: Call
 	var here: Dictionary = data.cities[title_city]
 	globe.focus(here["lat"], here["lon"])
 	globe.add_country_labels(data.countries, loc.lang)
+	globe.add_city_markers(data.cities, loc.lang)
 	var side := _side(row, 400)
 	_label(side, loc.s("departing"), 12, Style.MUTED, "ui_bold")
 	_title(side, _city(title_city), 30)
@@ -975,17 +998,70 @@ func show_travel() -> void:
 	_wire_pin(globe, here, info, fly, false)
 
 
+## Analyst / smuggler shortlist. Picking a country is enough to travel:
+## one game city -> pin goes there; several -> choose the city; none -> country centre.
 func _country_chips(parent: Control, codes: Array, globe: Control) -> void:
 	var grid := GridContainer.new()
 	grid.columns = 2
 	grid.add_theme_constant_override("h_separation", 8)
 	grid.add_theme_constant_override("v_separation", 8)
 	parent.add_child(grid)
+	var city_box := VBoxContainer.new()
+	city_box.add_theme_constant_override("separation", 6)
+	parent.add_child(city_box)
+	var here: String = state.current if state else esc.current
+	var chips: Array = []
 	for code in codes:
 		var cc: Dictionary = data.countries[code]
-		var b := _button(grid, loc.t(cc["name"]), func(): globe.highlight_country(code, cc["lat"], cc["lon"]))
+		var b := _button(grid, loc.t(cc["name"]), func(): pass)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.add_theme_font_size_override("font_size", 15)
+		chips.append(b)
+		b.pressed.connect(func():
+			for other in chips:
+				other.remove_theme_stylebox_override("normal")
+				other.remove_theme_color_override("font_color")
+			b.add_theme_stylebox_override("normal", Style.pill(Color(Style.CORAL, 0.14), 18, 11, Style.CORAL, 2))
+			b.add_theme_color_override("font_color", Style.CORAL_DARK)
+			for ch in city_box.get_children():
+				ch.queue_free()
+			globe.highlight_country(code, cc["lat"], cc["lon"])
+			var in_country: Array = data.cities.keys().filter(func(id): return data.cities[id].get("country_code", "") == code and id != here)
+			in_country.sort()
+			if in_country.size() == 1:
+				globe.select_city(in_country[0])
+			elif in_country.size() > 1:
+				_label(city_box, loc.s("which_city"), 13, Style.CORAL, "ui_bold")
+				var cg := GridContainer.new()
+				cg.columns = 2
+				cg.add_theme_constant_override("h_separation", 8)
+				cg.add_theme_constant_override("v_separation", 8)
+				city_box.add_child(cg)
+				var city_btns: Array = []
+				for cid in in_country:
+					var cb := _button(cg, _city(cid), func(): pass)
+					cb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+					cb.add_theme_font_size_override("font_size", 15)
+					city_btns.append(cb)
+					cb.pressed.connect(func():
+						for o in city_btns:
+							o.remove_theme_stylebox_override("normal")
+							o.remove_theme_color_override("font_color")
+						cb.add_theme_stylebox_override("normal", Style.pill(Style.NAVY, 18, 11))
+						cb.add_theme_color_override("font_color", Color.WHITE)
+						globe.select_city(cid))
+			else:
+				globe.set_pin(cc["lat"], cc["lon"])
+				globe.pin_dropped.emit(cc["lat"], cc["lon"]))
+
+
+## Name of a game city right under the pin (within 80 km), or "".
+func _city_at(p: Vector2) -> String:
+	for id in data.cities:
+		var c: Dictionary = data.cities[id]
+		if Geo.distance_km(p.x, p.y, c["lat"], c["lon"]) < 80.0:
+			return id
+	return ""
 
 
 func _wire_pin(globe: Control, here: Dictionary, info: Label, fly: Button, fugitive: bool) -> void:
@@ -996,7 +1072,12 @@ func _wire_pin(globe: Control, here: Dictionary, info: Label, fly: Button, fugit
 			fly.disabled = true
 		else:
 			var km := Geo.distance_km(here["lat"], here["lon"], p.x, p.y)
-			info.text = loc.s("pin_at", {"lat": _fmt_lat(p.x), "lon": _fmt_lon(p.y), "hours": Geo.travel_hours(km)})
+			var cid := _city_at(p)
+			if cid != "":
+				var cc: Dictionary = data.cities[cid]
+				info.text = loc.s("pin_city", {"city": loc.t(cc["name"]), "country": loc.t(cc["country"]), "hours": Geo.travel_hours(km)})
+			else:
+				info.text = loc.s("pin_at", {"lat": _fmt_lat(p.x), "lon": _fmt_lon(p.y), "hours": Geo.travel_hours(km)})
 			fly.disabled = false
 	update_info.call()
 	globe.pin_dropped.connect(func(lat: float, lon: float):
@@ -1151,22 +1232,37 @@ func _suspect_card(sid: String) -> Control:
 
 # ---------------------------------------------------------------- chase & results
 
+## Which arrest/escape action scene fits this city (ADR-0012).
+func _arrest_kind(city_id: String, number: int) -> String:
+	if city_id in WATER_CITIES:
+		return "canal"
+	return "roof" if number % 2 == 0 else "street"
+
+
+func _make_chase(kind: String, fugitive: bool) -> Control:
+	var c: Control = RoofChase.new() if kind == "roof" else ChaseView.new()
+	c.labels = {"time": loc.s("chase_time"), "gap": loc.s("esc_chase_gap" if fugitive else "chase_gap"), "help": "", "jump": loc.s("jump")}
+	return c
+
+
 func show_chase() -> void:
 	screen = "chase"
 	_chrome(loc.s("chase_title"), false)
 	var row := _hbox(body, 14)
 	var cw := _card(row, 6)
 	(cw.get_parent() as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var chase := ChaseView.new()
-	chase.labels = {"time": loc.s("chase_time"), "gap": loc.s("chase_gap"), "help": ""}
+	var kind := _arrest_kind(state.current, int(state.case_def["number"]))
+	var chase := _make_chase(kind, false)
 	cw.add_child(chase)
+	if kind == "canal":
+		chase.set_canal_theme()
 	var side := _side(row, 340)
 	_title(side, loc.s("chase_title"), 28, Style.CORAL)
-	_label(side, loc.s("chase_text", {"city": _city(state.current)}), 16, Style.INK)
+	_label(side, loc.s("chase_text_" + kind, {"city": _city(state.current)}), 16, Style.INK)
 	if state.warrant == "":
 		_label(side, loc.s("chase_no_warrant"), 15, Style.ROSE, "ui_bold")
 		_button(side, loc.s("board"), show_board)
-	_label(side, loc.s("chase_help"), 14, Style.INK2)
+	_label(side, loc.s("chase_help_" + kind), 14, Style.INK2)
 	_spacer(side)
 	var start_btn := _button(side, loc.s("chase_start"), func(): pass, "primary", false, "cuffs")
 	start_btn.pressed.connect(func():
@@ -1559,14 +1655,16 @@ func show_escape_chase() -> void:
 	var row := _hbox(body, 14)
 	var cw := _card(row, 6)
 	(cw.get_parent() as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var chase := ChaseView.new()
-	chase.labels = {"time": loc.s("chase_time"), "gap": loc.s("esc_chase_gap"), "help": ""}
+	var kind := _arrest_kind(esc.current, int(esc.def["number"]) + 1)
+	var chase := _make_chase(kind, true)
 	cw.add_child(chase)
+	if kind == "canal":
+		chase.set_canal_theme()
 	chase.set_escape_mode()
 	var side := _side(row, 340)
 	_title(side, loc.s("esc_chase_title"), 28, Style.ROSE)
-	_label(side, loc.s("esc_chase_text", {"city": _city(esc.current), "h": int(floor(maxf(0.0, esc.lead())))}), 16, Style.INK)
-	_label(side, loc.s("esc_chase_help"), 14, Style.INK2)
+	_label(side, loc.s("esc_chase_text_" + kind, {"city": _city(esc.current), "h": int(floor(maxf(0.0, esc.lead())))}), 16, Style.INK)
+	_label(side, loc.s("esc_chase_help_" + kind), 14, Style.INK2)
 	_spacer(side)
 	var start_btn := _button(side, loc.s("esc_chase_start"), func(): pass, "dark", false, "money")
 	start_btn.pressed.connect(func():

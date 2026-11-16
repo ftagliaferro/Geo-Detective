@@ -36,10 +36,41 @@ var _phase := 0.0
 var _continue: Button
 var _scan: Control
 var _scan_t := 0.0
+## Second interactive variant per source (ADR-0012): voice, focus, interrogate, order.
+var variant := ""
+var _game_over := false
+var _rng := RandomNumberGenerator.new()
+# voice match
+var _voice_target := 0
+var _voice_shapes: Array = []
+var _voice_mistake := false
+# focus
+var _photo: TextureRect
+var _focus_mat: ShaderMaterial
+# interrogation
+var _round := 0
+var _good := 0
+var _mood := ""
+var _round_box: VBoxContainer
+# order receipts
+var _order_next := 0
+var _order_btns: Array = []
+var _order_mistake := false
+const GAME_TIME := 8.0
+const FOCUS_SHADER := """
+shader_type canvas_item;
+uniform float cells = 12.0;
+void fragment() {
+	vec2 g = floor(UV * cells) / cells + 0.5 / cells;
+	COLOR = texture(TEXTURE, cells > 400.0 ? UV : g);
+}
+"""
 
 
-func setup(p_kind: String, p_texts: Dictionary, p_image = null, p_portrait := {}) -> void:
+func setup(p_kind: String, p_texts: Dictionary, p_image = null, p_portrait := {}, p_variant := "") -> void:
 	kind = p_kind
+	variant = p_variant
+	_rng.randomize()
 	texts = p_texts
 	image_path = p_image
 	portrait_data = p_portrait
@@ -62,20 +93,27 @@ func setup(p_kind: String, p_texts: Dictionary, p_image = null, p_portrait := {}
 	_text(hv, texts.get("title", ""), "display", 26, Style.INK)
 	_text(hv, texts.get("subtitle", ""), "ui_bold", 13, texts.get("color", Style.SKY))
 
-	match kind:
-		"wiretap": _build_wiretap()
-		"cctv": _build_cctv()
-		"contact": _build_contact()
-		"money": _build_money()
-		"message": _build_message()
-		_: _build_note()
+	match [kind, variant]:
+		["wiretap", "voice"]: _build_voice()
+		["cctv", "focus"]: _build_focus()
+		["contact", "interrogate"]: _build_interrogate()
+		["money", "order"]: _build_order()
+		_:
+			variant = ""
+			match kind:
+				"wiretap": _build_wiretap()
+				"cctv": _build_cctv()
+				"contact": _build_contact()
+				"money": _build_money()
+				"message": _build_message()
+				_: _build_note()
 
 	_continue = Button.new()
 	_continue.text = texts.get("continue", "OK")
 	_continue.focus_mode = Control.FOCUS_NONE
 	Style.primary(_continue)
 	_continue.pressed.connect(func(): done.emit(bonus))
-	_continue.visible = kind != "wiretap"
+	_continue.visible = kind != "wiretap" and variant == ""
 	_col.add_child(_continue)
 
 
@@ -179,6 +217,19 @@ func _process(delta: float) -> void:
 	if kind == "cctv" and _scan:
 		_scan_t += delta
 		_scan.queue_redraw()
+	if variant != "" and not _game_over:
+		_elapsed += delta
+		if _timer_bar:
+			_timer_bar.value = maxf(0.0, GAME_TIME - _elapsed)
+		if variant == "focus" and _slider:
+			var err := absf(_slider.value - _target) / 100.0
+			_focus_mat.set_shader_parameter("cells", lerpf(10.0, 160.0, clampf(1.0 - err * 2.5, 0.0, 1.0)))
+			if err <= 0.05:
+				_hold += delta
+				if _hold >= TUNE_HOLD:
+					_win_game(_elapsed <= GAME_TIME)
+			else:
+				_hold = 0.0
 
 
 func _lock(fast: bool) -> void:
@@ -197,6 +248,10 @@ func _lock(fast: bool) -> void:
 
 ## Test hook: lock the tuner as if the player matched the signal in time.
 func debug_solve() -> void:
+	if variant != "":
+		if not _game_over:
+			_win_game(true)
+		return
 	if kind == "wiretap" and not _locked:
 		_slider.value = _target
 		_lock(true)
@@ -337,3 +392,239 @@ func _show_bubble() -> void:
 	if bubble:
 		bubble.visible = true
 	_type_body()
+
+
+# ----------------------------------------------------------- shared for variants
+
+func _timer_row() -> void:
+	var row := HBoxContainer.new()
+	_col.add_child(row)
+	_status = _text(row, texts.get("game_hint_" + variant, ""), "ui_bold", 14, Style.INK2)
+	_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_timer_bar = ProgressBar.new()
+	_timer_bar.custom_minimum_size = Vector2(150, 10)
+	_timer_bar.show_percentage = false
+	_timer_bar.max_value = GAME_TIME
+	_timer_bar.value = GAME_TIME
+	_timer_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_timer_bar.add_theme_stylebox_override("fill", Style.box(Style.GOLD, 6, 0, Color.TRANSPARENT, 0, false))
+	_timer_bar.add_theme_stylebox_override("background", Style.box(Style.BG2, 6, 0, Color.TRANSPARENT, 0, false))
+	row.add_child(_timer_bar)
+
+
+## End of an interactive variant: show the clue; `fast` = solved well and in time -> 1 h cheaper.
+func _win_game(fast: bool) -> void:
+	_game_over = true
+	bonus = fast
+	Sfx.play("lock" if fast else "tick")
+	if _status:
+		_status.text = texts.get("game_bonus" if fast else "game_done", "")
+		_status.add_theme_color_override("font_color", Style.GREEN if fast else Style.INK2)
+	if _timer_bar:
+		_timer_bar.visible = false
+	if _body:
+		_body.visible = true
+		Fx.type_in(_body)
+	if _continue:
+		_continue.visible = true
+		Fx.pop_in(_continue, 0.3)
+
+
+# ----------------------------------------------------------- wiretap: voice match
+
+func _build_voice() -> void:
+	_text(_col, texts.get("voice_hint", ""), "ui", 15, Style.INK2)
+	_voice_target = _rng.randi_range(0, 2)
+	for i in range(3):
+		_voice_shapes.append([_rng.randf_range(2.0, 7.0), _rng.randf_range(0.0, TAU), _rng.randf_range(9.0, 15.0)])
+	var ref := _wave_box(_voice_shapes[_voice_target], Style.ROSE, texts.get("voice_ref", ""))
+	_col.add_child(ref)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	_col.add_child(row)
+	var order := [0, 1, 2]
+	order.shuffle()
+	for i in order:
+		var b := Button.new()
+		b.focus_mode = Control.FOCUS_NONE
+		b.custom_minimum_size = Vector2(0, 96)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(b)
+		var w := _wave_box(_voice_shapes[i], Style.SKY, "")
+		w.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		w.set_anchors_preset(Control.PRESET_FULL_RECT)
+		w.offset_left = 8
+		w.offset_right = -8
+		w.offset_top = 8
+		w.offset_bottom = -8
+		b.add_child(w)
+		b.pressed.connect(func():
+			if _game_over:
+				return
+			if i == _voice_target:
+				b.add_theme_stylebox_override("normal", Style.pill(Color(Style.GREEN, 0.2), 18, 11, Style.GREEN, 2))
+				_win_game(not _voice_mistake and _elapsed <= GAME_TIME)
+			else:
+				_voice_mistake = true
+				b.disabled = true
+				Sfx.play("fail", -8.0)
+				Fx.shake(b, 6))
+	_timer_row()
+	_body_label(_col, -1.0)
+	_body.visible = false
+
+
+func _wave_box(shape: Array, color: Color, caption: String) -> Control:
+	var c := Control.new()
+	c.custom_minimum_size = Vector2(0, 70)
+	c.draw.connect(func():
+		c.draw_rect(Rect2(Vector2.ZERO, c.size), Color("0f1a2b"))
+		var pts := PackedVector2Array()
+		for k in range(0, 101):
+			var x := c.size.x * k / 100.0
+			var a := float(k) / 100.0 * TAU
+			var y := sin(a * shape[0] + shape[1]) * 0.6 + sin(a * shape[2]) * 0.25
+			pts.append(Vector2(x, c.size.y / 2.0 + y * c.size.y * 0.35))
+		c.draw_polyline(pts, color, 2.5, true)
+		if caption != "":
+			c.draw_string(Style.font("ui_bold"), Vector2(8, 16), caption, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1, 1, 1, 0.7)))
+	return c
+
+
+# ----------------------------------------------------------- cctv: focus the footage
+
+func _build_focus() -> void:
+	_text(_col, texts.get("focus_hint", ""), "ui", 15, Style.INK2)
+	var frame := PanelContainer.new()
+	frame.custom_minimum_size = Vector2(0, 280)
+	frame.add_theme_stylebox_override("panel", Style.box(Color("0f1a2b"), 14, 0, Color.TRANSPARENT, 0, false))
+	frame.clip_contents = true
+	_col.add_child(frame)
+	_photo = TextureRect.new()
+	_photo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_photo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	if image_path != null and ResourceLoader.exists(image_path):
+		_photo.texture = load(image_path)
+	_focus_mat = ShaderMaterial.new()
+	var sh := Shader.new()
+	sh.code = FOCUS_SHADER
+	_focus_mat.shader = sh
+	_photo.material = _focus_mat
+	frame.add_child(_photo)
+	_target = _rng.randf_range(15.0, 85.0)
+	_slider = HSlider.new()
+	_slider.min_value = 0
+	_slider.max_value = 100
+	_slider.step = 0.5
+	_slider.value = 50.0 if absf(_target - 50.0) > 20.0 else 5.0
+	_slider.custom_minimum_size = Vector2(0, 28)
+	_col.add_child(_slider)
+	_timer_row()
+	if texts.get("credit", "") != "":
+		_text(_col, texts["credit"], "ui", 11, Style.MUTED)
+	_body_label(_col, -1.0)
+	_body.visible = false
+	Sfx.play("shutter")
+
+
+# ----------------------------------------------------------- contact: interrogation
+
+const MOODS := ["nervous", "greedy", "proud"]
+
+
+func _build_interrogate() -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 16)
+	_col.add_child(row)
+	var portrait := SuspectPortrait.new()
+	portrait.custom_minimum_size = Vector2(110, 132)
+	portrait.setup(portrait_data, false)
+	row.add_child(portrait)
+	_round_box = VBoxContainer.new()
+	_round_box.add_theme_constant_override("separation", 8)
+	_round_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(_round_box)
+	_timer_row()
+	_status.text = texts.get("interro_status", "") % [0, 3]
+	_body_label(_col, -1.0)
+	_body.visible = false
+	_next_round()
+
+
+func _next_round() -> void:
+	for c in _round_box.get_children():
+		c.queue_free()
+	if _round >= 3:
+		_win_game(_good >= 2)
+		return
+	_mood = MOODS[_rng.randi_range(0, 2)]
+	var cue := Label.new()
+	cue.text = texts.get("mood_" + _mood, "")
+	cue.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	cue.add_theme_font_override("font", Style.font("ui_bold"))
+	cue.add_theme_color_override("font_color", Style.INK)
+	_round_box.add_child(cue)
+	var opts := MOODS.duplicate()
+	opts.shuffle()
+	for m in opts:
+		var b := Button.new()
+		b.text = texts.get("tone_" + m, "")
+		b.focus_mode = Control.FOCUS_NONE
+		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		b.add_theme_font_size_override("font_size", 14)
+		b.pressed.connect(func():
+			if m == _mood:
+				_good += 1
+				Sfx.play("coin", -6.0)
+			else:
+				Sfx.play("fail", -8.0)
+			_round += 1
+			_status.text = texts.get("interro_status", "") % [_good, 3]
+			_next_round())
+		_round_box.add_child(b)
+
+
+# ----------------------------------------------------------- money: put movements in order
+
+func _build_order() -> void:
+	_text(_col, texts.get("order_hint", ""), "ui", 15, Style.INK2)
+	var grid := GridContainer.new()
+	grid.columns = 4
+	grid.add_theme_constant_override("h_separation", 8)
+	_col.add_child(grid)
+	var hours: Array = []
+	while hours.size() < 4:
+		var h := _rng.randi_range(0, 23) * 60 + _rng.randi_range(0, 59)
+		if not h in hours:
+			hours.append(h)
+	var sorted_h := hours.duplicate()
+	sorted_h.sort()
+	var labels: Array = texts.get("receipts", ["", "", ""])
+	for k in range(4):
+		var h: int = hours[k]
+		var b := Button.new()
+		b.focus_mode = Control.FOCUS_NONE
+		b.custom_minimum_size = Vector2(0, 80)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.text = "%02d:%02d\n%s" % [h / 60, h % 60, labels[k % labels.size()]]
+		b.add_theme_stylebox_override("normal", Style.box(Color("fffaf0"), 10, 10, Style.LINE, 1, false))
+		b.add_theme_font_override("font", Style.font("mono"))
+		grid.add_child(b)
+		_order_btns.append(b)
+		b.pressed.connect(func():
+			if _game_over:
+				return
+			if h == sorted_h[_order_next]:
+				_order_next += 1
+				b.disabled = true
+				b.add_theme_stylebox_override("disabled", Style.box(Color(Style.GREEN, 0.15), 10, 10, Style.GREEN, 2, false))
+				Sfx.play("coin", -6.0, 1.0 + _order_next * 0.1)
+				if _order_next >= 4:
+					_win_game(not _order_mistake and _elapsed <= GAME_TIME)
+			else:
+				_order_mistake = true
+				Sfx.play("fail", -8.0)
+				Fx.shake(b, 6))
+	_timer_row()
+	_body_label(_col, -1.0)
+	_body.visible = false

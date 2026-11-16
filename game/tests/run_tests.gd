@@ -7,6 +7,8 @@ const Deduction = preload("res://core/deduction.gd")
 const Geo = preload("res://core/geo.gd")
 const Loc = preload("res://core/loc.gd")
 const ChaseView = preload("res://ui/chase_view.gd")
+const RoofChase = preload("res://ui/roof_chase.gd")
+const ClueReveal = preload("res://ui/clue_reveal.gd")
 const Progress = preload("res://core/progress.gd")
 const EscapeState = preload("res://core/escape_state.gd")
 
@@ -505,3 +507,120 @@ func test_checkpoint_penalty() -> void:
 	var t0: int = e.now
 	check(e.resolve_checkpoint(false) == 3 and e.now == t0 + 3, "failing passport control costs 3 h")
 	check(not e.has_checkpoint(), "checkpoint resolved once")
+
+
+# ---------------- Arrest variety (ADR-0012) ----------------
+
+func _run_roof(escape: bool, clean: bool) -> Variant:
+	var rc = RoofChase.new()
+	rc.size = Vector2(900, 480)
+	root.add_child(rc)
+	if escape:
+		rc.set_escape_mode()
+	var result := [null]
+	rc.finished.connect(func(ok: bool): result[0] = ok)
+	rc.start(5)
+	var guard := 0
+	while rc.running and guard < 3000:
+		if clean:
+			rc.obstacles.clear()
+		else:
+			for o in rc.obstacles:
+				o[0] = rc._player_x() - 10.0   # run straight into every chimney
+		rc._process(0.05)
+		guard += 1
+	rc.queue_free()
+	return result[0]
+
+
+func test_roof_chase_pursue() -> void:
+	check(_run_roof(false, true) == true, "rooftop chase: clean run catches the thief")
+	check(_run_roof(false, false) == false, "rooftop chase: stumbling on everything lets them escape")
+
+
+func test_roof_chase_escape() -> void:
+	check(_run_roof(true, true) == true, "rooftop escape: clean run gets away")
+	check(_run_roof(true, false) == false, "rooftop escape: stumbling gets you caught")
+
+
+func test_canal_theme_chase() -> void:
+	var chase = ChaseView.new()
+	root.add_child(chase)
+	chase.set_canal_theme()
+	var result := [null]
+	chase.finished.connect(func(ok: bool): result[0] = ok)
+	chase.start(3)
+	var guard := 0
+	while chase.running and guard < 2000:
+		for o in chase.obstacles.duplicate():
+			chase._remove(o)
+		chase._process(0.05)
+		guard += 1
+	check(chase.theme_name == "canal" and result[0] == true, "canal chase works and is winnable")
+	chase.queue_free()
+
+
+# ---------------- Clue mini-game variants (ADR-0012) ----------------
+
+func _reveal(kind: String, variant: String):
+	var rv = ClueReveal.new()
+	root.add_child(rv)
+	var texts := {"body": "clue", "interro_status": "%d/%d", "receipts": ["a", "b", "c"],
+		"tone_nervous": "T-nervous", "tone_greedy": "T-greedy", "tone_proud": "T-proud"}
+	rv.setup(kind, texts, null, {"id": "x", "traits": {}}, variant)
+	return rv
+
+
+func test_interrogation_rewards_reading_the_mood() -> void:
+	var rv = _reveal("contact", "interrogate")
+	for r in range(3):
+		var want: String = "T-" + str(rv._mood)
+		for b in rv._round_box.get_children():
+			if b is Button and b.text == want:
+				b.pressed.emit()
+				break
+	check(rv._game_over and rv.bonus, "3 right answers: interrogation earns the bonus")
+	rv.queue_free()
+	var rv2 = _reveal("contact", "interrogate")
+	for r in range(3):
+		for b in rv2._round_box.get_children():
+			if b is Button and b.text != "T-" + str(rv2._mood):
+				b.pressed.emit()
+				break
+	check(rv2._game_over and not rv2.bonus, "wrong tone every time: clue but no bonus")
+	rv2.queue_free()
+
+
+func test_order_receipts() -> void:
+	var rv = _reveal("money", "order")
+	var btns: Array = rv._order_btns.duplicate()
+	btns.sort_custom(func(a, b): return a.text < b.text)   # "HH:MM" sorts chronologically
+	for b in btns:
+		b.pressed.emit()
+	check(rv._game_over and rv.bonus, "tapping receipts in time order earns the bonus")
+	rv.queue_free()
+	var rv2 = _reveal("money", "order")
+	var b2: Array = rv2._order_btns.duplicate()
+	b2.sort_custom(func(a, b): return a.text > b.text)
+	b2[0].pressed.emit()   # latest first = mistake
+	b2.reverse()
+	for b in b2:
+		b.pressed.emit()
+	check(rv2._game_over and not rv2.bonus, "a mistake removes the bonus but still gives the clue")
+	rv2.queue_free()
+
+
+func test_voice_and_focus_variants_build() -> void:
+	for v in [["wiretap", "voice"], ["cctv", "focus"]]:
+		var rv = _reveal(v[0], v[1])
+		check(rv.variant == v[1] and not rv._game_over, "%s variant starts" % v[1])
+		rv.debug_solve()
+		check(rv._game_over and rv.bonus, "%s variant can be solved" % v[1])
+		rv.queue_free()
+	var slow = _reveal("cctv", "focus")
+	slow._elapsed = 99.0
+	slow._slider.value = slow._target
+	for i in range(20):
+		slow._process(0.05)
+	check(slow._game_over and not slow.bonus, "focusing too late gives no bonus")
+	slow.queue_free()

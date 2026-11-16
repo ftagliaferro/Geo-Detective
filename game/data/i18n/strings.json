@@ -217,8 +217,8 @@
       "en": "Cross out suspects until only one is left to issue the order."
     },
     "globe_help": {
-      "es": "Arrastrá para girar, rueda para zoom. Tocá un país sugerido para ubicarlo y después tocá el globo para clavar el pin.",
-      "en": "Drag to spin, wheel to zoom. Tap a suggested country to find it, then tap the globe to drop the pin."
+      "es": "Tocá un país sugerido para viajar directo, o girá el globo y tocá una ciudad (puntos coral) o cualquier lugar para clavar el pin.",
+      "en": "Tap a suggested country to travel straight there, or spin the globe and tap a city (coral dots) or anywhere to drop the pin."
     },
     "globe_from": {
       "es": "Salís desde {city}.",
@@ -233,8 +233,8 @@
       "en": "Pin: {lat}, {lon} · flight approx. {hours} h"
     },
     "fly_here": {
-      "es": "Volar al pin",
-      "en": "Fly to pin"
+      "es": "Volar al destino",
+      "en": "Fly to destination"
     },
     "flight_hit": {
       "es": "Aterrizaste en {city}. Tu pin quedó a {km} km. ¡Vas bien!",
@@ -337,8 +337,8 @@
       "en": "2. Gather evidence in each city"
     },
     "howto_2": {
-      "es": "Escuchas, cámaras y contacto local te dicen A DÓNDE fue; el rastro de dinero, QUIÉN es. Cada fuente tiene su mini-juego: sintonizá la radio rápido y ahorrás una hora.",
-      "en": "Wiretaps, CCTV and the local contact tell you WHERE they went; the money trail tells you WHO it is. Each source has a mini-game: tune the radio fast and save an hour."
+      "es": "Escuchas, cámaras y contacto local te dicen A DÓNDE fue; el rastro de dinero, QUIÉN es. Cada fuente tiene minijuegos: sintonizar la radio, reconocer una voz, enfocar la cámara, interrogar al informante u ordenar movimientos. Si lo hacés bien, la pista cuesta una hora menos.",
+      "en": "Wiretaps, CCTV and the local contact tell you WHERE they went; the money trail tells you WHO it is. Each source has mini-games: tune the radio, match a voice, focus the camera, interrogate the informant or order the transactions. Do it well and the clue costs an hour less."
     },
     "howto_3_title": {
       "es": "3. Seguilo en el globo",
@@ -705,8 +705,8 @@
       "en": "False lead planted: she'll lose +{h} h."
     },
     "esc_globe_help": {
-      "es": "Usá los mensajes del jefe para encontrar el piso franco. Girá el globo y clavá el pin.",
-      "en": "Use your boss's messages to find the safe house. Spin the globe and drop the pin."
+      "es": "Usá los mensajes del jefe. Si compraste el mapa, tocá un país para viajar; si no, tocá una ciudad (puntos coral) en el globo.",
+      "en": "Use your boss's messages. If you bought the map, tap a country to travel; otherwise tap a city (coral dots) on the globe."
     },
     "esc_map_title": {
       "es": "MAPA DEL CONTRABANDISTA:",
@@ -951,6 +951,130 @@
     "your_route": {
       "es": "TU RECORRIDO",
       "en": "YOUR ROUTE"
+    },
+    "which_city": {
+      "es": "¿QUÉ CIUDAD?",
+      "en": "WHICH CITY?"
+    },
+    "pin_city": {
+      "es": "Destino: {city}, {country} · vuelo aprox. {hours} h",
+      "en": "Destination: {city}, {country} · flight approx. {hours} h"
+    },
+    "jump": {
+      "es": "SALTAR",
+      "en": "JUMP"
+    },
+    "chase_help_street": {
+      "es": "Flechas o A/D, deslizá el dedo o tocá un costado de la pantalla para cambiar de carril. Esquivá los obstáculos y alcanzalo.",
+      "en": "Arrows or A/D, swipe, or tap a side of the screen to change lanes. Dodge obstacles and catch up."
+    },
+    "chase_help_canal": {
+      "es": "¡Huye en lancha por el canal! Flechas o A/D, deslizá o tocá un costado para cambiar de carril y esquivá las boyas.",
+      "en": "They're fleeing by boat down the canal! Arrows or A/D, swipe or tap a side to change lanes and dodge the buoys."
+    },
+    "chase_help_roof": {
+      "es": "¡Escapa por los techos! Saltá chimeneas con espacio, flecha arriba, un clic o el botón SALTAR. Cada tropiezo te hace perder terreno.",
+      "en": "They're running across the rooftops! Jump chimneys with space, up arrow, a click or the JUMP button. Every stumble costs you ground."
+    },
+    "esc_chase_help_street": {
+      "es": "Esquivá las vallas: cada choque deja que el patrullero se acerque. Aguantá hasta que se acabe el tiempo.",
+      "en": "Dodge the barriers: every crash lets the patrol car close in. Hold out until time runs out."
+    },
+    "esc_chase_help_canal": {
+      "es": "Escapás en lancha y te sigue la policía portuaria. Esquivá las boyas: cada choque los acerca. Aguantá hasta que se acabe el tiempo.",
+      "en": "You flee by boat with the harbour police behind you. Dodge the buoys: every crash lets them close in. Hold out until time runs out."
+    },
+    "esc_chase_help_roof": {
+      "es": "Corrés por los techos con un policía detrás. Saltá los obstáculos (espacio, flecha arriba, clic o SALTAR). Aguantá hasta que se acabe el tiempo.",
+      "en": "You run across the rooftops with an officer behind you. Jump the obstacles (space, up arrow, click or JUMP). Hold out until time runs out."
+    },
+    "chase_text_street": {
+      "es": "¡Ahí va! El auto del sospechoso dobla una esquina en {city}. Es ahora o nunca.",
+      "en": "There! The suspect's car turns a corner in {city}. Now or never."
+    },
+    "chase_text_canal": {
+      "es": "¡Ahí va! El sospechoso salta a una lancha en {city}. Seguilo por el canal.",
+      "en": "There! The suspect jumps into a speedboat in {city}. Follow them down the canal."
+    },
+    "chase_text_roof": {
+      "es": "¡Lo viste! El sospechoso trepa a los techos de {city}. Corré detrás.",
+      "en": "Spotted! The suspect climbs onto the rooftops of {city}. Run after them."
+    },
+    "esc_chase_text_street": {
+      "es": "Llegaste al último piso franco en {city}, pero con solo {h} h de ventaja la policía te vio. ¡Manejá hasta perderlos!",
+      "en": "You reached the last safe house in {city}, but with only {h} h of lead the police spotted you. Drive until you lose them!"
+    },
+    "esc_chase_text_canal": {
+      "es": "Llegaste a {city} con solo {h} h de ventaja y la policía portuaria te vio. ¡A la lancha!",
+      "en": "You reached {city} with only {h} h of lead and the harbour police saw you. To the boat!"
+    },
+    "esc_chase_text_roof": {
+      "es": "Llegaste a {city} con solo {h} h de ventaja y un policía te reconoció. ¡A los techos!",
+      "en": "You reached {city} with only {h} h of lead and an officer recognised you. Up to the rooftops!"
+    },
+    "game_bonus": {
+      "es": "¡Impecable! Esta pista te costó 1 hora menos.",
+      "en": "Spot on! This clue cost you 1 hour less."
+    },
+    "game_done": {
+      "es": "Listo. Esta es la pista:",
+      "en": "Done. Here's the clue:"
+    },
+    "game_hint_voice": {
+      "es": "Elegí la grabación correcta",
+      "en": "Pick the right recording"
+    },
+    "game_hint_focus": {
+      "es": "Poné la imagen en foco",
+      "en": "Bring the footage into focus"
+    },
+    "game_hint_order": {
+      "es": "Tocá los movimientos en orden",
+      "en": "Tap the movements in order"
+    },
+    "voice_hint": {
+      "es": "Huella de voz: ¿cuál de estas grabaciones es la del sospechoso? Compará la forma de la onda.",
+      "en": "Voiceprint: which of these recordings is the suspect? Compare the wave shape."
+    },
+    "voice_ref": {
+      "es": "VOZ DEL SOSPECHOSO",
+      "en": "SUSPECT'S VOICE"
+    },
+    "focus_hint": {
+      "es": "La cámara está desenfocada. Mové el control hasta que la imagen se vea nítida.",
+      "en": "The camera is out of focus. Move the slider until the image is sharp."
+    },
+    "order_hint": {
+      "es": "Reconstruí el rastro: tocá los movimientos del más temprano al más tarde.",
+      "en": "Rebuild the trail: tap the movements from earliest to latest."
+    },
+    "interro_status": {
+      "es": "Confianza: %d / %d",
+      "en": "Trust: %d / %d"
+    },
+    "mood_nervous": {
+      "es": "Mira para todos lados y le transpiran las manos.",
+      "en": "Keeps looking around, palms sweating."
+    },
+    "mood_greedy": {
+      "es": "Se frota los dedos y mira de reojo tu billetera.",
+      "en": "Rubs fingers together, eyeing your wallet."
+    },
+    "mood_proud": {
+      "es": "Se acomoda la corbata: le encanta que lo admiren.",
+      "en": "Straightens the tie: loves being admired."
+    },
+    "tone_nervous": {
+      "es": "«Tranquilo, acá nadie nos escucha.»",
+      "en": "\"Relax, nobody can hear us here.\""
+    },
+    "tone_greedy": {
+      "es": "«Esto es para vos si hablás.»",
+      "en": "\"This is yours if you talk.\""
+    },
+    "tone_proud": {
+      "es": "«Dicen que sos el que más sabe en esta ciudad.»",
+      "en": "\"They say you know this city better than anyone.\""
     }
   }
 }

@@ -84,6 +84,10 @@ var scroll := 0.0
 var _press := Vector2.ZERO
 var _pressed := false
 var labels := {"time": "Time", "gap": "Gap", "help": ""}
+## "street" (cars) or "canal" (boats on water, buoys) — ADR-0012.
+var theme_name := "street"
+var road_mi: MeshInstance3D
+var edges: Array = []
 ## "pursue" (detective chases the suspect) or "escape" (police car chases you).
 var mode := "pursue"
 const ESCAPE_GAP := 12.0
@@ -152,10 +156,12 @@ func _init() -> void:
 	ground.position = Vector3(0, -0.02, -80)
 	viewport.add_child(ground)
 
-	var road := _box(Vector3(5.4, 0.06, 200), Color("4a5160"))
+	road_mi = _box(Vector3(5.4, 0.06, 200), Color("4a5160"))
+	var road := road_mi
 	road.position = Vector3(0, 0.0, -80)
 	for x in [-2.7, 2.7]:
 		var edge := _box(Vector3(0.1, 0.04, 200), Color("e8e4d8"))
+		edges.append(edge)
 		edge.position = Vector3(x, 0.04, -80)
 	for i in range(20):
 		for x in [-0.8, 0.8]:
@@ -214,6 +220,89 @@ func _box(size3: Vector3, color: Color, glow := 0.0) -> MeshInstance3D:
 
 
 ## Low-poly car built from primitives. Returns [root, body_material].
+## Turn the street into a canal: water, stone quays, boats and buoys.
+func set_canal_theme() -> void:
+	theme_name = "canal"
+	var water := StandardMaterial3D.new()
+	water.albedo_color = Color("1f5f99")
+	water.metallic = 0.0
+	water.roughness = 0.35
+	water.emission_enabled = true
+	water.emission = Color("1f5f99")
+	water.emission_energy_multiplier = 0.1
+	road_mi.material_override = water
+	for e in edges:
+		(e.material_override as StandardMaterial3D).albedo_color = Color("cfc6b5")
+		e.scale = Vector3(6.0, 6.0, 1.0)
+	for d in dashes:
+		(d.material_override as StandardMaterial3D).albedo_color = Color("d9efff")
+		d.scale = Vector3(1.0, 0.5, 0.4)
+	var pos_p := player.position
+	player.queue_free()
+	var pb := _boat(C_PLAYER)
+	player = pb[0]
+	player_body_mat = pb[1]
+	player.position = pos_p
+	var pos_s := suspect.position
+	suspect.queue_free()
+	suspect = _boat(C_SUSPECT)[0]
+	suspect.position = pos_s
+
+
+## Low-poly speedboat (hull + pointed bow + windshield + wake). Returns [root, hull_material].
+func _boat(color: Color) -> Array:
+	var root := Node3D.new()
+	viewport.add_child(root)
+	var hull_mat := StandardMaterial3D.new()
+	hull_mat.albedo_color = color
+	hull_mat.roughness = 0.4
+	var hull := MeshInstance3D.new()
+	var hm := BoxMesh.new()
+	hm.size = Vector3(1.0, 0.35, 1.5)
+	hull.mesh = hm
+	hull.position = Vector3(0, 0.2, 0.25)
+	hull.material_override = hull_mat
+	root.add_child(hull)
+	var bow := MeshInstance3D.new()
+	var pm := PrismMesh.new()
+	pm.size = Vector3(1.0, 0.7, 0.35)   # x width, y length (becomes -Z), z height
+	bow.mesh = pm
+	bow.rotation_degrees = Vector3(-90, 0, 0)
+	bow.position = Vector3(0, 0.2, -0.85)
+	bow.material_override = hull_mat
+	root.add_child(bow)
+	var stripe := MeshInstance3D.new()
+	var sm := BoxMesh.new()
+	sm.size = Vector3(1.02, 0.06, 1.5)
+	stripe.mesh = sm
+	stripe.position = Vector3(0, 0.3, 0.25)
+	var smat := StandardMaterial3D.new()
+	smat.albedo_color = Color.WHITE
+	stripe.material_override = smat
+	root.add_child(stripe)
+	var glass := MeshInstance3D.new()
+	var gm := BoxMesh.new()
+	gm.size = Vector3(0.8, 0.28, 0.12)
+	glass.mesh = gm
+	glass.position = Vector3(0, 0.5, -0.1)
+	glass.rotation_degrees = Vector3(-25, 0, 0)
+	var gmat := StandardMaterial3D.new()
+	gmat.albedo_color = Color("bfe3ff")
+	glass.material_override = gmat
+	root.add_child(glass)
+	var wake := MeshInstance3D.new()
+	var wm := BoxMesh.new()
+	wm.size = Vector3(1.1, 0.02, 1.6)
+	wake.mesh = wm
+	wake.position = Vector3(0, 0.04, 1.8)
+	var wmat := StandardMaterial3D.new()
+	wmat.albedo_color = Color(1, 1, 1, 0.55)
+	wmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	wake.material_override = wmat
+	root.add_child(wake)
+	return [root, hull_mat]
+
+
 func _car(color: Color) -> Array:
 	var root := Node3D.new()
 	viewport.add_child(root)
@@ -344,7 +433,7 @@ func set_escape_mode() -> void:
 	mode = "escape"
 	gap = ESCAPE_GAP
 	time_left = ESCAPE_DURATION
-	var police := _car(Color("e8e8e8"))
+	var police := _boat(Color("e8e8e8")) if theme_name == "canal" else _car(Color("e8e8e8"))
 	suspect.queue_free()
 	suspect = police[0]
 	var bar_mat := StandardMaterial3D.new()
@@ -441,7 +530,20 @@ func _spawn() -> void:
 	lanes.shuffle()
 	var count := rng.randi_range(1, max_blocks)
 	for i in range(count):
-		var o := _box(Vector3(1.2, 0.7, 0.5), C_ORANGE)
+		var o: MeshInstance3D
+		if theme_name == "canal":
+			o = MeshInstance3D.new()
+			var cyl := CylinderMesh.new()
+			cyl.top_radius = 0.3
+			cyl.bottom_radius = 0.45
+			cyl.height = 0.9
+			o.mesh = cyl
+			var bmat := StandardMaterial3D.new()
+			bmat.albedo_color = C_ORANGE
+			o.material_override = bmat
+			viewport.add_child(o)
+		else:
+			o = _box(Vector3(1.2, 0.7, 0.5), C_ORANGE)
 		o.position = Vector3(LANES[lanes[i]], 0.35, -80.0)
 		obstacles.append(o)
 
