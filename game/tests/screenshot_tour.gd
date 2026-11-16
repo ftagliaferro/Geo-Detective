@@ -41,8 +41,8 @@ func _initialize() -> void:
 		[func(): pass, "16_cutscene_trail", 150],
 		[func(): _finish(), "17_after_trail", 20],
 		[func(): main._sighting(), "18_sighting", 40],
-		[func(): _overlay().hit(); _overlay().hit(), "19_sighting_progress", 20],
-		[func(): _overlay().hit(), "", 90],
+		[func(): _hit(2), "19_sighting_progress", 20],
+		[func(): _hit(1), "", 90],
 		[func(): main.show_board(), "20_board"],
 		[func(): main.show_chase(), "21_chase", 60],
 		[func(): main.state.status = "won"; main.state.chase_caught = true; main.chase_result = "chase_caught"; main.show_results(), "22_results", 60],
@@ -72,6 +72,13 @@ func _initialize() -> void:
 func _overlay() -> Node:
 	var n: int = main.overlay_center.get_child_count()
 	return main.overlay_center.get_child(n - 1) if n > 0 else null
+
+
+func _hit(n: int) -> void:
+	var o := _overlay()
+	if o and o.has_method("hit"):
+		for i in range(n):
+			o.hit()
 
 
 func _finish() -> void:
