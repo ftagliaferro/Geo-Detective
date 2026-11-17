@@ -45,8 +45,8 @@
       "en": "(done)"
     },
     "travel": {
-      "es": "Rastrear en el globo",
-      "en": "Track on the globe"
+      "es": "Viajar",
+      "en": "Travel"
     },
     "board": {
       "es": "Pizarrón",
@@ -217,8 +217,8 @@
       "en": "Cross out suspects until only one is left to issue the order."
     },
     "globe_help": {
-      "es": "Tocá un país sugerido para viajar directo, o girá el globo y tocá una ciudad (puntos coral) o cualquier lugar para clavar el pin.",
-      "en": "Tap a suggested country to travel straight there, or spin the globe and tap a city (coral dots) or anywhere to drop the pin."
+      "es": "Tocá uno de los países sugeridos. También podés girar el globo y tocar una ciudad (punto coral).",
+      "en": "Tap one of the suggested countries. You can also spin the globe and tap a city (coral dot)."
     },
     "globe_from": {
       "es": "Salís desde {city}.",
@@ -325,44 +325,44 @@
       "en": "How to play"
     },
     "howto_1_title": {
-      "es": "1. Leé el expediente",
-      "en": "1. Read the case file"
+      "es": "1. Un ladrón escapa",
+      "en": "1. A thief is on the run"
     },
     "howto_1": {
-      "es": "Una banda cometió un delito y huyó por el mundo. Tenés un límite de horas para atrapar al culpable.",
-      "en": "A gang committed a crime and fled around the world. You have limited hours to catch the culprit."
+      "es": "Una banda roba y huye por varias ciudades del mundo. Vos sos el detective que la sigue. Tenés un límite de horas: cada acción gasta tiempo.",
+      "en": "A gang pulls off a heist and flees through several cities around the world. You are the detective on their trail. You have limited hours: every action costs time."
     },
     "howto_2_title": {
-      "es": "2. Juntá evidencia en cada ciudad",
-      "en": "2. Gather evidence in each city"
+      "es": "2. Investigá: ¿a dónde fue?",
+      "en": "2. Investigate: where did they go?"
     },
     "howto_2": {
-      "es": "Escuchas, cámaras y contacto local te dicen A DÓNDE fue; el rastro de dinero, QUIÉN es. Cada fuente tiene minijuegos: sintonizar la radio, reconocer una voz, enfocar la cámara, interrogar al informante u ordenar movimientos. Si lo hacés bien, la pista cuesta una hora menos.",
-      "en": "Wiretaps, CCTV and the local contact tell you WHERE they went; the money trail tells you WHO it is. Each source has mini-games: tune the radio, match a voice, focus the camera, interrogate the informant or order the transactions. Do it well and the clue costs an hour less."
+      "es": "En cada ciudad tocá «Investigar». Las pistas describen el próximo destino: un monumento, una comida, un idioma, una moneda. Ejemplo: «la Torre Eiffel» → París, Francia.",
+      "en": "In each city tap “Investigate”. Clues describe the next destination: a landmark, a dish, a language, a currency. Example: “the Eiffel Tower” → Paris, France."
     },
     "howto_3_title": {
-      "es": "3. Seguilo en el globo",
-      "en": "3. Track them on the globe"
+      "es": "3. Viajá",
+      "en": "3. Travel"
     },
     "howto_3": {
-      "es": "Girá el globo y clavá el pin donde creés que fue. El analista sugiere cuatro países. A veces vas a tener un avistamiento: tocá al sospechoso 3 veces y recuperás horas.",
-      "en": "Spin the globe and drop the pin where you think they went. The analyst suggests four countries. Sometimes you'll get a sighting: tap the suspect 3 times to win back hours."
+      "es": "Tocá «Viajar» y elegí uno de los 4 países que sugiere el analista (o tocá una ciudad en el globo). Si acertás, seguís el rastro; si no, perdés horas y volvés.",
+      "en": "Tap “Travel” and pick one of the 4 countries the analyst suggests (or tap a city on the globe). Right guess: you stay on the trail. Wrong: you lose hours and go back."
     },
     "howto_4_title": {
-      "es": "4. Tachá sospechosos en el pizarrón",
-      "en": "4. Cross out suspects on the corkboard"
+      "es": "4. Descubrí quién es",
+      "en": "4. Find out who it is"
     },
     "howto_4": {
-      "es": "Compará la evidencia del sospechoso con las fichas de la banda. Cuando quede uno solo, emití la orden de captura.",
-      "en": "Compare the evidence about the suspect with the gang's files. When only one is left, issue the arrest order."
+      "es": "El rastro de dinero te dice QUIÉN es (pelo, vehículo, pasatiempo…). En el Pizarrón tachá a los sospechosos que no coinciden hasta que quede uno y emití la orden de captura.",
+      "en": "The money trail tells you WHO it is (hair, vehicle, hobby…). On the Board, cross out the suspects that don't match until one is left, then issue the warrant."
     },
     "howto_5_title": {
-      "es": "5. Arresto y persecución",
-      "en": "5. Arrest and chase"
+      "es": "5. Atrapalo",
+      "en": "5. Catch them"
     },
     "howto_5": {
-      "es": "En la última ciudad el sospechoso está cerca. Arrestalo y ganá la persecución para sumar una estrella extra.",
-      "en": "In the last city the suspect is close. Make the arrest and win the chase for an extra star."
+      "es": "En la última ciudad tocá «Arrestar» y ganá la persecución. Algunas pistas traen minijuegos: si los hacés bien y rápido, la pista cuesta una hora menos.",
+      "en": "In the last city tap “Arrest” and win the chase. Some clues come with mini-games: do them well and fast and the clue costs one hour less."
     },
     "where_header": {
       "es": "¿A DÓNDE FUE?",
@@ -385,12 +385,12 @@
       "en": "NEXT STEP"
     },
     "step_investigate": {
-      "es": "Revisá la evidencia de esta ciudad. Escuchas y cámaras: a dónde fue. Rastro de dinero: quién es.",
-      "en": "Check this city's evidence. Wiretap and CCTV: where they went. Money trail: who it is."
+      "es": "Tocá «Investigar». Escuchas, cámaras y contacto dicen A DÓNDE fue; el rastro de dinero, QUIÉN es.",
+      "en": "Tap “Investigate”. Wiretaps, cameras and the contact say WHERE they went; the money trail, WHO it is."
     },
     "step_travel": {
-      "es": "¿Ya tenés una idea del destino? Rastrealo en el globo. Si dudás, revisá la evidencia que falta.",
-      "en": "Got an idea of the destination? Track it on the globe. Unsure? Check the remaining evidence."
+      "es": "¿Ya sabés a dónde fue? Tocá «Viajar». Si dudás, investigá otra pista.",
+      "en": "Know where they went? Tap “Travel”. Not sure? Investigate another clue."
     },
     "step_deadend": {
       "es": "Acá no hay rastro. Volvé a {city} o, si ya sabés a dónde fue, viajá directo para allá.",
@@ -449,16 +449,16 @@
       "en": "YOUR MISSION"
     },
     "objective_1": {
-      "es": "En cada ciudad, revisá la evidencia para saber a dónde huyó el sospechoso.",
-      "en": "In each city, check the evidence to learn where the suspect fled."
+      "es": "Investigá en cada ciudad: las pistas dicen a dónde fue el ladrón.",
+      "en": "Investigate in each city: the clues say where the thief went."
     },
     "objective_2": {
-      "es": "Seguilo clavando un pin en el globo; el analista te sugiere cuatro países.",
-      "en": "Follow them by dropping a pin on the globe; the analyst suggests four countries."
+      "es": "Viajá a esa ciudad. Si te equivocás, perdés horas.",
+      "en": "Travel to that city. If you get it wrong, you lose hours."
     },
     "objective_3": {
-      "es": "Juntá pistas sobre quién es, tachá sospechosos y emití la orden antes del arresto.",
-      "en": "Collect clues on who it is, cross out suspects and issue the order before the arrest."
+      "es": "En la última ciudad, elegí al culpable en el Pizarrón y atrapalo.",
+      "en": "In the last city, pick the culprit on the Board and catch them."
     },
     "accept_case": {
       "es": "Aceptar el caso",
@@ -501,8 +501,8 @@
       "en": "A local informant. Costs more, but tells what they saw from another angle."
     },
     "desc_money": {
-      "es": "Pagos, recibos y transferencias. Revelan rasgos del sospechoso para el pizarrón.",
-      "en": "Payments, receipts and transfers. They reveal the suspect's traits for the corkboard."
+      "es": "Pagos y recibos del ladrón. Dicen QUIÉN es (pelo, vehículo, pasatiempo…), no a dónde fue.",
+      "en": "The thief's payments and receipts. They say WHO it is (hair, vehicle, hobby…), not where they went."
     },
     "investigate": {
       "es": "Investigar ({h} h)",
@@ -705,8 +705,8 @@
       "en": "False lead planted: she'll lose +{h} h."
     },
     "esc_globe_help": {
-      "es": "Usá los mensajes del jefe. Si compraste el mapa, tocá un país para viajar; si no, tocá una ciudad (puntos coral) en el globo.",
-      "en": "Use your boss's messages. If you bought the map, tap a country to travel; otherwise tap a city (coral dots) on the globe."
+      "es": "¿A dónde te mandó tu jefe? Tocá ese país (si compraste el mapa) o la ciudad en el globo.",
+      "en": "Where did your boss send you? Tap that country (if you bought the map) or the city on the globe."
     },
     "esc_map_title": {
       "es": "MAPA DEL CONTRABANDISTA:",
@@ -773,8 +773,8 @@
       "en": "Fugitive mode"
     },
     "howto_6": {
-      "es": "Al revés: vos sos el ladrón. Descifrá los mensajes del jefe, borrá huellas, plantá pistas falsas y pasá los controles de pasaporte sin ponerte nervioso: la inspectora se acerca mientras te quedás en una ciudad.",
-      "en": "The other way round: you are the thief. Decode your boss's messages, clean your tracks, plant false leads and get through passport control calmly: the inspector closes in while you linger."
+      "es": "Al revés: vos sos el ladrón. Leé los mensajes de tu jefe para saber a dónde huir y llegá a la última guarida antes de que la inspectora te alcance.",
+      "en": "The other way round: you are the thief. Read your boss's messages to know where to flee, and reach the last safe house before the inspector catches you."
     },
     "menu_title": {
       "es": "Inicio",
@@ -785,16 +785,16 @@
       "en": "Detective"
     },
     "mode_detective_desc": {
-      "es": "Seguí a cinco bandas por el mundo y atrapá a sus jefes.",
-      "en": "Track five gangs around the world and catch their bosses."
+      "es": "Seguí a un ladrón por el mundo con pistas y atrapalo.",
+      "en": "Follow a thief around the world with clues and catch them."
     },
     "mode_fugitive_name": {
       "es": "Fugitivo",
       "en": "Fugitive"
     },
     "mode_fugitive_desc": {
-      "es": "Cambiá de lado: escapá de la inspectora Rivas con el botín.",
-      "en": "Switch sides: escape Inspector Rivas with the loot."
+      "es": "Al revés: sos el ladrón y tenés que escapar.",
+      "en": "The other way round: you are the thief and must escape."
     },
     "departing": {
       "es": "SALÍS DESDE",
@@ -1079,6 +1079,226 @@
     "tone_proud": {
       "es": "«Dicen que sos el que más sabe en esta ciudad.»",
       "en": "\"They say you know this city better than anyone.\""
+    },
+    "tut_tag_detective": {
+      "es": "GUÍA · TU PRIMER CASO",
+      "en": "GUIDE · YOUR FIRST CASE"
+    },
+    "tut_tag_fugitive": {
+      "es": "GUÍA · TU PRIMERA FUGA",
+      "en": "GUIDE · YOUR FIRST ESCAPE"
+    },
+    "tut_ok": {
+      "es": "Entendido",
+      "en": "Got it"
+    },
+    "tut_skip": {
+      "es": "Omitir guía",
+      "en": "Skip guide"
+    },
+    "tut_brief": {
+      "es": "Un ladrón acaba de dar un golpe y escapa de ciudad en ciudad. Tu trabajo: seguirlo y atraparlo antes de que se te acaben las horas. Tocá «{accept}».",
+      "en": "A thief has just pulled off a heist and is fleeing from city to city. Your job: follow and catch them before your hours run out. Tap “{accept}”."
+    },
+    "tut_investigate": {
+      "es": "Estás en {city}, donde fue el robo. El ladrón ya se fue de acá. Las pistas de cada ciudad te dicen A DÓNDE fue. Tocá «Investigar» en {wiretap}.",
+      "en": "You are in {city}, where the heist happened. The thief has already left. Each city's clues tell you WHERE they went. Tap “Investigate” on {wiretap}."
+    },
+    "tut_investigate_again": {
+      "es": "Igual que antes: investigá {wiretap} para saber a dónde fue ahora.",
+      "en": "Same as before: investigate {wiretap} to find out where they went next."
+    },
+    "tut_clue": {
+      "es": "La pista dice: «{clue}». Eso es {city}, en {country}: ¡ahí fue el ladrón! Las pistas hablan de monumentos, comidas, idiomas o monedas del próximo destino.",
+      "en": "The clue says: “{clue}”. That's {city}, in {country}: that's where the thief went! Clues talk about landmarks, food, languages or currencies of the next destination."
+    },
+    "tut_clue_generic": {
+      "es": "Las pistas describen el próximo destino: monumentos, comidas, idiomas o monedas. Esta vez apuntan a {city}, en {country}.",
+      "en": "Clues describe the next destination: landmarks, food, languages or currencies. This time they point to {city}, in {country}."
+    },
+    "tut_money": {
+      "es": "El {money} es distinto: no dice a dónde fue, dice QUIÉN es el ladrón. Investigalo.",
+      "en": "The {money} is different: it doesn't say where they went, it says WHO the thief is. Investigate it."
+    },
+    "tut_money_again": {
+      "es": "No te olvides del {money}: cada dato sobre QUIÉN es te ayuda al final.",
+      "en": "Don't forget the {money}: every fact about WHO it is helps you at the end."
+    },
+    "tut_money_done": {
+      "es": "Anotado en tu libreta: {trait}. Al final vas a usar estos datos para elegir al culpable entre los sospechosos.",
+      "en": "Written in your notebook: {trait}. At the end you will use these facts to pick the culprit among the suspects."
+    },
+    "tut_trait_unknown": {
+      "es": "un dato sobre el ladrón",
+      "en": "a fact about the thief"
+    },
+    "tut_travel": {
+      "es": "Ya sabés a dónde fue. Tocá «{travel}».",
+      "en": "You know where they went. Tap “{travel}”."
+    },
+    "tut_pick": {
+      "es": "El analista te propone 4 países: uno es el correcto. Según la pista, el ladrón fue a {city}: tocá «{country}».",
+      "en": "The analyst suggests 4 countries: one is right. Going by the clue, the thief went to {city}: tap “{country}”."
+    },
+    "tut_esc_pick": {
+      "es": "El mapa te muestra 4 países. Tu jefe te espera en {city}: tocá «{country}».",
+      "en": "The map shows 4 countries. Your boss is waiting in {city}: tap “{country}”."
+    },
+    "tut_pick_city": {
+      "es": "{country} tiene varias ciudades: tocá «{city}».",
+      "en": "{country} has several cities: tap “{city}”."
+    },
+    "tut_pick_globe": {
+      "es": "Buscá {city} en el globo (punto coral) y tocalo.",
+      "en": "Find {city} on the globe (coral dot) and tap it."
+    },
+    "tut_pick_self": {
+      "es": "Elegí el país al que apuntan tus pistas.",
+      "en": "Pick the country your clues point to."
+    },
+    "tut_esc_pick_self": {
+      "es": "Elegí el destino que te indicó tu jefe: un país del mapa o la ciudad en el globo.",
+      "en": "Pick the destination your boss gave you: a country on the map or the city on the globe."
+    },
+    "tut_fly": {
+      "es": "¡Perfecto! Tocá «{fly}».",
+      "en": "Perfect! Tap “{fly}”."
+    },
+    "tut_repeat": {
+      "es": "¡Bien! Llegaste a {city}: seguís el rastro. Ahora repetí lo mismo en cada ciudad: investigá, deducí a dónde fue y viajá. Cada acción gasta horas: mirá el reloj de arriba.",
+      "en": "Well done! You reached {city}: you're on the trail. Now repeat in every city: investigate, work out where they went, and travel. Every action costs hours: watch the clock at the top."
+    },
+    "tut_miss": {
+      "es": "Esta no era la ciudad: acá no hay pistas del ladrón (y perdiste horas). Tocá «{travel}» y volvé a {city}, o probá otro país.",
+      "en": "Wrong city: there are no clues about the thief here (and you lost hours). Tap “{travel}” and go back to {city}, or try another country."
+    },
+    "tut_miss_travel": {
+      "es": "Volvé a {city} (en {country}) o elegí otro país que coincida con las pistas.",
+      "en": "Go back to {city} (in {country}) or pick another country that matches the clues."
+    },
+    "tut_final": {
+      "es": "¡Última ciudad! El ladrón se esconde acá. Para arrestarlo necesitás una orden de captura con su nombre. En esta ciudad todas las pistas dicen QUIÉN es.",
+      "en": "Last city! The thief is hiding here. To arrest them you need a warrant with their name. In this city every clue tells you WHO it is."
+    },
+    "tut_final_investigate": {
+      "es": "Investigá «{spot}» para saber más sobre cómo es el ladrón.",
+      "en": "Investigate “{spot}” to learn more about what the thief is like."
+    },
+    "tut_final_board": {
+      "es": "Ahora abrí el «{board}» para descartar sospechosos.",
+      "en": "Now open the “{board}” to rule out suspects."
+    },
+    "tut_board_cross": {
+      "es": "Estos son los sospechosos. Lo que sabés del ladrón aparece en verde ✓ (coincide) o en rojo ✗ (no coincide). Tachá a {name}: tiene un ✗.",
+      "en": "These are the suspects. What you know about the thief shows in green ✓ (matches) or red ✗ (doesn't match). Cross out {name}: they have a ✗."
+    },
+    "tut_board_restore": {
+      "es": "{name} coincide con todo lo que sabés: no lo descartes todavía. Tocá para devolverlo.",
+      "en": "{name} matches everything you know: don't rule them out yet. Tap to bring them back."
+    },
+    "tut_board_more": {
+      "es": "Con lo que sabés no podés descartar a nadie más. Volvé a la ciudad e investigá otra pista.",
+      "en": "With what you know you can't rule out anyone else. Go back to the city and investigate another clue."
+    },
+    "tut_board_guess": {
+      "es": "Quedan {n} que coinciden con todo lo que sabés. Tachá hasta dejar uno (es una apuesta). Consejo: en cada ciudad investigá también el rastro de dinero.",
+      "en": "{n} suspects match everything you know. Cross out until one is left (it's a gamble). Tip: in every city, also investigate the money trail."
+    },
+    "tut_board_warrant": {
+      "es": "Queda un solo sospechoso. ¡Emití la orden de captura!",
+      "en": "Only one suspect left. Issue the warrant!"
+    },
+    "tut_board_back": {
+      "es": "Orden emitida. Volvé a la ciudad y tocá «{arrest}».",
+      "en": "Warrant issued. Go back to the city and tap “{arrest}”."
+    },
+    "tut_arrest": {
+      "es": "Tenés la orden. ¡Tocá «{arrest}»!",
+      "en": "You have the warrant. Tap “{arrest}”!"
+    },
+    "tut_chase": {
+      "es": "¡Persecución! Esquivá los obstáculos y alcanzá al ladrón antes de que se acabe el tiempo. Los controles están explicados acá. Tocá «{start}».",
+      "en": "Chase! Dodge the obstacles and catch the thief before time runs out. The controls are explained here. Tap “{start}”."
+    },
+    "tut_won": {
+      "es": "¡Caso resuelto! Así se juega. Ganás estrellas por resolver el caso, no errar viajes y ganar la persecución. Seguí con el Caso 2 cuando quieras.",
+      "en": "Case solved! That's how it's played. You earn stars for solving the case, not missing a trip and winning the chase. Move on to Case 2 whenever you like."
+    },
+    "tut_lost": {
+      "es": "Esta vez se escapó. No pasa nada: tocá «Jugar de nuevo» y la guía te acompaña otra vez.",
+      "en": "They got away this time. No problem: tap “Play again” and the guide will walk you through it again."
+    },
+    "tut_esc_brief": {
+      "es": "Ahora sos el ladrón. La inspectora Rivas te persigue. Tu VENTAJA son las horas que le llevás: si llega a cero, te atrapa. Llegá a la última guarida. Tocá «{start_esc}».",
+      "en": "Now you are the thief. Inspector Rivas is after you. Your LEAD is how many hours ahead of her you are: if it hits zero, she catches you. Reach the last safe house. Tap “{start_esc}”."
+    },
+    "tut_esc_message": {
+      "es": "Tu jefe te dice a dónde ir, pero en clave. Tocá el botón de «{message}».",
+      "en": "Your boss tells you where to go, but in code. Tap the “{message}” button."
+    },
+    "tut_esc_message_again": {
+      "es": "Leé el nuevo «{message}» para saber a dónde ir ahora.",
+      "en": "Read the new “{message}” to find out where to go next."
+    },
+    "tut_esc_clue": {
+      "es": "El mensaje dice: «{clue}». Eso es {city}, en {country}: ahí está tu próxima guarida.",
+      "en": "The message says: “{clue}”. That's {city}, in {country}: your next safe house is there."
+    },
+    "tut_esc_map": {
+      "es": "El «{map}» te muestra 4 países para elegir rápido. Compralo.",
+      "en": "The “{map}” shows you 4 countries to pick from quickly. Buy it."
+    },
+    "tut_esc_time": {
+      "es": "Ojo: cada acción gasta horas y la inspectora se acerca (mirá tu ventaja arriba). «{clean}» y «{decoy}» la frenan.",
+      "en": "Careful: every action costs hours and the inspector gets closer (watch your lead at the top). “{clean}” and “{decoy}” slow her down."
+    },
+    "tut_esc_flee": {
+      "es": "Ya sabés a dónde ir. Tocá «{flee}».",
+      "en": "You know where to go. Tap “{flee}”."
+    },
+    "tut_esc_repeat": {
+      "es": "¡Bien! Repetí en cada ciudad: descifrá a dónde ir y huí antes de que te alcance.",
+      "en": "Well done! Repeat in every city: work out where to go and flee before she catches up."
+    },
+    "tut_esc_wrong": {
+      "es": "Esa no era la guarida y perdiste horas. Tocá «{flee}» y elegí otro destino.",
+      "en": "That wasn't the safe house and you lost hours. Tap “{flee}” and pick another destination."
+    },
+    "tut_esc_chase": {
+      "es": "¡Te alcanzaron! Esquivá los obstáculos y aguantá hasta que se acabe el tiempo. Tocá «{esc_start}».",
+      "en": "They caught up with you! Dodge the obstacles and hold out until time runs out. Tap “{esc_start}”."
+    },
+    "tut_esc_won": {
+      "es": "¡Escapaste! Así se juega el modo fugitivo. Las próximas fugas son más largas y la inspectora, más rápida.",
+      "en": "You escaped! That's how fugitive mode works. Later escapes are longer and the inspector is faster."
+    },
+    "tut_esc_lost": {
+      "es": "Te atraparon. Probá de nuevo: gastá menos horas y elegí bien el destino.",
+      "en": "You were caught. Try again: spend fewer hours and pick your destination carefully."
+    },
+    "learn_play": {
+      "es": "Aprender jugando, con guía",
+      "en": "Learn by playing, with a guide"
+    },
+    "first_time_title": {
+      "es": "¿Primera vez?",
+      "en": "First time?"
+    },
+    "first_time_text": {
+      "es": "Aprendé a jugar en 3 minutos: el primer caso viene con una guía que te dice qué tocar.",
+      "en": "Learn in 3 minutes: the first case comes with a guide that tells you what to tap."
+    },
+    "first_time_button": {
+      "es": "Empezar con guía",
+      "en": "Start with the guide"
+    },
+    "howto_intro": {
+      "es": "Un juego de detectives con el mapa del mundo. No hace falta saber geografía: las pistas y el analista te ayudan.",
+      "en": "A detective game played on the world map. No geography knowledge needed: the clues and the analyst help you."
+    },
+    "tut_board_cross_next": {
+      "es": "Bien. Seguí tachando a los que tienen ✗: ahora {name}.",
+      "en": "Good. Keep crossing out those with a ✗: now {name}."
     }
   }
 }

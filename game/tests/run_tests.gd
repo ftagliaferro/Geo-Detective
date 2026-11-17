@@ -226,6 +226,22 @@ func test_cctv_enhance() -> void:
 	check(s.hours_used == h + 1, "enhancing twice is free")
 
 
+func test_progress_flags_roundtrip() -> void:
+	var p = Progress.new("user://test_flags.json")
+	p.record("case_01", 2)
+	p.set_flag("tutorial_detective_done")
+	p.save_file()
+	var q = Progress.new("user://test_flags.json")
+	q.load_file()
+	check(q.flag("tutorial_detective_done") and not q.flag("other") and q.best("case_01") == 2, "progress flags survive save/load")
+	var f := FileAccess.open("user://test_flags_old.json", FileAccess.WRITE)
+	f.store_string('{"version": 1, "stars": {"case_01": 3}}')
+	f.close()
+	var o = Progress.new("user://test_flags_old.json")
+	o.load_file()
+	check(o.best("case_01") == 3 and o.flags.is_empty(), "old save files without flags still load")
+
+
 func test_progress_unlock_and_rank() -> void:
 	var p = Progress.new("user://test_progress.json")
 	var by_num := {}

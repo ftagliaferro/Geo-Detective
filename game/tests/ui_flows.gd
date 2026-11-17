@@ -23,6 +23,7 @@ var _placeholder := RegEx.new()
 var _scanned := {}
 var phone_size := Vector2i.ZERO   # set for --phone / --landscape
 var host: SubViewport
+var touch_index := 0   # Android numbers fingers 0, 1, 2; iOS Safari uses big arbitrary ids
 
 
 func _initialize() -> void:
@@ -203,25 +204,25 @@ func _check_fits(label: String) -> void:
 ## Phone: a drag that starts on a button scrolls the page and does not press it;
 ## a tap on the same button presses it. Simulates the browser's touch + emulated mouse.
 func _touch_check() -> void:
-	var label := "touch"
+	var label := "touch (finger id %d)" % touch_index
 	main.current_case = "case_01"
 	main._start_case()
 	main._accept_case()
 	await _wait_screen(label, ["city"])
 	await _frames(3)
 	var sc: ScrollContainer = main.body.find_child("PageScroll", true, false)
-	check(sc != null, "touch: city page scrolls on phones")
+	check(sc != null, "%s: city page scrolls on phones" % label)
 	if sc == null:
 		return
 	var btn := _button(main.loc.s("investigate", {"h": CaseState.SPOT_COST["wiretap"]}))
-	check(btn != null, "touch: investigate button found")
+	check(btn != null, "%s: investigate button found" % label)
 	if btn == null:
 		return
 	# Put the button in the upper part of the screen, with room left to scroll down.
 	sc.scroll_vertical = maxi(0, sc.scroll_vertical + int(btn.get_global_rect().position.y - sc.get_global_rect().position.y) - 40)
 	await _frames(3)
 	var p: Vector2 = btn.get_global_rect().get_center()
-	check(sc.get_global_rect().has_point(p), "touch: button on screen at %s" % p)
+	check(sc.get_global_rect().has_point(p), "%s: button on screen at %s" % [label, p])
 	var before := sc.scroll_vertical
 	_touch(p, true)
 	for k in range(1, 9):
@@ -230,21 +231,21 @@ func _touch_check() -> void:
 	await process_frame
 	_touch(p + Vector2(0, -96), false)
 	await _frames(4)
-	check(sc.scroll_vertical > before + 40, "touch: drag scrolled the page (%d -> %d)" % [before, sc.scroll_vertical])
-	check(not main.overlay.visible and not main.busy, "touch: drag did not press the button")
+	check(sc.scroll_vertical > before + 40, "%s: drag scrolled the page (%d -> %d)" % [label, before, sc.scroll_vertical])
+	check(not main.overlay.visible and not main.busy, "%s: drag did not press the button" % label)
 	await _frames(30)   # let any fling settle
 	var b2 := _button(main.loc.s("investigate", {"h": CaseState.SPOT_COST["wiretap"]}))
 	sc.scroll_vertical = maxi(0, sc.scroll_vertical + int(b2.get_global_rect().position.y - sc.get_global_rect().position.y) - 40)
 	await _frames(3)
 	var q: Vector2 = b2.get_global_rect().get_center()
-	check(sc.get_global_rect().has_point(q), "touch: button on screen for the tap at %s" % q)
+	check(sc.get_global_rect().has_point(q), "%s: button on screen for the tap at %s" % [label, q])
 	_touch(q, true)
 	await process_frame
 	_touch(q, false)
 	await _frames(3)
-	check(main.overlay.visible, "touch: a tap presses the button")
+	check(main.overlay.visible, "%s: a tap presses the button" % label)
 	await _settle("touch tap")
-	check(main.state.visited.has("wiretap"), "touch: tap investigated")
+	check(main.state.visited.has("wiretap"), "%s: tap investigated" % label)
 
 
 func _push(ev: InputEvent) -> void:
@@ -262,7 +263,7 @@ func _touch(p: Vector2, pressed: bool) -> void:
 	mb.button_mask = MOUSE_BUTTON_MASK_LEFT if pressed else 0
 	_push(mb)
 	var t := InputEventScreenTouch.new()
-	t.index = 0
+	t.index = touch_index
 	t.pressed = pressed
 	t.position = p
 	_push(t)
@@ -277,7 +278,7 @@ func _drag(p: Vector2, rel: Vector2) -> void:
 	mm.button_mask = MOUSE_BUTTON_MASK_LEFT
 	_push(mm)
 	var d := InputEventScreenDrag.new()
-	d.index = 0
+	d.index = touch_index
 	d.position = p
 	d.relative = rel
 	_push(d)
@@ -528,7 +529,9 @@ func _run() -> void:
 		await _play_escape(eid)
 	await _wrong_chip_recovers()
 	if phone_size != Vector2i.ZERO:
-		await _touch_check()
+		for id in [0, 1837465291]:   # Android-style, then iOS-style finger id
+			touch_index = id
+			await _touch_check()
 	main.show_menu()
 	await _scan("menu end")
 	print("UI flows%s: %d checks, %d failed, screens scanned: %s" % [" (%dx%d)" % [phone_size.x, phone_size.y] if phone_size != Vector2i.ZERO else "", checks, failures, _scanned.keys().size()])

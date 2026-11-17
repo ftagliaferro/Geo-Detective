@@ -22,6 +22,7 @@ const Cutscene = preload("res://ui/cutscene.gd")
 const Minigame = preload("res://ui/minigame.gd")
 const Sfx = preload("res://ui/sfx.gd")
 const RoofChase = preload("res://ui/roof_chase.gd")
+const Coach = preload("res://ui/coach.gd")
 const WATER_CITIES := ["amsterdam", "stockholm", "sydney", "istanbul", "hong_kong", "singapore", "rio", "cape_town", "lisbon"]
 
 const BG_SHADER := """
@@ -71,6 +72,12 @@ var ad_label: Label
 var overlay: Control
 var overlay_center: CenterContainer
 var overlay_scroll: ScrollContainer
+var coach: Control
+
+# Guided tutorial (ADR-0014): "" = off, "detective" or "fugitive".
+var tutorial := ""
+var force_tutorial := false
+var _tut_seen := {}            # "read this" steps already acknowledged
 
 # Phone layout (ADR-0013): one logical pixel ~ one CSS pixel, single-column screens.
 var compact := false
@@ -82,6 +89,7 @@ const DESKTOP_SIZE := Vector2i(1280, 720)
 const PHONE_MAX_CSS := Vector2(820, 520)   # narrower OR shorter than this (CSS px) = phone
 # Touch drag-to-scroll state
 var _touch_start := Vector2.INF
+var _touch_id := -1            # finger being followed (iOS numbers touches arbitrarily, not 0, 1, 2)
 var _touch_scroll: ScrollContainer = null
 var _touch_scrolling := false
 var _touch_velocity := 0.0
@@ -186,23 +194,28 @@ func _try_relayout() -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
 		var t := event as InputEventScreenTouch
-		if t.index != 0:
-			return
 		if t.pressed:
+			if _touch_id != -1 and t.index != _touch_id and _touch_scrolling:
+				# A second finger while scrolling (pinch): stop scrolling.
+				_touch_scroll = null
+				_touch_scrolling = false
+				return
+			_touch_id = t.index
 			_fling = null
 			_touch_start = t.position
 			_touch_scrolling = false
 			_touch_velocity = 0.0
 			_touch_last_us = Time.get_ticks_usec()
 			_touch_scroll = _scroll_target_at(t.position)
-		else:
+		elif t.index == _touch_id:
 			if _touch_scrolling and is_instance_valid(_touch_scroll):
 				_fling = _touch_scroll
 			_touch_scroll = null
 			_touch_scrolling = false
+			_touch_id = -1
 	elif event is InputEventScreenDrag:
 		var d := event as InputEventScreenDrag
-		if d.index != 0 or _touch_scroll == null or not is_instance_valid(_touch_scroll):
+		if d.index != _touch_id or _touch_scroll == null or not is_instance_valid(_touch_scroll):
 			return
 		if not _touch_scrolling:
 			var moved := d.position - _touch_start
@@ -366,6 +379,12 @@ func _build_layout() -> void:
 	ad_bar.add_child(ad_label)
 	root.add_child(ad_bar)
 
+	coach = Coach.new()
+	coach.name = "Coach"
+	add_child(coach)
+	coach.ok_pressed.connect(_on_coach_ok)
+	coach.skip_pressed.connect(_end_tutorial)
+
 	overlay = Control.new()
 	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	overlay.visible = false
@@ -396,6 +415,8 @@ func _show_overlay(node: Control) -> void:
 	for c in overlay_center.get_children():
 		c.queue_free()
 	overlay.visible = true
+	if coach:
+		coach.hide_step()
 	overlay_center.add_child(node)
 	if overlay_scroll:
 		overlay_scroll.scroll_vertical = 0
@@ -477,6 +498,7 @@ func _chrome(title: String, show_ad: bool, scroll := true) -> void:
 		clock_label.add_theme_color_override("font_color", Style.INK)
 	ad_bar.visible = show_ad
 	ad_label.text = loc.s("ad_placeholder")
+	_coach_update.call_deferred()
 	body.modulate.a = 0.0
 	body.create_tween().tween_property(body, "modulate:a", 1.0, 0.22)
 
@@ -543,8 +565,11 @@ func _button(parent: Control, text: String, cb: Callable, kind := "secondary", d
 	b.pressed.connect(cb)
 	if compact:
 		b.custom_minimum_size.y = 44   # comfortable touch target
-		if parent is VBoxContainer:
+		if parent is VBoxContainer and icon_kind == "":
 			b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART   # full width: long labels wrap
+		elif parent is VBoxContainer:
+			b.clip_text = true   # icon on the left: trim instead of wrapping under it
+			b.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	if kind == "primary":
 		Style.primary(b)
 	elif kind == "dark":
@@ -644,6 +669,12 @@ func _row(parent: Control, sep := 14) -> BoxContainer:
 	if compact:
 		return _vbox(parent, 10)
 	return _hbox(parent, sep)
+
+
+## Give a node a name (the tutorial points at buttons by name) and return it.
+func _named(n, n_name: String):
+	n.name = n_name
+	return n
 
 
 ## A button that shares a row on phones: takes the free width and trims its label
@@ -811,6 +842,15 @@ func show_menu() -> void:
 	var stars := _label(rh, loc.s("stars_total", {"stars": progress.total_stars(), "max": _max_stars()}), 14, Style.INK2, "ui_bold")
 	stars.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
+	if not progress.flag("tutorial_detective_done") and progress.total_stars() == 0:
+		var ft := _card(left, 16, Color("fff4e6"), Color("ffd8b0"))
+		var fh2 := _hbox(ft, 10)
+		fh2.add_child(_icon_badge("notebook", Style.CORAL, 38))
+		var fv := _vbox(fh2, 2)
+		fv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_title(fv, loc.s("first_time_title"), 20, Style.CORAL)
+		_wrap(_label(fv, loc.s("first_time_text"), 14, Style.INK))
+		_named(_button(ft, loc.s("first_time_button"), _start_guided, "primary", false, "cuffs"), "FirstTimeButton")
 	var modes := _row(left, 12)
 	var det := _card(modes, 16)
 	(det.get_parent() as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -839,6 +879,13 @@ func show_menu() -> void:
 	hero.focus(25.0, -20.0)
 	hero.camera.position.z = 3.5
 	hero.home_marker.visible = false
+
+
+## Play the first case with the step-by-step guide (also from "How to play").
+func _start_guided() -> void:
+	force_tutorial = true
+	current_case = _first_id(data.cases)
+	_start_case()
 
 
 func _cases_by_number() -> Dictionary:
@@ -940,6 +987,8 @@ func show_howto() -> void:
 	esc = null
 	_chrome(loc.s("howto"), true)
 	var col := _scroll(page)
+	_wrap(_label(col, loc.s("howto_intro"), 17, Style.INK2))
+	_named(_button(col, loc.s("learn_play"), _start_guided, "primary", false, "cuffs"), "LearnButton")
 	var icons := ["notebook", "wiretap", "globe", "board", "cuffs", "money"]
 	var cards: Array = []
 	for i in range(1, 7):
@@ -951,7 +1000,7 @@ func show_howto() -> void:
 		_title(v, loc.s("howto_%d_title" % i), 22)
 		_label(v, loc.s("howto_%d" % i), 16, Style.INK2)
 		cards.append(p.get_parent())
-	_button(col, loc.s("menu"), show_menu, "primary")
+	_button(col, loc.s("menu"), show_menu)
 	_stagger(cards)
 
 
@@ -960,6 +1009,11 @@ func show_howto() -> void:
 # ======================================================================
 
 func _start_case() -> void:
+	tutorial = ""
+	if current_case == _first_id(data.cases) and (force_tutorial or not progress.flag("tutorial_detective_done")):
+		tutorial = "detective"
+	force_tutorial = false
+	_tut_seen = {}
 	esc = null
 	state = CaseState.new(data, current_case, randi() % 100000 + 1)
 	hours_before = -1
@@ -1010,11 +1064,11 @@ func show_briefing() -> void:
 		_wrap(_label(r, loc.s("objective_%d" % i), 16, Style.INK))
 	var bh := _btn_row(v)
 	if compact:
-		_button(bh, loc.s("accept_case"), _accept_case, "primary", false, "cuffs")
+		_named(_button(bh, loc.s("accept_case"), _accept_case, "primary", false, "cuffs"), "AcceptButton")
 		_button(bh, loc.s("back"), show_cases)
 	else:
 		_button(bh, loc.s("back"), show_cases)
-		_button(bh, loc.s("accept_case"), _accept_case, "primary", false, "cuffs")
+		_named(_button(bh, loc.s("accept_case"), _accept_case, "primary", false, "cuffs"), "AcceptButton")
 
 
 func _accept_case() -> void:
@@ -1088,22 +1142,22 @@ func show_city() -> void:
 	if compact:
 		# Main action first and full width, then notebook / board side by side.
 		if state.is_final():
-			_button(col, loc.s("arrest"), show_chase, "primary", false, "cuffs")
+			_named(_button(col, loc.s("arrest"), show_chase, "primary", false, "cuffs"), "ArrestButton")
 		elif state.can_travel():
-			_button(col, loc.s("travel"), show_travel, "primary", false, "globe")
+			_named(_button(col, loc.s("travel"), show_travel, "primary", false, "globe"), "TravelButton")
 		var bar2 := _hbox(col, 8)
 		_shrinkable(_button(bar2, loc.s("notebook_btn", {"n": notebook.size()}), show_notebook, "secondary", false, "notebook"))
-		_shrinkable(_button(bar2, loc.s("board"), show_board, "secondary", false, "board"))
+		_shrinkable(_named(_button(bar2, loc.s("board"), show_board, "secondary", false, "board"), "BoardButton"))
 		_stagger(list, 0.05)
 		return
 	var bar := _hbox(col, 10)
 	_button(bar, loc.s("notebook_btn", {"n": notebook.size()}), show_notebook, "secondary", false, "notebook").custom_minimum_size = Vector2(210, 0)
-	_button(bar, loc.s("board"), show_board, "secondary", false, "board").custom_minimum_size = Vector2(210, 0)
+	_named(_button(bar, loc.s("board"), show_board, "secondary", false, "board"), "BoardButton").custom_minimum_size = Vector2(210, 0)
 	_spacer(bar, false)
 	if state.is_final():
-		_button(bar, loc.s("arrest"), show_chase, "primary", false, "cuffs").custom_minimum_size = Vector2(300, 0)
+		_named(_button(bar, loc.s("arrest"), show_chase, "primary", false, "cuffs"), "ArrestButton").custom_minimum_size = Vector2(300, 0)
 	elif state.can_travel():
-		_button(bar, loc.s("travel"), show_travel, "primary", false, "globe").custom_minimum_size = Vector2(300, 0)
+		_named(_button(bar, loc.s("travel"), show_travel, "primary", false, "globe"), "TravelButton").custom_minimum_size = Vector2(300, 0)
 	_stagger(list, 0.05)
 
 
@@ -1139,6 +1193,7 @@ func _evidence_card(parent: Control, spot: String) -> Control:
 		_label(v, loc.s("desc_" + spot), 14, Style.INK2)
 		_spacer(v)
 		var b := _button(v, loc.s("investigate", {"h": CaseState.SPOT_COST[spot]}), _investigate.bind(spot))
+		b.name = "Investigate_" + spot
 		Style.primary(b, accent)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		return p
@@ -1365,8 +1420,10 @@ func _travel_buttons(parts: Array, fly_kind: String, on_fly: Callable, on_back: 
 	if compact:
 		_button(buttons, loc.s("back"), on_back)
 		fly = _shrinkable(_button(buttons, loc.s("fly_here"), on_fly, fly_kind, true, "globe"))
+		fly.name = "FlyButton"
 	else:
 		fly = _button(buttons, loc.s("fly_here"), on_fly, fly_kind, true, "globe")
+		fly.name = "FlyButton"
 		_button(buttons, loc.s("back"), on_back)
 	return fly
 
@@ -1407,6 +1464,7 @@ func _country_chips(parent: Control, codes: Array, globe: Control) -> void:
 	for code in codes:
 		var cc: Dictionary = data.countries[code]
 		var b := _button(grid, loc.t(cc["name"]), func(): pass)
+		b.name = "Chip_" + code
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.add_theme_font_size_override("font_size", 15)
 		if compact:
@@ -1435,6 +1493,7 @@ func _country_chips(parent: Control, codes: Array, globe: Control) -> void:
 				var city_btns: Array = []
 				for cid in in_country:
 					var cb := _button(cg, _city(cid), func(): pass)
+					cb.name = "City_" + cid
 					cb.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 					cb.add_theme_font_size_override("font_size", 15)
 					if compact:
@@ -1449,7 +1508,8 @@ func _country_chips(parent: Control, codes: Array, globe: Control) -> void:
 						globe.select_city(cid))
 			else:
 				globe.set_pin(cc["lat"], cc["lon"])
-				globe.pin_dropped.emit(cc["lat"], cc["lon"]))
+				globe.pin_dropped.emit(cc["lat"], cc["lon"])
+			_coach_update.call_deferred())   # e.g. guide moves on to "Which city?"
 
 
 ## Game city right under the pin (same rule the flight uses), or "".
@@ -1484,6 +1544,7 @@ func _wire_pin(globe: Control, here: Dictionary, info: Label, fly: Button, fugit
 		else:
 			pin = Vector2(lat, lon)
 		update_info.call()
+		_coach_update.call_deferred()
 		Fx.pulse(fly, 1))
 
 
@@ -1514,6 +1575,7 @@ func _on_fly() -> void:
 	if pin == Vector2.INF or flying or _city_at(pin) == state.current:
 		return
 	flying = true
+	coach.hide_step()
 	var prev_city: String = state.current
 	var from: Dictionary = data.cities[state.current]
 	last_flight = state.travel_to_pin(pin.x, pin.y)
@@ -1577,12 +1639,12 @@ func show_board() -> void:
 		_chip(side, loc.s("warrant_for", {"name": data.suspects[state.warrant]["name"]}), Style.GREEN)
 	_spacer(side)
 	if remaining.size() == 1 and state.warrant != remaining[0]:
-		_button(side, loc.s("issue_warrant_for", {"name": data.suspects[remaining[0]]["name"]}), func():
+		_named(_button(side, loc.s("issue_warrant_for", {"name": data.suspects[remaining[0]]["name"]}), func():
 			state.issue_warrant(remaining[0])
-			show_board(), "primary")
+			show_board(), "primary"), "WarrantButton")
 	elif remaining.size() != 1:
 		_label(side, loc.s("issue_warrant_hint"), 14, Style.MUTED)
-	_button(side, loc.s("back"), show_city)
+	_named(_button(side, loc.s("back"), show_city), "BackButton")
 
 
 func _gang_ids() -> Array:
@@ -1636,6 +1698,7 @@ func _suspect_card(sid: String) -> Control:
 		_label(r, loc.t(tr["name"]) + ":", 11, Style.MUTED)
 		_label(r, loc.t(tr["values"][val]["label"]) + mark, 11, vcol, "ui_bold")
 	var b := Button.new()
+	b.name = "Cross_" + sid
 	b.text = loc.s("restore") if is_out else loc.s("cross_out")
 	b.focus_mode = Control.FOCUS_NONE
 	b.add_theme_font_size_override("font_size", 13)
@@ -1704,11 +1767,13 @@ func _chase_buttons(box: BoxContainer, start_text: String, kind: String, icon: S
 		if on_back.is_valid():
 			_button(box, loc.s("back"), on_back)
 		start_btn = _shrinkable(_button(box, start_text, func(): pass, kind, false, icon))
+		start_btn.name = "StartChase"
 		if box is VBoxContainer:
 			box.move_child(start_btn, 0)
 	else:
 		_spacer(box)
 		start_btn = _button(box, start_text, func(): pass, kind, false, icon)
+		start_btn.name = "StartChase"
 		if on_back.is_valid():
 			_button(box, loc.s("back"), on_back)
 	return start_btn
@@ -1735,6 +1800,7 @@ func show_chase() -> void:
 	var start_btn := _chase_buttons(parts[2], loc.s("chase_start"), "primary", "cuffs", show_city)
 	start_btn.pressed.connect(func():
 		start_btn.disabled = true
+		coach.hide_step()
 		chase.start())
 	chase.finished.connect(func(caught: bool):
 		chase_result = "chase_caught" if caught else "chase_escaped"
@@ -1882,6 +1948,11 @@ func show_escapes() -> void:
 
 
 func _start_escape() -> void:
+	tutorial = ""
+	if current_escape == _first_id(data.escapes) and (force_tutorial or not progress.flag("tutorial_fugitive_done")):
+		tutorial = "fugitive"
+	force_tutorial = false
+	_tut_seen = {}
 	state = null
 	esc = EscapeState.new(data, current_escape, randi() % 100000 + 1)
 	esc_flight = {}
@@ -1917,11 +1988,11 @@ func show_escape_briefing() -> void:
 		_wrap(_label(r, loc.s("esc_objective_%d" % i), 15, Style.INK))
 	var bh := _btn_row(v)
 	if compact:
-		_button(bh, loc.s("start_escape"), _accept_escape, "dark", false, "money")
+		_named(_button(bh, loc.s("start_escape"), _accept_escape, "dark", false, "money"), "StartEscape")
 		_button(bh, loc.s("back"), show_escapes)
 	else:
 		_button(bh, loc.s("back"), show_escapes)
-		_button(bh, loc.s("start_escape"), _accept_escape, "dark", false, "money")
+		_named(_button(bh, loc.s("start_escape"), _accept_escape, "dark", false, "money"), "StartEscape")
 
 
 func _accept_escape() -> void:
@@ -1976,11 +2047,11 @@ func show_escape_city() -> void:
 	var bar := _hbox(col, 10)
 	if compact:
 		_button(bar, loc.s("abandon"), show_escapes)
-		_shrinkable(_button(bar, loc.s("flee"), show_escape_travel, "dark", false, "globe"))
+		_shrinkable(_named(_button(bar, loc.s("flee"), show_escape_travel, "dark", false, "globe"), "FleeButton"))
 	else:
 		_button(bar, loc.s("abandon"), show_escapes).custom_minimum_size = Vector2(180, 0)
 		_spacer(bar, false)
-		_button(bar, loc.s("flee"), show_escape_travel, "dark", false, "globe").custom_minimum_size = Vector2(320, 0)
+		_named(_button(bar, loc.s("flee"), show_escape_travel, "dark", false, "globe"), "FleeButton").custom_minimum_size = Vector2(320, 0)
 	_stagger(list, 0.05)
 
 
@@ -2027,6 +2098,7 @@ func _escape_card(parent: Control, action: String) -> Control:
 	_label(v, desc, 13, Style.INK2)
 	_spacer(v)
 	var b := _button(v, loc.s("esc_do", {"h": EscapeState.COST[action]}), _escape_act.bind(action), "secondary", not esc.can_act(action))
+	b.name = "Act_" + action
 	Style.primary(b, accent)
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	return p
@@ -2103,6 +2175,7 @@ func _on_escape_fly() -> void:
 	if esc_pin == Vector2.INF or flying or _city_at(esc_pin) == esc.current:
 		return
 	flying = true
+	coach.hide_step()
 	var from: Dictionary = data.cities[esc.current]
 	esc_flight = esc.travel_to_pin(esc_pin.x, esc_pin.y)
 	esc_pin = Vector2.INF
@@ -2158,6 +2231,7 @@ func show_escape_chase() -> void:
 	var start_btn := _chase_buttons(parts[2], loc.s("esc_chase_start"), "dark", "money", Callable())
 	start_btn.pressed.connect(func():
 		start_btn.disabled = true
+		coach.hide_step()
 		chase.start())
 	chase.finished.connect(func(ok: bool):
 		chase_result = "esc_chase_won" if ok else "esc_chase_lost"
@@ -2193,3 +2267,256 @@ func show_escape_results() -> void:
 			_start_escape(), "dark")
 		if compact:
 			bh.move_child(nb, 0)
+
+
+# ======================================================================
+# Guided tutorial (ADR-0014)
+# ======================================================================
+# The first case / first escape (and any replay from "How to play") is played with a
+# guide: a bubble says what to do and a spotlight marks the exact button. Each step is
+# computed from the game state, so it always matches what is on screen; "read this"
+# steps wait for "Got it". It never blocks: the player can do anything at any time.
+
+func _first_id(defs: Dictionary) -> String:
+	for id in defs:
+		if int(defs[id]["number"]) == 1:
+			return id
+	return ""
+
+
+## Visible control with this name in the current screen (old screens are hidden).
+func _find(n_name: String) -> Control:
+	for n in find_children(n_name, "", true, false):
+		if n is Control and not n.is_queued_for_deletion() and n.is_visible_in_tree():
+			return n
+	return null
+
+
+func _coach_update() -> void:
+	if coach == null or not is_instance_valid(coach):
+		return
+	if tutorial == "" or (overlay and overlay.visible) or flying or busy:
+		coach.hide_step()
+		return
+	var step := _tut_step()
+	if step.is_empty():
+		coach.hide_step()
+		return
+	var target: Control = _find(step.get("target", "")) if step.get("target", "") != "" else null
+	var tag: String = loc.s("tut_tag_" + tutorial)
+	coach.show_step(step["id"], tag, loc.s(step["key"], _tut_args(step.get("args", {}))), target,
+		loc.s("tut_ok") if step.get("ok", false) else "", loc.s("tut_skip"))
+
+
+func _on_coach_ok() -> void:
+	var id: String = coach.step_id
+	_tut_seen[id] = true
+	if id in ["won", "esc_won"]:
+		_end_tutorial()
+		return
+	if id in ["lost", "esc_lost"]:
+		coach.hide_step()
+		return
+	_coach_update()
+
+
+## Finish (or skip) the guide; it won't start by itself again.
+func _end_tutorial() -> void:
+	if tutorial != "":
+		progress.set_flag("tutorial_%s_done" % tutorial)
+		progress.save_file()
+	tutorial = ""
+	if coach:
+		coach.hide_step()
+
+
+## Button labels the guide quotes, plus step-specific values.
+func _tut_args(extra: Dictionary) -> Dictionary:
+	var a := {
+		"accept": loc.s("accept_case"), "travel": loc.s("travel"), "fly": loc.s("fly_here"),
+		"board": loc.s("board"), "arrest": loc.s("arrest"), "cross": loc.s("cross_out"),
+		"start": loc.s("chase_start"), "start_esc": loc.s("start_escape"), "flee": loc.s("flee"),
+		"esc_start": loc.s("esc_chase_start"), "wiretap": loc.s("spot_wiretap"), "money": loc.s("spot_money"),
+		"message": loc.s("esc_message"), "map": loc.s("esc_map"), "clean": loc.s("esc_clean"), "decoy": loc.s("esc_decoy"),
+	}
+	a.merge(extra, true)
+	return a
+
+
+## A quoted clue/fact without its final full stop (the guide's sentence adds its own).
+func _unstop(t: String) -> String:
+	t = t.strip_edges()
+	while t.ends_with(".") or t.ends_with("…"):
+		t = t.left(t.length() - 1)
+	return t
+
+
+func _city_args(city_id: String) -> Dictionary:
+	return {"city": _city(city_id), "country": loc.t(data.cities[city_id]["country"])}
+
+
+func _tut_step() -> Dictionary:
+	if tutorial == "detective" and state != null:
+		return _tut_detective()
+	if tutorial == "fugitive" and esc != null:
+		return _tut_fugitive()
+	return {}
+
+
+## Travel screen (both modes): point at the right chip on the first trip, then at Fly.
+func _tut_travel_step(prefix: String, answer: String, guided: bool, has_chips: bool) -> Dictionary:
+	var p: Vector2 = esc_pin if prefix == "esc_" else pin
+	var args := _city_args(answer)
+	if p != Vector2.INF and _city_at(p) != "":
+		return {"id": prefix + "fly", "key": "tut_fly", "target": "FlyButton"}
+	if not guided:
+		return {"id": prefix + "pick_self", "key": "tut_%spick_self" % prefix}
+	if not has_chips:
+		return {"id": prefix + "pick_globe", "key": "tut_pick_globe", "args": args}
+	if _find("City_" + answer) != null:
+		return {"id": prefix + "pick_city", "key": "tut_pick_city", "target": "City_" + answer, "args": args}
+	return {"id": prefix + "pick", "key": "tut_%spick" % prefix, "target": "Chip_" + data.cities[answer]["country_code"], "args": args}
+
+
+func _tut_detective() -> Dictionary:
+	var st = state
+	match screen:
+		"briefing":
+			return {"id": "brief", "key": "tut_brief", "target": "AcceptButton"}
+		"city":
+			return _tut_city()
+		"travel":
+			if not st.on_trail():
+				return {"id": "miss_travel", "key": "tut_miss_travel", "args": _city_args(st.route()[st.stop])}
+			return _tut_travel_step("", st.route()[st.stop + 1], st.stop == 0, not st.suggested_countries().is_empty())
+		"board":
+			return _tut_board()
+		"chase":
+			var b := _find("StartChase") as Button
+			if b and not b.disabled:
+				return {"id": "chase", "key": "tut_chase", "target": "StartChase"}
+		"results":
+			if st.status == "won":
+				return {"id": "won", "key": "tut_won", "ok": true}
+			return {"id": "lost", "key": "tut_lost", "ok": true}
+	return {}
+
+
+func _tut_city() -> Dictionary:
+	var st = state
+	if st.is_final():
+		if not _tut_seen.has("final"):
+			return {"id": "final", "key": "tut_final", "ok": true}
+		if st.warrant != "":
+			return {"id": "arrest", "key": "tut_arrest", "target": "ArrestButton"}
+		var next_spot := ""
+		for spot in CaseState.SPOTS:
+			if not st.visited.has(spot):
+				next_spot = spot
+				break
+		if _consistent_suspects().size() > 1 and next_spot != "":
+			return {"id": "final_inv_" + next_spot, "key": "tut_final_investigate", "target": "Investigate_" + next_spot,
+				"args": {"spot": loc.s("spot_" + next_spot)}}
+		return {"id": "final_board", "key": "tut_final_board", "target": "BoardButton"}
+	if not st.on_trail():
+		return {"id": "miss", "key": "tut_miss", "target": "TravelButton", "args": _city_args(st.route()[st.stop])}
+	if st.stop == 1 and not _tut_seen.has("repeat"):
+		return {"id": "repeat", "key": "tut_repeat", "ok": true, "args": _city_args(st.current)}
+	var answer: String = st.route()[st.stop + 1]
+	if not st.visited.has("wiretap"):
+		if st.stop == 0:
+			return {"id": "investigate", "key": "tut_investigate", "target": "Investigate_wiretap", "args": _city_args(st.current)}
+		return {"id": "investigate_%d" % st.stop, "key": "tut_investigate_again", "target": "Investigate_wiretap"}
+	if st.stop == 0 and not _tut_seen.has("clue"):
+		var clue: Dictionary = st.visited["wiretap"]
+		var args := _city_args(answer)
+		if clue.get("kind") == "dest":
+			args["clue"] = _unstop(loc.t(clue["text"]))
+			return {"id": "clue", "key": "tut_clue", "ok": true, "args": args}
+		return {"id": "clue", "key": "tut_clue_generic", "ok": true, "args": args}
+	if not st.visited.has("money"):
+		if st.stop == 0:
+			return {"id": "money", "key": "tut_money", "target": "Investigate_money"}
+		return {"id": "money_%d" % st.stop, "key": "tut_money_again", "target": "Investigate_money"}
+	if st.stop == 0 and not _tut_seen.has("money_done"):
+		var m: Dictionary = st.visited["money"]
+		var trait_text: String = _unstop(loc.t(m["text"])) if m.get("kind") == "trait" else loc.s("tut_trait_unknown")
+		return {"id": "money_done", "key": "tut_money_done", "ok": true, "args": {"trait": trait_text}}
+	return {"id": "travel_%d" % st.stop, "key": "tut_travel", "target": "TravelButton"}
+
+
+## Gang members not crossed out that match everything known so far.
+func _consistent_suspects() -> Array:
+	return _gang_ids().filter(func(sid):
+		for tid in known_traits:
+			if data.suspects[sid]["traits"][tid] != known_traits[tid]:
+				return false
+		return true)
+
+
+func _mismatch(sid: String) -> bool:
+	for tid in known_traits:
+		if data.suspects[sid]["traits"][tid] != known_traits[tid]:
+			return true
+	return false
+
+
+func _tut_board() -> Dictionary:
+	var st = state
+	if st.warrant != "":
+		return {"id": "board_back", "key": "tut_board_back", "target": "BackButton"}
+	var ids := _gang_ids()
+	for sid in ids:   # crossed out by mistake (matches everything known)?
+		if crossed.get(sid, false) and not _mismatch(sid) and not known_traits.is_empty():
+			return {"id": "restore_" + sid, "key": "tut_board_restore", "target": "Cross_" + sid, "args": {"name": data.suspects[sid]["name"]}}
+	var remaining := ids.filter(func(i): return not crossed.get(i, false))
+	if remaining.size() == 1:
+		return {"id": "warrant", "key": "tut_board_warrant", "target": "WarrantButton"}
+	for sid in remaining:
+		if _mismatch(sid):
+			var first := remaining.size() == ids.size()   # nobody crossed yet: explain the board
+			return {"id": "cross_" + sid, "key": "tut_board_cross" if first else "tut_board_cross_next", "target": "Cross_" + sid, "args": {"name": data.suspects[sid]["name"]}}
+	if st.visited.size() < CaseState.SPOTS.size():
+		return {"id": "board_more", "key": "tut_board_more", "target": "BackButton"}
+	return {"id": "board_guess", "key": "tut_board_guess", "args": {"n": remaining.size()}}
+
+
+func _tut_fugitive() -> Dictionary:
+	var e = esc
+	match screen:
+		"esc_briefing":
+			return {"id": "esc_brief", "key": "tut_esc_brief", "target": "StartEscape"}
+		"esc_city":
+			var rev: Dictionary = e.revealed.get(e.stop, {})
+			if not e.on_route():
+				return {"id": "esc_wrong", "key": "tut_esc_wrong", "target": "FleeButton"}
+			if e.stop == 1 and not _tut_seen.has("esc_repeat"):
+				return {"id": "esc_repeat", "key": "tut_esc_repeat", "ok": true}
+			var answer: String = e.route()[e.stop + 1]
+			if not rev.has("message"):
+				if e.stop == 0:
+					return {"id": "esc_message", "key": "tut_esc_message", "target": "Act_message"}
+				return {"id": "esc_message_%d" % e.stop, "key": "tut_esc_message_again", "target": "Act_message"}
+			if e.stop == 0 and not _tut_seen.has("esc_clue"):
+				var args := _city_args(answer)
+				args["clue"] = _unstop(loc.t(rev["message"]["text"]))
+				return {"id": "esc_clue", "key": "tut_esc_clue", "ok": true, "args": args}
+			if e.stop == 0 and not rev.has("map"):
+				return {"id": "esc_map", "key": "tut_esc_map", "target": "Act_map"}
+			if e.stop == 0 and not _tut_seen.has("esc_time"):
+				return {"id": "esc_time", "key": "tut_esc_time", "ok": true}
+			return {"id": "esc_flee_%d" % e.stop, "key": "tut_esc_flee", "target": "FleeButton"}
+		"esc_travel":
+			if not e.on_route():
+				return {"id": "esc_wrong_travel", "key": "tut_esc_pick_self"}
+			var rev2: Dictionary = e.revealed.get(e.stop, {})
+			return _tut_travel_step("esc_", e.route()[e.stop + 1], e.stop == 0, rev2.has("map"))
+		"esc_chase":
+			var b := _find("StartChase") as Button
+			if b and not b.disabled:
+				return {"id": "esc_chase", "key": "tut_esc_chase", "target": "StartChase"}
+		"esc_results":
+			if e.status == "escaped":
+				return {"id": "esc_won", "key": "tut_esc_won", "ok": true}
+			return {"id": "esc_lost", "key": "tut_esc_lost", "ok": true}
+	return {}

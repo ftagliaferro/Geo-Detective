@@ -69,6 +69,14 @@ jobs:
           grep -q "UI flows: .* 0 failed" flows.log
           ! grep -E "SCRIPT ERROR|Parse Error|FAIL:" flows.log
 
+      - name: Tutorial test (a newcomer following only the guide wins; desktop, phone, landscape)
+        run: |
+          for m in "" "-- --phone" "-- --landscape"; do
+            timeout 900 ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path game --script res://tests/tutorial_flow.gd $m 2>&1 | tee tut.log
+            grep -q "Tutorial.*, 0 failed" tut.log
+            if grep -E "SCRIPT ERROR|Parse Error|FAIL:" tut.log; then exit 1; fi
+          done
+
       - name: UI flow test on phones (360x740 portrait, 844x390 landscape; fit + touch)
         run: |
           for m in phone landscape; do
