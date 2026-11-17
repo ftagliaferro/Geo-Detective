@@ -17,6 +17,9 @@ const TUNE_TOL := 5.0
 const TUNE_HOLD := 0.5
 
 var kind := "note"
+var narrow := false      # phone layout: fit ~360 px, stack wide rows
+var short := false       # landscape phone: shorter pictures so the card fits
+var _width := 640.0
 var texts := {}          # title, subtitle, body, credit, status_search, status_locked, bonus, continue, ...
 var image_path = null
 var portrait_data := {}
@@ -74,8 +77,13 @@ func setup(p_kind: String, p_texts: Dictionary, p_image = null, p_portrait := {}
 	texts = p_texts
 	image_path = p_image
 	portrait_data = p_portrait
-	custom_minimum_size = Vector2(640, 0)
-	add_theme_stylebox_override("panel", Style.box(Style.SURFACE, 22, 26))
+	var vp := _screen_size()
+	var vp_w: float = vp.x
+	narrow = vp_w < 600.0
+	short = vp.y < 520.0
+	_width = minf(640.0, vp_w - 16.0) if narrow else 640.0
+	custom_minimum_size = Vector2(_width, 0)
+	add_theme_stylebox_override("panel", Style.box(Style.SURFACE, 22, 16 if narrow else 26))
 	_col = VBoxContainer.new()
 	_col.add_theme_constant_override("separation", 14)
 	add_child(_col)
@@ -144,7 +152,7 @@ func _build_wiretap() -> void:
 	_target = rng.randf_range(15.0, 85.0)
 	_text(_col, texts.get("hint", ""), "ui", 15, Style.INK2)
 	_wave = Control.new()
-	_wave.custom_minimum_size = Vector2(0, 120)
+	_wave.custom_minimum_size = Vector2(0, 80 if short else 120)
 	_wave.draw.connect(_draw_wave)
 	_col.add_child(_wave)
 	_slider = HSlider.new()
@@ -152,7 +160,7 @@ func _build_wiretap() -> void:
 	_slider.max_value = 100
 	_slider.step = 0.5
 	_slider.value = 50.0 if absf(_target - 50.0) > 20.0 else 5.0
-	_slider.custom_minimum_size = Vector2(0, 28)
+	_slider.custom_minimum_size = Vector2(0, 44 if narrow else 28)
 	_col.add_child(_slider)
 	Sfx.play("static", -10.0)
 	_slider.value_changed.connect(func(_v):
@@ -163,7 +171,7 @@ func _build_wiretap() -> void:
 	_status = _text(row, texts.get("status_search", ""), "ui_bold", 15, Style.INK2)
 	_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_timer_bar = ProgressBar.new()
-	_timer_bar.custom_minimum_size = Vector2(160, 10)
+	_timer_bar.custom_minimum_size = Vector2(90 if narrow else 160, 10)
 	_timer_bar.show_percentage = false
 	_timer_bar.max_value = TUNE_TIME
 	_timer_bar.value = TUNE_TIME
@@ -261,7 +269,7 @@ func debug_solve() -> void:
 
 func _build_cctv() -> void:
 	var frame := PanelContainer.new()
-	frame.custom_minimum_size = Vector2(0, 300)
+	frame.custom_minimum_size = Vector2(0, 170 if short else 300)
 	frame.add_theme_stylebox_override("panel", Style.box(Color("0f1a2b"), 14, 0, Color.TRANSPARENT, 0, false))
 	frame.clip_contents = true
 	_col.add_child(frame)
@@ -271,7 +279,7 @@ func _build_cctv() -> void:
 		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 		frame.add_child(tr)
-		tr.pivot_offset = Vector2(320, 150)
+		tr.pivot_offset = Vector2((_width - (32.0 if narrow else 52.0)) / 2.0, 85 if short else 150)
 		tr.scale = Vector2(1.35, 1.35)
 		tr.create_tween().tween_property(tr, "scale", Vector2.ONE, 1.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	else:
@@ -328,14 +336,14 @@ func _build_contact() -> void:
 # ----------------------------------------------------------- money
 
 func _build_money() -> void:
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 10)
+	var row: BoxContainer = VBoxContainer.new() if narrow else HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8 if narrow else 10)
 	_col.add_child(row)
 	var labels: Array = texts.get("receipts", ["", "", ""])
 	for i in range(3):
 		var r := PanelContainer.new()
 		r.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		r.custom_minimum_size = Vector2(0, 92)
+		r.custom_minimum_size = Vector2(0, 0 if narrow else 92)
 		r.add_theme_stylebox_override("panel", Style.box(Color("fffaf0"), 10, 12, Style.LINE, 1, false))
 		row.add_child(r)
 		var v := VBoxContainer.new()
@@ -402,7 +410,7 @@ func _timer_row() -> void:
 	_status = _text(row, texts.get("game_hint_" + variant, ""), "ui_bold", 14, Style.INK2)
 	_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_timer_bar = ProgressBar.new()
-	_timer_bar.custom_minimum_size = Vector2(150, 10)
+	_timer_bar.custom_minimum_size = Vector2(90 if narrow else 150, 10)
 	_timer_bar.show_percentage = false
 	_timer_bar.max_value = GAME_TIME
 	_timer_bar.value = GAME_TIME
@@ -447,7 +455,7 @@ func _build_voice() -> void:
 	for i in order:
 		var b := Button.new()
 		b.focus_mode = Control.FOCUS_NONE
-		b.custom_minimum_size = Vector2(0, 96)
+		b.custom_minimum_size = Vector2(0, 70 if short else 96)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(b)
 		var w := _wave_box(_voice_shapes[i], Style.SKY, "")
@@ -496,7 +504,7 @@ func _wave_box(shape: Array, color: Color, caption: String) -> Control:
 func _build_focus() -> void:
 	_text(_col, texts.get("focus_hint", ""), "ui", 15, Style.INK2)
 	var frame := PanelContainer.new()
-	frame.custom_minimum_size = Vector2(0, 280)
+	frame.custom_minimum_size = Vector2(0, 170 if short else 280)
 	frame.add_theme_stylebox_override("panel", Style.box(Color("0f1a2b"), 14, 0, Color.TRANSPARENT, 0, false))
 	frame.clip_contents = true
 	_col.add_child(frame)
@@ -517,7 +525,7 @@ func _build_focus() -> void:
 	_slider.max_value = 100
 	_slider.step = 0.5
 	_slider.value = 50.0 if absf(_target - 50.0) > 20.0 else 5.0
-	_slider.custom_minimum_size = Vector2(0, 28)
+	_slider.custom_minimum_size = Vector2(0, 44 if narrow else 28)
 	_col.add_child(_slider)
 	_timer_row()
 	if texts.get("credit", "") != "":
@@ -589,8 +597,9 @@ func _next_round() -> void:
 func _build_order() -> void:
 	_text(_col, texts.get("order_hint", ""), "ui", 15, Style.INK2)
 	var grid := GridContainer.new()
-	grid.columns = 4
+	grid.columns = 2 if narrow else 4
 	grid.add_theme_constant_override("h_separation", 8)
+	grid.add_theme_constant_override("v_separation", 8)
 	_col.add_child(grid)
 	var hours: Array = []
 	while hours.size() < 4:
@@ -607,6 +616,8 @@ func _build_order() -> void:
 		b.custom_minimum_size = Vector2(0, 80)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.text = "%02d:%02d\n%s" % [h / 60, h % 60, labels[k % labels.size()]]
+		if narrow:
+			b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		b.add_theme_stylebox_override("normal", Style.box(Color("fffaf0"), 10, 10, Style.LINE, 1, false))
 		b.add_theme_font_override("font", Style.font("mono"))
 		grid.add_child(b)
@@ -628,3 +639,13 @@ func _build_order() -> void:
 	_timer_row()
 	_body_label(_col, -1.0)
 	_body.visible = false
+
+
+## Size of the screen this card is shown on (desktop size when not in a scene yet).
+func _screen_size() -> Vector2:
+	if is_inside_tree():
+		return get_viewport().get_visible_rect().size
+	var ml := Engine.get_main_loop()
+	if ml is SceneTree and (ml as SceneTree).root:
+		return (ml as SceneTree).root.get_visible_rect().size
+	return Vector2(1280, 720)

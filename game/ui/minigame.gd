@@ -43,15 +43,19 @@ func setup(p_kind: String, p_texts: Dictionary, p_seed := 0) -> void:
 		rng.seed = p_seed
 	else:
 		rng.randomize()
-	custom_minimum_size = Vector2(700, 0)
-	add_theme_stylebox_override("panel", Style.box(Style.SURFACE, 22, 24))
+	var vp := _screen_size()
+	var vp_w: float = vp.x
+	var narrow := vp_w < 600.0
+	custom_minimum_size = Vector2(minf(700.0, vp_w - 16.0) if narrow else 700.0, 0)
+	add_theme_stylebox_override("panel", Style.box(Style.SURFACE, 22, 16 if narrow else 24))
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", 12)
 	add_child(col)
-	var title := _text(col, texts.get("title", ""), "display", 30, Style.CORAL)
+	var title := _text(col, texts.get("title", ""), "display", 24 if narrow else 30, Style.CORAL)
 	_text(col, texts.get("hint", ""), "ui", 15, Style.INK2)
 	_area = Control.new()
-	_area.custom_minimum_size = Vector2(0, 230 if kind == "sighting" else 110)
+	var short: bool = vp.y < 520.0
+	_area.custom_minimum_size = Vector2(0, (150 if short else 230) if kind == "sighting" else (80 if short else 110))
 	_area.mouse_filter = Control.MOUSE_FILTER_STOP
 	_area.draw.connect(_draw_area)
 	_area.gui_input.connect(_on_area_input)
@@ -62,7 +66,7 @@ func setup(p_kind: String, p_texts: Dictionary, p_seed := 0) -> void:
 	_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	if kind == "sighting":
 		_bar = ProgressBar.new()
-		_bar.custom_minimum_size = Vector2(180, 10)
+		_bar.custom_minimum_size = Vector2(100 if narrow else 180, 10)
 		_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		_bar.show_percentage = false
 		_bar.max_value = SIGHT_TIME
@@ -81,6 +85,7 @@ func setup(p_kind: String, p_texts: Dictionary, p_seed := 0) -> void:
 		_btn.text = texts.get("action", "GO")
 		_btn.focus_mode = Control.FOCUS_NONE
 		Style.primary(_btn, Style.NAVY)
+		_btn.custom_minimum_size.y = 52
 		_btn.pressed.connect(_try_pass)
 		col.add_child(_btn)
 		_status.text = texts.get("status", "")
@@ -221,3 +226,13 @@ func _draw_area() -> void:
 		var nx := w * _needle
 		_area.draw_rect(Rect2(nx - 4, y - 34, 8, 68), Style.INK)
 		_area.draw_circle(Vector2(nx, y - 38), 9, Style.CORAL)
+
+
+## Size of the screen this card is shown on (desktop size when not in a scene yet).
+func _screen_size() -> Vector2:
+	if is_inside_tree():
+		return get_viewport().get_visible_rect().size
+	var ml := Engine.get_main_loop()
+	if ml is SceneTree and (ml as SceneTree).root:
+		return (ml as SceneTree).root.get_visible_rect().size
+	return Vector2(1280, 720)

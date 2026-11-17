@@ -36,7 +36,8 @@ static func draw(ci: CanvasItem, pos: Vector2, u: float, phase: float, running :
 		ci.draw_line(shoulder, hand_b, ink, u * 0.07)
 		if bag and not rim:
 			ci.draw_circle(hand_f + Vector2(0, 0.08 * u), 0.1 * u, Color("c9a26b"))
-			ci.draw_string(Style.font("display"), hand_f + Vector2(-0.05 * u, 0.13 * u), "$", HORIZONTAL_ALIGNMENT_LEFT, -1, int(0.14 * u), Color("5a3d1e"))
+			if int(0.14 * u) >= 1:   # first frame can have zero size (font size 0 is an engine error)
+				ci.draw_string(Style.font("display"), hand_f + Vector2(-0.05 * u, 0.13 * u), "$", HORIZONTAL_ALIGNMENT_LEFT, -1, int(0.14 * u), Color("5a3d1e"))
 	# scarf (coral signature) and head
 	var neck := pos + Vector2(lean, -0.78 * u)
 	ci.draw_rect(Rect2(neck.x - 0.08 * u, neck.y - 0.02 * u, 0.16 * u, 0.06 * u), ink if rim else Style.CORAL)

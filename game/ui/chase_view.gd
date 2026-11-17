@@ -416,6 +416,17 @@ func _build_hud() -> void:
 		add_child(b)
 
 
+## Narrow screens (phones): smaller HUD so time + gap + bar fit in ~340 px.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED and hud_time != null and size.x > 0.0:
+		var narrow := size.x < 520.0
+		for l in [hud_time, hud_gap]:
+			l.add_theme_font_size_override("font_size", 22 if narrow else 34)
+			l.add_theme_constant_override("outline_size", 6 if narrow else 8)
+		gap_bar.custom_minimum_size.x = 50.0 if narrow else 160.0
+		(hud_time.get_parent() as HBoxContainer).add_theme_constant_override("separation", 10 if narrow else 24)
+
+
 func _hud_label(parent: Control) -> Label:
 	var l := Label.new()
 	l.add_theme_font_override("font", FONT_TITLE)

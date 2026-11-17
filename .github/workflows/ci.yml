@@ -69,6 +69,14 @@ jobs:
           grep -q "UI flows: .* 0 failed" flows.log
           ! grep -E "SCRIPT ERROR|Parse Error|FAIL:" flows.log
 
+      - name: UI flow test on phones (360x740 portrait, 844x390 landscape; fit + touch)
+        run: |
+          for m in phone landscape; do
+            timeout 2400 ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path game --script res://tests/ui_flows.gd -- --$m 2>&1 | tee flows_$m.log
+            grep -q "UI flows (.*): .* 0 failed" flows_$m.log
+            if grep -E "SCRIPT ERROR|Parse Error|FAIL:" flows_$m.log; then exit 1; fi
+          done
+
       - name: Export Web build
         run: |
           mkdir -p build/web

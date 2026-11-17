@@ -13,6 +13,12 @@
 | ![Cutscene](docs/screenshots/04_cutscene_heist.png) | ![Fugitive](docs/screenshots/26_esc_city.png) |
 | ![CCTV](docs/screenshots/08_cctv.png) | ![Board](docs/screenshots/20_board.png) |
 
+**On a phone** (same build, single-column touch layout):
+
+| | | | |
+|---|---|---|---|
+| ![City on phone](docs/screenshots/phone_05_city.png) | ![Travel on phone](docs/screenshots/phone_14_globe_highlight.png) | ![Board on phone](docs/screenshots/phone_20_board.png) | ![Chase on phone](docs/screenshots/phone_21_chase.png) |
+
 *Rendered automatically by `game/tests/screenshot_tour.gd` (xvfb + OpenGL).*
 
 ## Why this project
@@ -53,7 +59,7 @@ This is an original work. It belongs to the *geography/detective* genre, but its
 Juego original de detectives y geografía, con gráficos 3D estilo arcade, hecho en **Godot 4** para PC, Android, iOS y web. Tiene **dos modos**: como detective perseguís a redes criminales por el mundo; como **fugitivo** sos el ladrón y escapás de una inspectora controlada por el juego. En modo detective revisás escuchas, rastros de dinero y cámaras de seguridad, **clavás un pin en un globo 3D** para seguirlos, tachás sospechosos en un pizarrón de corcho y terminás con una persecución arcade. La v1 tiene 15 casos (niveles), español e inglés, anuncios y una compra única para quitarlos. Todo el desarrollo queda documentado (decisiones, diario y plan) como proyecto de portfolio.
 
 ## Play the latest build
-▶️ **https://ftagliaferro.github.io/Geo-Detective/** — built and deployed automatically by GitHub Actions on every push to `main`.
+▶️ **https://ftagliaferro.github.io/Geo-Detective/** — built and deployed automatically by GitHub Actions on every push to `main`. Works on desktop and phone browsers: on phones the UI switches to a single-column touch layout (portrait or landscape) — see [ADR-0013](docs/decisions/0013-phone-layout.md).
 
 ## Development
 ```bash
@@ -68,4 +74,6 @@ godot --headless --path game --script res://tests/run_tests.gd
 # UI tests: smoke test of every screen, then every chip/city/case played through the real UI
 godot --headless --path game --script res://tests/smoke_ui.gd
 godot --headless --path game --script res://tests/ui_flows.gd
+godot --headless --path game --script res://tests/ui_flows.gd -- --phone      # 360x740
+godot --headless --path game --script res://tests/ui_flows.gd -- --landscape  # 844x390
 ```

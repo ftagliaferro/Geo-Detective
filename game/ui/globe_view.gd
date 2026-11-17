@@ -21,6 +21,8 @@ var pitch := 0.0
 var _press_pos := Vector2.ZERO
 var _dragging := false
 var _moved := 0.0
+var _touches := {}          # touch index -> position (pinch to zoom)
+var _pinch_dist := 0.0
 var interactive := true
 var auto_spin := 0.0
 var labels: Dictionary = {}      # country id -> Label3D
@@ -101,6 +103,31 @@ func _init() -> void:
 	home_marker = _marker(C_CYAN, 0.03)
 	pin_marker = _pin_mesh()
 	pin_marker.visible = false
+
+
+## "+" / "−" buttons in the top-right corner (phones can't use the mouse wheel).
+func add_zoom_buttons() -> void:
+	var box := VBoxContainer.new()
+	box.name = "ZoomButtons"
+	box.add_theme_constant_override("separation", 6)
+	box.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	box.offset_left = -54
+	box.offset_right = -8
+	box.offset_top = 8
+	add_child(box)
+	for d in [["+", -0.35], ["−", 0.35]]:
+		var b := Button.new()
+		b.text = d[0]
+		b.name = "ZoomIn" if d[1] < 0 else "ZoomOut"
+		b.focus_mode = Control.FOCUS_NONE
+		b.custom_minimum_size = Vector2(46, 46)
+		b.add_theme_font_size_override("font_size", 24)
+		b.add_theme_stylebox_override("normal", Style.box(Color(1, 1, 1, 0.92), 23, 4, Style.LINE, 1, false))
+		b.add_theme_stylebox_override("hover", Style.box(Color.WHITE, 23, 4, Style.CORAL, 2, false))
+		b.add_theme_stylebox_override("pressed", Style.box(Color(Style.CORAL, 0.15), 23, 4, Style.CORAL, 2, false))
+		b.add_theme_color_override("font_color", INK)
+		b.pressed.connect(_zoom.bind(d[1]))
+		box.add_child(b)
 
 
 ## A map pin: needle + glowing head, pointing away from the globe surface.
@@ -363,6 +390,31 @@ func _apply() -> void:
 func _gui_input(event: InputEvent) -> void:
 	if not interactive:
 		return
+	if event is InputEventScreenTouch:
+		var t := event as InputEventScreenTouch
+		if t.pressed:
+			_touches[t.index] = t.position
+		else:
+			_touches.erase(t.index)
+		if _touches.size() == 2:
+			_dragging = false
+			_moved = TAP_SLOP + 1.0   # a pinch never drops a pin
+			var pts: Array = _touches.values()
+			_pinch_dist = (pts[0] as Vector2).distance_to(pts[1])
+		return
+	if event is InputEventScreenDrag:
+		var d := event as InputEventScreenDrag
+		_touches[d.index] = d.position
+		if _touches.size() == 2:
+			var pts: Array = _touches.values()
+			var dist := (pts[0] as Vector2).distance_to(pts[1])
+			if _pinch_dist > 0.0 and dist > 0.0:
+				_zoom((_pinch_dist - dist) * 0.006)
+			_pinch_dist = dist
+			accept_event()
+		return
+	if _touches.size() >= 2:
+		return   # emulated mouse from the first finger: ignore while pinching
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_LEFT:
@@ -443,24 +495,25 @@ func _draw_preview(a: Vector3, b: Vector3) -> void:
 func show_route(points: Array, misses: Array = []) -> void:
 	if points.is_empty():
 		return
-	var line_mat := StandardMaterial3D.new()
-	line_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	line_mat.albedo_color = C_PINK
-	var mi := MeshInstance3D.new()
-	var im := ImmediateMesh.new()
-	mi.mesh = im
-	mi.material_override = line_mat
-	pivot.add_child(mi)
-	im.surface_begin(Mesh.PRIMITIVE_LINES)
-	for k in range(points.size() - 1):
-		var a := Geo.lat_lon_to_vec(points[k].x, points[k].y)
-		var b := Geo.lat_lon_to_vec(points[k + 1].x, points[k + 1].y)
-		var steps := 30
-		for i in range(0, steps, 2):
-			for j in [i, i + 1]:
-				var t := float(j) / steps
-				im.surface_add_vertex(a.slerp(b, t).normalized() * (1.0 + 0.08 * sin(PI * t)))
-	im.surface_end()
+	if points.size() >= 2:   # a one-city trip has no arcs (an empty surface is an engine error)
+		var line_mat := StandardMaterial3D.new()
+		line_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		line_mat.albedo_color = C_PINK
+		var mi := MeshInstance3D.new()
+		var im := ImmediateMesh.new()
+		mi.mesh = im
+		mi.material_override = line_mat
+		pivot.add_child(mi)
+		im.surface_begin(Mesh.PRIMITIVE_LINES)
+		for k in range(points.size() - 1):
+			var a := Geo.lat_lon_to_vec(points[k].x, points[k].y)
+			var b := Geo.lat_lon_to_vec(points[k + 1].x, points[k + 1].y)
+			var steps := 30
+			for i in range(0, steps, 2):
+				for j in [i, i + 1]:
+					var t := float(j) / steps
+					im.surface_add_vertex(a.slerp(b, t).normalized() * (1.0 + 0.08 * sin(PI * t)))
+		im.surface_end()
 	for k in range(points.size()):
 		var dot := _marker(Color("1f2f4d") if k > 0 else C_PINK, 0.03)
 		dot.position = Geo.lat_lon_to_vec(points[k].x, points[k].y) * 1.01
