@@ -16,7 +16,7 @@
         "es": "Una red de cheques falsificados vació las cuentas de un banco en Buenos Aires. Cada cheque tenía una firma impecable.",
         "en": "A forged-cheque ring emptied accounts at a bank in Buenos Aires. Every cheque carried a flawless signature."
       },
-      "hours": 130,
+      "hours": 160,
       "radius_km": 1000,
       "tiers": [
         1,
@@ -31,12 +31,15 @@
       ],
       "culprit": "dimitri_vask",
       "trait_order": [
-        "specialty",
+        "language",
         "mark",
         "hobby",
-        "language",
-        "vehicle"
-      ]
+        "vehicle",
+        "specialty"
+      ],
+      "objective": "pursuit",
+      "lead0": 11,
+      "twists": 0
     },
     {
       "id": "case_02",
@@ -54,7 +57,7 @@
         "es": "Un supuesto piloto de aerolínea cobró cheques de viaje falsos en tres aeropuertos de Madrid en una sola tarde.",
         "en": "A so-called airline pilot cashed fake traveller's cheques at three Madrid airport desks in a single afternoon."
       },
-      "hours": 130,
+      "hours": 140,
       "radius_km": 1000,
       "tiers": [
         1,
@@ -70,12 +73,15 @@
       ],
       "culprit": "lucia_ferraz",
       "trait_order": [
-        "hobby",
-        "mark",
         "specialty",
+        "mark",
+        "hobby",
         "language",
         "vehicle"
-      ]
+      ],
+      "objective": "pursuit",
+      "lead0": 11,
+      "twists": 1
     },
     {
       "id": "case_03",
@@ -93,7 +99,7 @@
         "es": "Apareció una imprenta clandestina en Nueva York que fabricaba bonos del Tesoro perfectos. La jefa de los Santos de Papel dejó su firma.",
         "en": "A secret press in New York was printing flawless Treasury bonds. The Paper Saints' leader left her signature."
       },
-      "hours": 190,
+      "hours": 195,
       "radius_km": 900,
       "tiers": [
         1,
@@ -110,12 +116,15 @@
       ],
       "culprit": "valentina_la_firma_roca",
       "trait_order": [
-        "language",
-        "mark",
         "vehicle",
+        "language",
         "hobby",
+        "mark",
         "specialty"
-      ]
+      ],
+      "objective": "pursuit",
+      "lead0": 11,
+      "twists": 2
     },
     {
       "id": "case_04",
@@ -130,10 +139,10 @@
         "en": "Case 4: Container 47"
       },
       "crime": {
-        "es": "Un contenedor con marfil falso y documentos adulterados desapareció del puerto de Ciudad del Cabo.",
-        "en": "A container of fake ivory and doctored papers vanished from the port of Cape Town."
+        "es": "Un contenedor con documentos adulterados desapareció del puerto de Ciudad del Cabo. Esta vez no alcanza con seguirlos: recuperá la carga antes de que la vendan.",
+        "en": "A container of doctored papers vanished from the port of Cape Town. Following them isn't enough this time: recover the cargo before it's sold."
       },
-      "hours": 155,
+      "hours": 130,
       "radius_km": 800,
       "tiers": [
         1,
@@ -150,12 +159,15 @@
       ],
       "culprit": "sasha_ilinskaya",
       "trait_order": [
-        "specialty",
-        "hobby",
         "vehicle",
+        "specialty",
         "language",
+        "hobby",
         "mark"
-      ]
+      ],
+      "objective": "recover",
+      "lead0": 11,
+      "twists": 1
     },
     {
       "id": "case_05",
@@ -173,7 +185,7 @@
         "es": "Un barco de bandera falsa zarpó de Río con un cargamento que nadie declaró.",
         "en": "A ship under a false flag left Rio carrying undeclared cargo."
       },
-      "hours": 170,
+      "hours": 130,
       "radius_km": 800,
       "tiers": [
         2,
@@ -190,12 +202,15 @@
       ],
       "culprit": "tomas_quiroga",
       "trait_order": [
-        "vehicle",
-        "language",
         "hobby",
         "specialty",
+        "language",
+        "vehicle",
         "mark"
-      ]
+      ],
+      "objective": "pursuit",
+      "lead0": 11,
+      "twists": 2
     },
     {
       "id": "case_06",
@@ -213,7 +228,7 @@
         "es": "El jefe del Sindicato Puerto Azul cerró un trato millonario en Singapur y cruzó el Pacífico antes del amanecer.",
         "en": "The Blue Harbour boss sealed a million-dollar deal in Singapore and crossed the Pacific before dawn."
       },
-      "hours": 210,
+      "hours": 165,
       "radius_km": 750,
       "tiers": [
         2,
@@ -231,12 +246,15 @@
       ],
       "culprit": "kofi_mensah_lund",
       "trait_order": [
-        "specialty",
-        "language",
-        "mark",
         "vehicle",
+        "mark",
+        "language",
+        "specialty",
         "hobby"
-      ]
+      ],
+      "objective": "pursuit",
+      "lead0": 11,
+      "twists": 3
     },
     {
       "id": "case_07",
@@ -251,10 +269,10 @@
         "en": "Case 7: Black Screen"
       },
       "crime": {
-        "es": "Un ataque informático apagó las pantallas de la bolsa de Seúl durante diez minutos. Alguien ganó una fortuna.",
-        "en": "A cyberattack blanked the Seoul stock exchange screens for ten minutes. Someone made a fortune."
+        "es": "Un ataque informático apagó la bolsa de Seúl durante diez minutos. Fueron dos hackers, y se van a separar con el botín.",
+        "en": "A cyberattack blanked the Seoul stock exchange for ten minutes. It was two hackers, and they'll split up with the loot."
       },
-      "hours": 170,
+      "hours": 140,
       "radius_km": 650,
       "tiers": [
         2,
@@ -272,11 +290,27 @@
       ],
       "culprit": "yuna_seo",
       "trait_order": [
+        "hobby",
+        "vehicle",
+        "specialty",
+        "mark",
+        "language"
+      ],
+      "objective": "split",
+      "lead0": 10,
+      "twists": 1,
+      "split_at": 2,
+      "route_b": [
+        "mexico_city",
+        "bogota"
+      ],
+      "culprit_b": "noor_haddad",
+      "trait_order_b": [
+        "hobby",
+        "vehicle",
         "specialty",
         "language",
-        "vehicle",
-        "mark",
-        "hobby"
+        "mark"
       ]
     },
     {
@@ -292,10 +326,10 @@
         "en": "Case 8: Cold Wallet"
       },
       "crime": {
-        "es": "Robaron las claves de un monedero cripto con millones de una empresa berlinesa.",
-        "en": "The keys to a crypto wallet holding millions were stolen from a Berlin company."
+        "es": "Robaron la llave física de un monedero cripto con millones de una empresa berlinesa. Recuperala antes de que lo vacíen.",
+        "en": "The hardware key to a crypto wallet holding millions was stolen from a Berlin company. Recover it before they empty it."
       },
-      "hours": 170,
+      "hours": 140,
       "radius_km": 650,
       "tiers": [
         2,
@@ -313,12 +347,15 @@
       ],
       "culprit": "lars_ekdahl",
       "trait_order": [
+        "specialty",
+        "hobby",
         "mark",
         "language",
-        "vehicle",
-        "specialty",
-        "hobby"
-      ]
+        "vehicle"
+      ],
+      "objective": "recover",
+      "lead0": 10,
+      "twists": 2
     },
     {
       "id": "case_09",
@@ -336,7 +373,7 @@
         "es": "Con una voz clonada por computadora, alguien ordenó una transferencia gigante desde un estudio de Los Ángeles. Es obra del líder de Señal Cero.",
         "en": "Using a computer-cloned voice, someone ordered a huge transfer from a Los Angeles studio. It's the work of Zero Signal's leader."
       },
-      "hours": 200,
+      "hours": 150,
       "radius_km": 600,
       "tiers": [
         2,
@@ -355,12 +392,15 @@
       ],
       "culprit": "glitch_okafor",
       "trait_order": [
-        "specialty",
-        "vehicle",
-        "language",
+        "hobby",
         "mark",
-        "hobby"
-      ]
+        "specialty",
+        "language",
+        "vehicle"
+      ],
+      "objective": "pursuit",
+      "lead0": 10,
+      "twists": 3
     },
     {
       "id": "case_10",
@@ -375,10 +415,10 @@
         "en": "Case 10: The Swapped Painting"
       },
       "crime": {
-        "es": "En un museo de París descubrieron que un cuadro famoso era una copia. El original lleva días de viaje.",
-        "en": "A Paris museum discovered a famous painting was a copy. The original has been travelling for days."
+        "es": "En un museo de París descubrieron que un cuadro famoso era una copia. El original lleva días de viaje: recuperalo antes de que se venda.",
+        "en": "A Paris museum discovered a famous painting was a copy. The original has been travelling for days: recover it before it's sold."
       },
-      "hours": 155,
+      "hours": 115,
       "radius_km": 500,
       "tiers": [
         2,
@@ -397,12 +437,15 @@
       ],
       "culprit": "felix_marchetti",
       "trait_order": [
+        "language",
         "vehicle",
         "specialty",
-        "language",
         "mark",
         "hobby"
-      ]
+      ],
+      "objective": "recover",
+      "lead0": 10,
+      "twists": 1
     },
     {
       "id": "case_11",
@@ -417,10 +460,10 @@
         "en": "Case 11: The Sleeping Violin"
       },
       "crime": {
-        "es": "Un violín de trescientos años desapareció de una bóveda en Viena durante un concierto.",
-        "en": "A three-hundred-year-old violin vanished from a Vienna vault during a concert."
+        "es": "Secuestraron a una violinista en Viena, junto con su violín de trescientos años. Encontrá a los captores y rescatala.",
+        "en": "A violinist was kidnapped in Vienna along with her three-hundred-year-old violin. Find her captors and rescue her."
       },
-      "hours": 190,
+      "hours": 150,
       "radius_km": 500,
       "tiers": [
         3,
@@ -439,12 +482,15 @@
       ],
       "culprit": "ottilie_strand",
       "trait_order": [
-        "vehicle",
-        "hobby",
-        "mark",
         "specialty",
-        "language"
-      ]
+        "vehicle",
+        "language",
+        "hobby",
+        "mark"
+      ],
+      "objective": "rescue",
+      "lead0": 10,
+      "twists": 2
     },
     {
       "id": "case_12",
@@ -462,7 +508,7 @@
         "es": "Una máscara de jade prehispánica fue robada de un museo en Ciudad de México. La condesa de las Manos de Terciopelo está detrás.",
         "en": "A pre-Hispanic jade mask was stolen from a Mexico City museum. The Velvet Hands' countess is behind it."
       },
-      "hours": 190,
+      "hours": 140,
       "radius_km": 450,
       "tiers": [
         3,
@@ -483,11 +529,14 @@
       "culprit": "contessa_aurelia_bianchi",
       "trait_order": [
         "vehicle",
+        "language",
         "specialty",
-        "hobby",
         "mark",
-        "language"
-      ]
+        "hobby"
+      ],
+      "objective": "pursuit",
+      "lead0": 10,
+      "twists": 3
     },
     {
       "id": "case_13",
@@ -502,10 +551,10 @@
         "en": "Case 13: First Bite"
       },
       "crime": {
-        "es": "Un contador del cartel de la Serpiente de Cristal desapareció de Bogotá con los libros de la organización.",
-        "en": "A Glass Serpent Cartel accountant vanished from Bogotá with the organisation's books."
+        "es": "El contador del cartel de la Serpiente de Cristal no escapó: el cartel se lo llevó de Bogotá junto con los libros. Rescatalo antes de que lo hagan callar.",
+        "en": "The Glass Serpent Cartel's accountant didn't run: the cartel took him from Bogotá along with the books. Rescue him before they silence him."
       },
-      "hours": 190,
+      "hours": 140,
       "radius_km": 400,
       "tiers": [
         3,
@@ -525,12 +574,15 @@
       ],
       "culprit": "bastian_ortega",
       "trait_order": [
-        "language",
-        "mark",
         "hobby",
+        "specialty",
         "vehicle",
-        "specialty"
-      ]
+        "language",
+        "mark"
+      ],
+      "objective": "rescue",
+      "lead0": 9,
+      "twists": 1
     },
     {
       "id": "case_14",
@@ -545,10 +597,10 @@
         "en": "Case 14: Laundered in Seven Steps"
       },
       "crime": {
-        "es": "Una red de casas de cambio en Lima mueve dinero del cartel por medio mundo.",
-        "en": "A network of exchange houses in Lima is moving cartel money across half the world."
+        "es": "Una red de casas de cambio en Lima mueve dinero del cartel. Dos mensajeros llevan el dinero y en algún punto se van a separar.",
+        "en": "A network of exchange houses in Lima moves cartel money. Two couriers carry it, and at some point they'll split up."
       },
-      "hours": 200,
+      "hours": 145,
       "radius_km": 400,
       "tiers": [
         3,
@@ -569,11 +621,28 @@
       ],
       "culprit": "camila_reyes",
       "trait_order": [
-        "hobby",
         "vehicle",
         "language",
-        "mark",
-        "specialty"
+        "hobby",
+        "specialty",
+        "mark"
+      ],
+      "objective": "split",
+      "lead0": 9,
+      "twists": 2,
+      "split_at": 3,
+      "route_b": [
+        "lisbon",
+        "paris",
+        "amsterdam"
+      ],
+      "culprit_b": "helena_kostas",
+      "trait_order_b": [
+        "vehicle",
+        "language",
+        "hobby",
+        "specialty",
+        "mark"
       ]
     },
     {
@@ -592,7 +661,7 @@
         "es": "La jefa del cartel salió de Río en un vuelo privado. Es ahora o nunca: atrapá a La Serpiente.",
         "en": "The cartel boss left Rio on a private flight. It's now or never: catch the Serpent."
       },
-      "hours": 225,
+      "hours": 155,
       "radius_km": 350,
       "tiers": [
         3,
@@ -614,12 +683,15 @@
       ],
       "culprit": "leonor_la_serpiente_vidal",
       "trait_order": [
-        "hobby",
         "specialty",
-        "mark",
         "language",
-        "vehicle"
-      ]
+        "vehicle",
+        "hobby",
+        "mark"
+      ],
+      "objective": "pursuit",
+      "lead0": 9,
+      "twists": 3
     }
   ]
 }

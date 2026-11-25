@@ -9,6 +9,10 @@ var cases: Dictionary = {}
 var strings: Dictionary = {}
 var countries: Dictionary = {}
 var escapes: Dictionary = {}
+var facts: Dictionary = {}     # combined clues (ADR-0015 §7)
+var hideout: Dictionary = {}   # recover objective places
+var events: Dictionary = {}    # event and reaction cards
+var story: Dictionary = {}     # scenes, gang files, thief messages
 
 
 func load_all(base: String = "res://data") -> void:
@@ -27,6 +31,10 @@ func load_all(base: String = "res://data") -> void:
 	strings = _read(base + "/i18n/strings.json")["strings"]
 	countries = _index(_read(base + "/countries.json")["countries"])
 	escapes = _index(_read(base + "/escapes.json")["escapes"])
+	facts = _read(base + "/facts.json")
+	hideout = _read(base + "/hideout.json")
+	events = _read(base + "/events.json")
+	story = _read(base + "/story.json")
 
 
 static func _index(items: Array) -> Dictionary:

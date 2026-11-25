@@ -1,0 +1,179 @@
+{
+  "attrs": [
+    "zone",
+    "kind",
+    "detail"
+  ],
+  "values": {
+    "zone": {
+      "water": {
+        "label": {
+          "es": "junto al agua",
+          "en": "by the water"
+        },
+        "hint": {
+          "es": "Pagó el amarre de un bote junto al agua.",
+          "en": "They paid for a boat mooring by the water."
+        }
+      },
+      "center": {
+        "label": {
+          "es": "en el centro",
+          "en": "downtown"
+        },
+        "hint": {
+          "es": "Pagó estacionamiento en pleno centro, todos los días.",
+          "en": "They paid for parking right downtown, every day."
+        }
+      },
+      "outskirts": {
+        "label": {
+          "es": "en las afueras",
+          "en": "on the outskirts"
+        },
+        "hint": {
+          "es": "Cargó combustible en una estación de las afueras.",
+          "en": "They filled up at a petrol station on the outskirts."
+        }
+      }
+    },
+    "kind": {
+      "warehouse": {
+        "label": {
+          "es": "depósito",
+          "en": "warehouse"
+        },
+        "hint": {
+          "es": "Alquiló un montacargas por una semana.",
+          "en": "They rented a forklift for a week."
+        }
+      },
+      "shop": {
+        "label": {
+          "es": "negocio",
+          "en": "shop"
+        },
+        "hint": {
+          "es": "Compró un cartel luminoso para un negocio.",
+          "en": "They bought a neon sign for a shop."
+        }
+      },
+      "house": {
+        "label": {
+          "es": "vivienda",
+          "en": "home"
+        },
+        "hint": {
+          "es": "Pagó luz y gas de una vivienda.",
+          "en": "They paid the power and gas bills of a home."
+        }
+      }
+    },
+    "detail": {
+      "dogs": {
+        "label": {
+          "es": "con perros guardianes",
+          "en": "with guard dogs"
+        },
+        "hint": {
+          "es": "Compró comida para perros de guardia, de los grandes.",
+          "en": "They bought food for big guard dogs."
+        }
+      },
+      "cameras": {
+        "label": {
+          "es": "con cámaras de seguridad",
+          "en": "with security cameras"
+        },
+        "hint": {
+          "es": "Pagó la instalación de cámaras de seguridad.",
+          "en": "They paid to have security cameras installed."
+        }
+      },
+      "for_sale": {
+        "label": {
+          "es": "con cartel de «se vende»",
+          "en": "with a 'for sale' sign"
+        },
+        "hint": {
+          "es": "Pagó un cartel de «se vende», para que parezca vacío.",
+          "en": "They paid for a 'for sale' sign, to make it look empty."
+        }
+      }
+    }
+  },
+  "names": [
+    {
+      "kind": "warehouse",
+      "zone": "water",
+      "name": {
+        "es": "Depósito del puerto",
+        "en": "Harbour warehouse"
+      }
+    },
+    {
+      "kind": "warehouse",
+      "zone": "center",
+      "name": {
+        "es": "Galpón del centro",
+        "en": "Downtown storeroom"
+      }
+    },
+    {
+      "kind": "warehouse",
+      "zone": "outskirts",
+      "name": {
+        "es": "Depósito de las afueras",
+        "en": "Outskirts warehouse"
+      }
+    },
+    {
+      "kind": "shop",
+      "zone": "water",
+      "name": {
+        "es": "Pescadería del muelle",
+        "en": "Pier fish shop"
+      }
+    },
+    {
+      "kind": "shop",
+      "zone": "center",
+      "name": {
+        "es": "Galería de arte del centro",
+        "en": "Downtown art gallery"
+      }
+    },
+    {
+      "kind": "shop",
+      "zone": "outskirts",
+      "name": {
+        "es": "Taller mecánico de las afueras",
+        "en": "Outskirts garage"
+      }
+    },
+    {
+      "kind": "house",
+      "zone": "water",
+      "name": {
+        "es": "Casa flotante",
+        "en": "Houseboat"
+      }
+    },
+    {
+      "kind": "house",
+      "zone": "center",
+      "name": {
+        "es": "Departamento del centro",
+        "en": "Downtown flat"
+      }
+    },
+    {
+      "kind": "house",
+      "zone": "outskirts",
+      "name": {
+        "es": "Mansión de las afueras",
+        "en": "Outskirts mansion"
+      }
+    }
+  ]
+}
