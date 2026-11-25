@@ -1,0 +1,494 @@
+{
+  "characters": {
+    "rivas": {
+      "es": "Inspectora Marta Rivas",
+      "en": "Inspector Marta Rivas"
+    },
+    "nico": {
+      "es": "Nico, el analista",
+      "en": "Nico, the analyst"
+    },
+    "varela": {
+      "es": "Dr. Aldo Varela, Interpol",
+      "en": "Dr. Aldo Varela, Interpol"
+    },
+    "hostage_violin": {
+      "es": "Clara Wenzel, violinista",
+      "en": "Clara Wenzel, violinist"
+    },
+    "hostage_accountant": {
+      "es": "Elías Prado, contador",
+      "en": "Elías Prado, accountant"
+    }
+  },
+  "looks": {
+    "rivas": {
+      "skin": 1,
+      "hair": 1,
+      "coat": 0,
+      "hair_style": 2,
+      "hat": false
+    },
+    "nico": {
+      "skin": 3,
+      "hair": 0,
+      "coat": 3,
+      "hair_style": 0,
+      "hat": false
+    },
+    "varela": {
+      "skin": 0,
+      "hair": 4,
+      "coat": 4,
+      "hair_style": 3,
+      "hat": false,
+      "traits": {
+        "mark": "glasses"
+      }
+    },
+    "hostage_violin": {
+      "skin": 0,
+      "hair": 3,
+      "coat": 5,
+      "hair_style": 2,
+      "hat": false
+    },
+    "hostage_accountant": {
+      "skin": 2,
+      "hair": 0,
+      "coat": 1,
+      "hair_style": 1,
+      "hat": false,
+      "traits": {
+        "mark": "glasses"
+      }
+    }
+  },
+  "scenes": {
+    "case_01": {
+      "intro": [
+        {
+          "who": "rivas",
+          "es": "Te doy la bienvenida a la unidad, detective. Soy la inspectora Marta Rivas.",
+          "en": "Welcome to the unit, detective. I'm Inspector Marta Rivas."
+        },
+        {
+          "who": "rivas",
+          "es": "Una banda de falsificadores vació un banco en Buenos Aires. Quiero que la sigas.",
+          "en": "A gang of forgers emptied a bank in Buenos Aires. I want you on their trail."
+        },
+        {
+          "who": "nico",
+          "es": "Soy Nico, el analista. Cuando viajes te sugiero cuatro países: uno siempre es el correcto.",
+          "en": "I'm Nico, the analyst. When you travel I'll suggest four countries: one is always right."
+        }
+      ],
+      "outro": [
+        {
+          "who": "rivas",
+          "es": "Buen trabajo. Ya tenemos a {culprit}.",
+          "en": "Good work. {culprit} is in custody."
+        },
+        {
+          "who": "nico",
+          "es": "En sus papeles hay una firma rara: una «C» dorada. ¿C de qué?",
+          "en": "There's an odd signature in their papers: a golden 'C'. C for what?"
+        }
+      ]
+    },
+    "case_02": {
+      "intro": [
+        {
+          "who": "rivas",
+          "es": "Los Santos de Papel siguen activos. Ojo: falsifican todo, hasta las pistas.",
+          "en": "The Paper Saints are still active. Careful: they forge everything, even the clues."
+        },
+        {
+          "who": "varela",
+          "es": "Aldo Varela, de Interpol. Persigo a esta gente hace años. Cuenten conmigo.",
+          "en": "Aldo Varela, Interpol. I've chased these people for years. Count on me."
+        }
+      ],
+      "outro": [
+        {
+          "who": "nico",
+          "es": "Otra vez la «C». Alguien les paga a los Santos.",
+          "en": "The 'C' again. Someone is paying the Saints."
+        },
+        {
+          "who": "varela",
+          "es": "Interesante... Lo voy a averiguar.",
+          "en": "Interesting... I'll look into it."
+        }
+      ]
+    },
+    "case_03": {
+      "intro": [
+        {
+          "who": "rivas",
+          "es": "La jefa de los Santos, {culprit}, imprimió bonos falsos en Nueva York.",
+          "en": "The Saints' boss, {culprit}, printed fake bonds in New York."
+        },
+        {
+          "who": "varela",
+          "es": "Si la atrapan, quizás nos diga quién es «C».",
+          "en": "Catch her and she may tell us who 'C' is."
+        }
+      ],
+      "outro": [
+        {
+          "who": "culprit",
+          "es": "Yo solo firmaba. Las órdenes las da El Coleccionista.",
+          "en": "I only signed. The orders come from the Collector."
+        },
+        {
+          "who": "rivas",
+          "es": "¿El Coleccionista? Nico, buscá todo lo que haya.",
+          "en": "The Collector? Nico, dig up everything."
+        }
+      ]
+    },
+    "case_04": {
+      "intro": [
+        {
+          "who": "rivas",
+          "es": "El Sindicato Puerto Azul se llevó un contenedor de Ciudad del Cabo. Esta vez hay que recuperar la carga.",
+          "en": "The Blue Harbour Syndicate took a container from Cape Town. This time we need the cargo back."
+        },
+        {
+          "who": "nico",
+          "es": "El rastro de dinero te va a contar cómo es el escondite: zona, tipo de lugar y un detalle.",
+          "en": "The money trail will tell you what the hideout is like: area, kind of place and a detail."
+        }
+      ],
+      "outro": [
+        {
+          "who": "nico",
+          "es": "En la carga había un sello: la misma «C» dorada. El Coleccionista colecciona... de todo.",
+          "en": "The cargo carried a seal: the same golden 'C'. The Collector collects... everything."
+        }
+      ]
+    },
+    "case_05": {
+      "intro": [
+        {
+          "who": "nico",
+          "es": "Puerto Azul se mueve por mar. En esos tramos no voy a tener datos de vuelos para darte.",
+          "en": "Blue Harbour moves by sea. On those legs I won't have flight data for you."
+        },
+        {
+          "who": "varela",
+          "es": "Cuando Nico no vea nada, buscá la ciudad en el globo.",
+          "en": "When Nico can't see a thing, find the city on the globe."
+        }
+      ],
+      "outro": [
+        {
+          "who": "rivas",
+          "es": "Bien. Su capitán va a tener que dar la cara.",
+          "en": "Good. Their captain will have to show his face."
+        }
+      ]
+    },
+    "case_06": {
+      "intro": [
+        {
+          "who": "rivas",
+          "es": "{culprit}, el capitán de Puerto Azul, cerró un trato en Singapur.",
+          "en": "{culprit}, Blue Harbour's captain, closed a deal in Singapore."
+        }
+      ],
+      "outro": [
+        {
+          "who": "culprit",
+          "es": "El Coleccionista siempre sabía dónde iba a estar la policía. Siempre.",
+          "en": "The Collector always knew where the police would be. Always."
+        },
+        {
+          "who": "rivas",
+          "es": "Entonces alguien le pasa información...",
+          "en": "Then someone is feeding him information..."
+        }
+      ]
+    },
+    "case_07": {
+      "intro": [
+        {
+          "who": "nico",
+          "es": "Señal Cero apagó la bolsa de Seúl. Fueron dos, y se van a separar.",
+          "en": "Zero Signal blanked the Seoul exchange. There were two of them, and they'll split up."
+        },
+        {
+          "who": "rivas",
+          "es": "Cuando se separen, seguí a uno. El que tengas más cerca.",
+          "en": "When they split, follow one. Whichever you can catch."
+        }
+      ],
+      "outro": [
+        {
+          "who": "nico",
+          "es": "En la computadora del hacker hay mensajes de alguien con acceso a Interpol.",
+          "en": "The hacker's laptop has messages from someone with Interpol access."
+        }
+      ]
+    },
+    "case_08": {
+      "intro": [
+        {
+          "who": "varela",
+          "es": "Robaron la llave de un monedero cripto en Berlín. Recupérenla antes de que lo vacíen.",
+          "en": "A crypto wallet key was stolen in Berlin. Get it back before they empty it."
+        },
+        {
+          "who": "nico",
+          "es": "Cuidado: las escuchas de Señal Cero llegan con interferencia.",
+          "en": "Careful: Zero Signal's wiretaps come in jammed."
+        }
+      ],
+      "outro": [
+        {
+          "who": "rivas",
+          "es": "La llave estaba en un lugar que solo conocía Interpol. Raro, ¿no?",
+          "en": "The key was somewhere only Interpol knew about. Odd, isn't it?"
+        }
+      ]
+    },
+    "case_09": {
+      "intro": [
+        {
+          "who": "rivas",
+          "es": "{culprit}, el líder de Señal Cero, clonó una voz para robar millones.",
+          "en": "{culprit}, Zero Signal's leader, cloned a voice to steal millions."
+        }
+      ],
+      "outro": [
+        {
+          "who": "culprit",
+          "es": "¿Quieren al Coleccionista? Miren más cerca. Siempre estuvo en sus reuniones.",
+          "en": "You want the Collector? Look closer. He's always been in your meetings."
+        },
+        {
+          "who": "rivas",
+          "es": "¿En nuestras reuniones...?",
+          "en": "In our meetings...?"
+        }
+      ]
+    },
+    "case_10": {
+      "intro": [
+        {
+          "who": "rivas",
+          "es": "Cambiaron un cuadro del museo de París por una copia. Recuperá el original.",
+          "en": "A Paris museum painting was swapped for a copy. Recover the original."
+        },
+        {
+          "who": "varela",
+          "es": "Las Manos de Terciopelo usan dobles. No confíes solo en las cámaras.",
+          "en": "The Velvet Hands use body doubles. Don't trust the cameras alone."
+        }
+      ],
+      "outro": [
+        {
+          "who": "nico",
+          "es": "El original tenía una etiqueta: «Para la colección privada de A. V.»",
+          "en": "The original had a label: 'For the private collection of A. V.'"
+        }
+      ]
+    },
+    "case_11": {
+      "intro": [
+        {
+          "who": "rivas",
+          "es": "Secuestraron a una violinista en Viena, con su violín. Encontrá a los captores.",
+          "en": "A violinist was kidnapped in Vienna, with her violin. Find the captors."
+        },
+        {
+          "who": "nico",
+          "es": "Cuando los encuentres, vas a tener que sacarla de ahí a toda velocidad.",
+          "en": "When you find them, you'll have to get her out at full speed."
+        }
+      ],
+      "outro": [
+        {
+          "who": "hostage_violin",
+          "es": "Gracias. Mis captores hablaban de un tal «doctor» que pagaba todo.",
+          "en": "Thank you. My captors talked about some 'doctor' who paid for everything."
+        }
+      ]
+    },
+    "case_12": {
+      "intro": [
+        {
+          "who": "rivas",
+          "es": "La condesa de las Manos de Terciopelo, {culprit}, se llevó una máscara de jade.",
+          "en": "The Velvet Hands' countess, {culprit}, took a jade mask."
+        }
+      ],
+      "outro": [
+        {
+          "who": "culprit",
+          "es": "Varela... perdón, El Coleccionista, odia los errores. Y ustedes son uno.",
+          "en": "Varela... sorry, the Collector, hates mistakes. And you are one."
+        },
+        {
+          "who": "nico",
+          "es": "¿Dijo «Varela»?",
+          "en": "Did she say 'Varela'?"
+        }
+      ]
+    },
+    "case_13": {
+      "intro": [
+        {
+          "who": "rivas",
+          "es": "El contador de la Serpiente no escapó: lo secuestraron con los libros. Rescatalo.",
+          "en": "The Serpent's accountant didn't run: he was taken with the books. Rescue him."
+        },
+        {
+          "who": "varela",
+          "es": "Ese hombre sabe demasiado... Mejor que no llegue a declarar.",
+          "en": "That man knows too much... Better if he never testifies."
+        }
+      ],
+      "outro": [
+        {
+          "who": "hostage_accountant",
+          "es": "Los libros muestran pagos a una cuenta de Interpol, a nombre de A. Varela.",
+          "en": "The books show payments to an Interpol account, in the name of A. Varela."
+        },
+        {
+          "who": "rivas",
+          "es": "Lo sospechaba. Varela es El Coleccionista.",
+          "en": "I suspected it. Varela is the Collector."
+        }
+      ]
+    },
+    "case_14": {
+      "intro": [
+        {
+          "who": "rivas",
+          "es": "Varela desapareció. El cartel mueve su dinero con dos mensajeros que se van a separar.",
+          "en": "Varela has vanished. The cartel moves its money with two couriers who will split up."
+        },
+        {
+          "who": "nico",
+          "es": "Elegí a uno y no lo sueltes. El tramo corto es más rápido; el largo te da más pistas.",
+          "en": "Pick one and don't let go. The short branch is faster; the long one gives you more clues."
+        }
+      ],
+      "outro": [
+        {
+          "who": "nico",
+          "es": "La Serpiente salió de Río en un vuelo privado. Es la última.",
+          "en": "The Serpent left Rio on a private flight. She's the last one."
+        }
+      ]
+    },
+    "case_15": {
+      "intro": [
+        {
+          "who": "rivas",
+          "es": "Es ahora o nunca. Atrapá a {culprit}: ella sabe dónde está Varela.",
+          "en": "It's now or never. Catch {culprit}: she knows where Varela is."
+        }
+      ],
+      "outro": [
+        {
+          "who": "culprit",
+          "es": "Llegaron tarde. El Coleccionista ya se fue... con lo mejor de cada banda.",
+          "en": "You're too late. The Collector is gone... with the best of every gang."
+        },
+        {
+          "who": "rivas",
+          "es": "Varela era El Coleccionista y se escapó. Esto no terminó, detective. Descansá: te voy a necesitar.",
+          "en": "Varela was the Collector, and he got away. This isn't over, detective. Get some rest: I'll need you."
+        }
+      ]
+    }
+  },
+  "gang_files": {
+    "paper_saints": {
+      "es": "Falsifican documentos: en algunas ciudades una pista escrita es falsa y apunta a otro país. Confirmá con otra fuente: las cámaras nunca mienten. El Detector de mentiras marca la falsa.",
+      "en": "They forge documents: in some cities a written clue is fake and points to another country. Confirm with a second source: cameras never lie. The Lie detector marks the fake."
+    },
+    "blue_harbour": {
+      "es": "Viajan en barco: en algunos tramos el analista no tiene datos de vuelos y no sugiere países. Buscá la ciudad en el globo; el margen del pin es generoso. El Radar de puertos ayuda.",
+      "en": "They travel by sea: on some legs the analyst has no flight data and suggests no countries. Find the city on the globe; the pin margin is generous. The Port radar helps."
+    },
+    "zero_signal": {
+      "es": "Interfieren las comunicaciones: algunas escuchas llegan con palabras tapadas. Pagá 1 h para descifrarlas o confiá en otras fuentes. El Descifrador las limpia.",
+      "en": "They jam communications: some wiretaps arrive with words blacked out. Pay 1 h to decrypt them or trust other sources. The Decoder cleans them."
+    },
+    "velvet_hands": {
+      "es": "Usan dobles: en algunas ciudades la cámara muestra a un doble del sospechoso en otro país. Las pistas escritas sí son confiables. La Lupa forense detecta al doble.",
+      "en": "They use body doubles: in some cities the camera shows a double of the suspect in another country. Written clues are reliable there. The Forensic lens spots the double."
+    },
+    "glass_serpent": {
+      "es": "El cartel aprendió de todas las bandas: puede falsificar pistas, viajar en barco, interferir escuchas y usar dobles.",
+      "en": "The cartel learned from every gang: it may forge clues, travel by sea, jam wiretaps and use body doubles."
+    }
+  },
+  "gang_twist": {
+    "paper_saints": "forged",
+    "blue_harbour": "sea",
+    "zero_signal": "jam",
+    "velvet_hands": "double",
+    "glass_serpent": "mixed"
+  },
+  "messages": {
+    "far": [
+      {
+        "es": "«¿Todavía me buscás? Disfrutá {city}, yo ya estoy lejos.»",
+        "en": "\"Still looking for me? Enjoy {city}, I'm long gone.\""
+      },
+      {
+        "es": "«Llegás tarde, detective. Como siempre.»",
+        "en": "\"Late again, detective. As always.\""
+      },
+      {
+        "es": "«Te dejé el café servido. Ya se enfrió.»",
+        "en": "\"I left you a coffee. It's gone cold.\""
+      }
+    ],
+    "close": [
+      {
+        "es": "«Siento tus pasos... no te va a alcanzar.»",
+        "en": "\"I can hear your footsteps... it won't be enough.\""
+      },
+      {
+        "es": "«Bien jugado. Pero yo juego mejor.»",
+        "en": "\"Well played. But I play better.\""
+      },
+      {
+        "es": "«Si me seguís tan de cerca, me voy a poner nervioso.»",
+        "en": "\"Follow me this closely and I'll get nervous.\""
+      }
+    ],
+    "here": [
+      {
+        "es": "«¿Qué hacés acá? ¡No puede ser!»",
+        "en": "\"What are you doing here? It can't be!\""
+      },
+      {
+        "es": "«Te vi en el aeropuerto. Corré, si querés.»",
+        "en": "\"I saw you at the airport. Run, if you like.\""
+      }
+    ],
+    "miss": [
+      {
+        "es": "«¿{city}? Ni cerca. Seguí paseando.»",
+        "en": "\"{city}? Not even close. Keep sightseeing.\""
+      },
+      {
+        "es": "«Te mandé a pasear. Volvé cuando quieras.»",
+        "en": "\"I sent you sightseeing. Come back whenever.\""
+      }
+    ],
+    "plant": [
+      {
+        "es": "«Te dejé un regalito en la ciudad. Elegí bien en quién confiar.»",
+        "en": "\"I left you a little gift in town. Choose carefully who you trust.\""
+      }
+    ]
+  }
+}

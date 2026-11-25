@@ -149,11 +149,11 @@
       "name": "\"Glitch\" Okafor",
       "network": "zero_signal",
       "traits": {
-        "specialty": "forgery",
+        "specialty": "pickpocket",
         "vehicle": "yacht",
-        "mark": "red_scarf",
-        "language": "japanese",
-        "hobby": "poker"
+        "mark": "tattoo",
+        "language": "italian",
+        "hobby": "golf"
       }
     },
     {
@@ -161,10 +161,10 @@
       "name": "Yuna Seo",
       "network": "zero_signal",
       "traits": {
-        "specialty": "art_theft",
-        "vehicle": "yacht",
+        "specialty": "smuggling",
+        "vehicle": "private_jet",
         "mark": "glasses",
-        "language": "japanese",
+        "language": "french",
         "hobby": "golf"
       }
     },
@@ -173,11 +173,11 @@
       "name": "Lars Ekdahl",
       "network": "zero_signal",
       "traits": {
-        "specialty": "forgery",
-        "vehicle": "yacht",
-        "mark": "red_scarf",
-        "language": "japanese",
-        "hobby": "chess"
+        "specialty": "pickpocket",
+        "vehicle": "convertible",
+        "mark": "tattoo",
+        "language": "italian",
+        "hobby": "golf"
       }
     },
     {
@@ -185,11 +185,11 @@
       "name": "Priya Raman",
       "network": "zero_signal",
       "traits": {
-        "specialty": "con_artist",
-        "vehicle": "convertible",
-        "mark": "tattoo",
+        "specialty": "art_theft",
+        "vehicle": "private_jet",
+        "mark": "scar",
         "language": "portuguese",
-        "hobby": "opera"
+        "hobby": "golf"
       }
     },
     {
@@ -197,11 +197,11 @@
       "name": "Viktor Hale",
       "network": "zero_signal",
       "traits": {
-        "specialty": "art_theft",
-        "vehicle": "yacht",
-        "mark": "glasses",
-        "language": "japanese",
-        "hobby": "poker"
+        "specialty": "forgery",
+        "vehicle": "private_jet",
+        "mark": "red_scarf",
+        "language": "italian",
+        "hobby": "photography"
       }
     },
     {
@@ -209,11 +209,11 @@
       "name": "Noor Haddad",
       "network": "zero_signal",
       "traits": {
-        "specialty": "hacking",
+        "specialty": "smuggling",
         "vehicle": "private_jet",
         "mark": "glasses",
-        "language": "french",
-        "hobby": "opera"
+        "language": "japanese",
+        "hobby": "golf"
       }
     },
     {
@@ -222,10 +222,10 @@
       "network": "velvet_hands",
       "traits": {
         "specialty": "hacking",
-        "vehicle": "private_jet",
+        "vehicle": "motorcycle",
         "mark": "scar",
-        "language": "japanese",
-        "hobby": "poker"
+        "language": "italian",
+        "hobby": "chess"
       }
     },
     {
@@ -234,10 +234,10 @@
       "network": "velvet_hands",
       "traits": {
         "specialty": "hacking",
-        "vehicle": "private_jet",
+        "vehicle": "motorcycle",
         "mark": "scar",
-        "language": "japanese",
-        "hobby": "chess"
+        "language": "italian",
+        "hobby": "photography"
       }
     },
     {
@@ -245,11 +245,11 @@
       "name": "Ottilie Strand",
       "network": "velvet_hands",
       "traits": {
-        "specialty": "hacking",
-        "vehicle": "private_jet",
-        "mark": "scar",
+        "specialty": "art_theft",
+        "vehicle": "motorcycle",
+        "mark": "red_scarf",
         "language": "italian",
-        "hobby": "poker"
+        "hobby": "chess"
       }
     },
     {
@@ -257,11 +257,11 @@
       "name": "Rafael Montiel",
       "network": "velvet_hands",
       "traits": {
-        "specialty": "forgery",
-        "vehicle": "convertible",
-        "mark": "red_scarf",
+        "specialty": "art_theft",
+        "vehicle": "motorcycle",
+        "mark": "gold_ring",
         "language": "italian",
-        "hobby": "opera"
+        "hobby": "chess"
       }
     },
     {
@@ -269,10 +269,10 @@
       "name": "Zara Whitlock",
       "network": "velvet_hands",
       "traits": {
-        "specialty": "con_artist",
-        "vehicle": "vintage_car",
-        "mark": "gold_ring",
-        "language": "russian",
+        "specialty": "forgery",
+        "vehicle": "convertible",
+        "mark": "tattoo",
+        "language": "italian",
         "hobby": "chess"
       }
     },
@@ -281,11 +281,11 @@
       "name": "Ilya Petrov",
       "network": "velvet_hands",
       "traits": {
-        "specialty": "con_artist",
-        "vehicle": "private_jet",
-        "mark": "scar",
-        "language": "russian",
-        "hobby": "chess"
+        "specialty": "pickpocket",
+        "vehicle": "motorcycle",
+        "mark": "gold_ring",
+        "language": "italian",
+        "hobby": "poker"
       }
     },
     {
@@ -296,8 +296,8 @@
         "specialty": "pickpocket",
         "vehicle": "convertible",
         "mark": "red_scarf",
-        "language": "russian",
-        "hobby": "golf"
+        "language": "italian",
+        "hobby": "poker"
       }
     },
     {
@@ -305,11 +305,11 @@
       "name": "Bastián Ortega",
       "network": "glass_serpent",
       "traits": {
-        "specialty": "forgery",
+        "specialty": "pickpocket",
         "vehicle": "convertible",
-        "mark": "tattoo",
-        "language": "russian",
-        "hobby": "golf"
+        "mark": "scar",
+        "language": "italian",
+        "hobby": "poker"
       }
     },
     {
@@ -318,10 +318,10 @@
       "network": "glass_serpent",
       "traits": {
         "specialty": "con_artist",
-        "vehicle": "convertible",
-        "mark": "tattoo",
+        "vehicle": "motorcycle",
+        "mark": "glasses",
         "language": "russian",
-        "hobby": "golf"
+        "hobby": "photography"
       }
     },
     {
@@ -330,10 +330,10 @@
       "network": "glass_serpent",
       "traits": {
         "specialty": "art_theft",
-        "vehicle": "yacht",
-        "mark": "scar",
+        "vehicle": "private_jet",
+        "mark": "red_scarf",
         "language": "french",
-        "hobby": "photography"
+        "hobby": "poker"
       }
     },
     {
@@ -341,11 +341,11 @@
       "name": "Akira Mori",
       "network": "glass_serpent",
       "traits": {
-        "specialty": "pickpocket",
-        "vehicle": "yacht",
-        "mark": "red_scarf",
-        "language": "russian",
-        "hobby": "golf"
+        "specialty": "forgery",
+        "vehicle": "private_jet",
+        "mark": "tattoo",
+        "language": "portuguese",
+        "hobby": "poker"
       }
     },
     {
@@ -353,11 +353,11 @@
       "name": "Esteban Ruiz",
       "network": "glass_serpent",
       "traits": {
-        "specialty": "art_theft",
-        "vehicle": "yacht",
-        "mark": "scar",
-        "language": "japanese",
-        "hobby": "photography"
+        "specialty": "smuggling",
+        "vehicle": "private_jet",
+        "mark": "glasses",
+        "language": "french",
+        "hobby": "golf"
       }
     },
     {
@@ -365,10 +365,10 @@
       "name": "Helena Kostas",
       "network": "glass_serpent",
       "traits": {
-        "specialty": "hacking",
+        "specialty": "con_artist",
         "vehicle": "motorcycle",
-        "mark": "gold_ring",
-        "language": "italian",
+        "mark": "tattoo",
+        "language": "russian",
         "hobby": "photography"
       }
     },
@@ -377,10 +377,10 @@
       "name": "Omar Benali",
       "network": "glass_serpent",
       "traits": {
-        "specialty": "hacking",
-        "vehicle": "private_jet",
+        "specialty": "smuggling",
+        "vehicle": "yacht",
         "mark": "tattoo",
-        "language": "italian",
+        "language": "russian",
         "hobby": "poker"
       }
     }

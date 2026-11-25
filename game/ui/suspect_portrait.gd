@@ -29,11 +29,13 @@ func _draw() -> void:
 		var y := h * i / 6.0
 		draw_line(Vector2(0, y), Vector2(w, y), Color(0.11, 0.14, 0.2, 0.07), 1.0)
 	var traits: Dictionary = suspect.get("traits", {})
-	var skin: Color = _pick(SKIN, 1)
-	var hair: Color = _pick(HAIR, 2)
-	var coat: Color = _pick(COAT, 3)
-	var hair_style: int = abs(hash(str(suspect.get("id", "")) + "4")) % 4
-	var hat: bool = abs(hash(str(suspect.get("id", "")) + "5")) % 3 == 0
+	# Story characters can fix their look (story.json "looks"); suspects vary by id.
+	var look: Dictionary = suspect.get("look", {})
+	var skin: Color = SKIN[int(look["skin"])] if look.has("skin") else _pick(SKIN, 1)
+	var hair: Color = HAIR[int(look["hair"])] if look.has("hair") else _pick(HAIR, 2)
+	var coat: Color = COAT[int(look["coat"])] if look.has("coat") else _pick(COAT, 3)
+	var hair_style: int = int(look["hair_style"]) if look.has("hair_style") else abs(hash(str(suspect.get("id", "")) + "4")) % 4
+	var hat: bool = bool(look["hat"]) if look.has("hat") else abs(hash(str(suspect.get("id", "")) + "5")) % 3 == 0
 	var cx := w * 0.5
 	var head_r := w * 0.2
 	var head_c := Vector2(cx, h * 0.42)

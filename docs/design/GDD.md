@@ -56,6 +56,19 @@ Five fictional crime networks × 3 cases each; the 3rd case of each arc is the n
 - Sightings (detective) and passport control (fugitive) add reflex moments that move the clock.
 - Sound effects throughout; route recap globe on the results card.
 
+## 3c. Depth update (ADR-0015)
+The detective loop stays the same; each city now asks for decisions.
+- **City map:** the four sources and the airport are pins on a drawn district map (streets, coast or river, landmark). Tap a pin or its card.
+- **Choose what to investigate:** two investigations per city before the trail goes cold (each one after that costs +3 h). Every source shows how clear its clue is (clear / medium / vague), so the player trades hours for certainty.
+- **Lead:** the thief left the city *N* hours ago. Being fast closes the gap; arriving within 2 h gives a sighting, and from case 3 a close detective triggers a **reaction** (tip-off, burned source, planted false lead, thugs). Intercepted messages say how close you are.
+- **Surprise events:** 10 cards (informant, strike, storm, pickpocket, colleague…) with two options each; some lead into a mini-game. Every option is safe to pick (tested).
+- **Gang tricks:** Paper Saints forge one clue, Blue Harbour sails (no flight data on sea legs), Zero Signal jams wiretaps (decrypt 1 h), Velvet Hands use body doubles (fake CCTV photo), the Glass Serpent mixes all of them.
+- **Gear:** 8 gadgets unlocked with stars (Interpol contact, forensic lens, contact book, private jet, decoder, lie detector, gang file, port radar); 3 slots per case, chosen in the briefing.
+- **Objectives:** *arrest* (as before), *recover* (cases 4, 8, 10: the money trail describes the hideout; raid the right one of six on the map, 3 h per try) and *rescue* (cases 11, 13: escape chase with the hostage). Cases 7 and 14: the gang **splits up**; follow either branch (short vs long).
+- **Combined clues:** from case 10, some cities give half a fact per source; two halves together point to one country.
+- **Story:** short scenes before and after each case (Inspector Rivas, analyst Nico, Dr. Varela); the arc ends with Varela revealed as the Collector.
+- **Fairness:** every city keeps at least one truthful source; bots win every case and branch with and without gear; two worst-case wrong flights still leave most runs winnable (see `tests/run_tests.gd`).
+
 ## 3b. Fugitive mode (ADR-0010)
 You are the thief. Decode your boss's coded messages to find each safe house and drop the pin. **Inspector Rivas** follows: your *lead* shrinks with every hour you spend and grows each time you leave a city (she must investigate it). Tools: second message, smuggler's map (4 countries), clean tracks (+6 h), false lead (+10 h, ×2). Wrong pins cost you — she flies straight. Arrive with little lead and you must win an escape chase. 5 escapes, one per gang.
 

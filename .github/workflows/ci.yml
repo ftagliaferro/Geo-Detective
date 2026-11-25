@@ -57,6 +57,12 @@ jobs:
       - name: Game logic tests
         run: ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path game --script res://tests/run_tests.gd
 
+      - name: City map layout (every city, both languages, desktop and phone sizes)
+        run: |
+          timeout 600 ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path game --script res://tests/city_map_check.gd 2>&1 | tee maps.log
+          grep -q "City maps: .* 0 failed" maps.log
+          ! grep -E "SCRIPT ERROR|Parse Error|FAIL:" maps.log
+
       - name: UI smoke test (every screen, both modes)
         run: |
           timeout 300 ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 --headless --path game --script res://tests/smoke_ui.gd 2>&1 | tee smoke.log

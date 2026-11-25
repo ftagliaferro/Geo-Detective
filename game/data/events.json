@@ -1,0 +1,554 @@
+{
+  "events": [
+    {
+      "id": "informant",
+      "needs": [
+        "analyst"
+      ],
+      "title": {
+        "es": "Un informante",
+        "en": "An informant"
+      },
+      "text": {
+        "es": "Un hombre en el bar dice que vio al sospechoso comprar un pasaje. Quiere que lo invites a cenar, y habla mucho.",
+        "en": "A man at the bar says he saw the suspect buy a ticket. He wants you to buy him dinner, and he talks a lot."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Invitarlo (2 h): el analista descarta 2 países",
+            "en": "Buy him dinner (2 h): the analyst drops 2 countries"
+          },
+          "effects": [
+            [
+              "hours",
+              2
+            ],
+            [
+              "eliminate"
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "No tengo tiempo",
+            "en": "No time"
+          },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "strike",
+      "needs": [],
+      "title": {
+        "es": "Huelga en el aeropuerto",
+        "en": "Airport strike"
+      },
+      "text": {
+        "es": "El personal del aeropuerto para por un día. Los vuelos van a salir con demora.",
+        "en": "Airport staff walk out for a day. Flights will leave late."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Esperar: el próximo vuelo tarda 3 h más",
+            "en": "Wait: the next flight takes 3 h longer"
+          },
+          "effects": [
+            [
+              "next_flight",
+              3
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "Tren a otra ciudad (+1 h al vuelo), pero hoy investigás una vez menos",
+            "en": "Train to another city (+1 h to the flight), but you investigate once less today"
+          },
+          "effects": [
+            [
+              "next_flight",
+              1
+            ],
+            [
+              "lose_action"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "corrupt_cop",
+      "needs": [],
+      "title": {
+        "es": "Un policía corrupto",
+        "en": "A corrupt cop"
+      },
+      "text": {
+        "es": "Un agente te ofrece la ficha del sospechoso a cambio de «un favor» que te va a llevar horas.",
+        "en": "An officer offers you the suspect's file in exchange for 'a favour' that will take hours."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Aceptar (3 h): un dato de QUIÉN es",
+            "en": "Accept (3 h): a fact about WHO it is"
+          },
+          "effects": [
+            [
+              "hours",
+              3
+            ],
+            [
+              "reveal_who"
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "Denunciarlo (1 h): te ganás un aliado, tu próxima investigación es gratis",
+            "en": "Report him (1 h): you gain an ally, your next investigation is free"
+          },
+          "effects": [
+            [
+              "hours",
+              1
+            ],
+            [
+              "free_action"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ambush",
+      "needs": [],
+      "title": {
+        "es": "¡Emboscada!",
+        "en": "Ambush!"
+      },
+      "text": {
+        "es": "Dos matones de la banda te cierran el paso en un callejón.",
+        "en": "Two of the gang's thugs block your way in an alley."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Escapar corriendo (si fallás, 3 h perdidas)",
+            "en": "Run for it (fail and lose 3 h)"
+          },
+          "effects": [
+            [
+              "minigame",
+              "checkpoint",
+              [],
+              [
+                [
+                  "hours",
+                  3
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "Llamar a la policía local y esperar (2 h)",
+            "en": "Call the local police and wait (2 h)"
+          },
+          "effects": [
+            [
+              "hours",
+              2
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "envelope",
+      "needs": [],
+      "title": {
+        "es": "Un sobre anónimo",
+        "en": "An anonymous envelope"
+      },
+      "text": {
+        "es": "Alguien deslizó un sobre por debajo de la puerta de tu hotel.",
+        "en": "Someone slipped an envelope under your hotel door."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Abrirlo: un dato del próximo destino",
+            "en": "Open it: a fact about the next destination"
+          },
+          "effects": [
+            [
+              "reveal_fact"
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "Puede ser una trampa: no abrirlo",
+            "en": "It could be a trap: leave it"
+          },
+          "effects": []
+        }
+      ]
+    },
+    {
+      "id": "witness",
+      "needs": [],
+      "title": {
+        "es": "Una testigo",
+        "en": "A witness"
+      },
+      "text": {
+        "es": "Una vendedora del mercado vio al sospechoso ayer y se acuerda de él.",
+        "en": "A market vendor saw the suspect yesterday and remembers them."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Preguntarle cómo era (2 h): un dato de QUIÉN es",
+            "en": "Ask what they looked like (2 h): a fact about WHO it is"
+          },
+          "effects": [
+            [
+              "hours",
+              2
+            ],
+            [
+              "reveal_who"
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "Preguntarle a dónde iba (1 h): un dato del destino",
+            "en": "Ask where they were going (1 h): a fact about the destination"
+          },
+          "effects": [
+            [
+              "hours",
+              1
+            ],
+            [
+              "reveal_fact"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pickpocket",
+      "needs": [],
+      "title": {
+        "es": "¡Te robaron la billetera!",
+        "en": "Your wallet's gone!"
+      },
+      "text": {
+        "es": "Un carterista se llevó tu billetera en la calle. Todavía se lo ve entre la gente.",
+        "en": "A pickpocket took your wallet in the street. You can still see them in the crowd."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Perseguirlo (si se escapa, 2 h perdidas)",
+            "en": "Chase them (if they get away, lose 2 h)"
+          },
+          "effects": [
+            [
+              "minigame",
+              "sighting",
+              [],
+              [
+                [
+                  "hours",
+                  2
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "Dejarlo y hacer la denuncia (2 h)",
+            "en": "Let it go and file a report (2 h)"
+          },
+          "effects": [
+            [
+              "hours",
+              2
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "storm",
+      "needs": [],
+      "title": {
+        "es": "Se viene una tormenta",
+        "en": "A storm is coming"
+      },
+      "text": {
+        "es": "El pronóstico anuncia tormenta. Los vuelos van a salir tarde.",
+        "en": "The forecast says storm. Flights will leave late."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Esperar: el próximo vuelo tarda 2 h más",
+            "en": "Wait: the next flight takes 2 h longer"
+          },
+          "effects": [
+            [
+              "next_flight",
+              2
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "Aprovechar: una investigación más antes de que se enfríe el rastro (+1 h al vuelo)",
+            "en": "Make use of it: one more investigation before the trail cools (+1 h to the flight)"
+          },
+          "effects": [
+            [
+              "extra_action"
+            ],
+            [
+              "next_flight",
+              1
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "colleague",
+      "needs": [],
+      "title": {
+        "es": "Un viejo colega",
+        "en": "An old colleague"
+      },
+      "text": {
+        "es": "Te cruzás con un excompañero de Interpol que ahora trabaja en esta ciudad.",
+        "en": "You run into a former Interpol colleague who now works in this city."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Pedirle ayuda: tu próxima investigación es gratis",
+            "en": "Ask for help: your next investigation is free"
+          },
+          "effects": [
+            [
+              "free_action"
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "Pedirle sus contactos: una investigación más antes de que se enfríe el rastro",
+            "en": "Ask for contacts: one more investigation before the trail cools"
+          },
+          "effects": [
+            [
+              "extra_action"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "reporter",
+      "needs": [],
+      "title": {
+        "es": "Una periodista",
+        "en": "A reporter"
+      },
+      "text": {
+        "es": "Una periodista quiere entrevistarte sobre el caso para el noticiero de la noche.",
+        "en": "A reporter wants to interview you about the case for the evening news."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Dar la nota (1 h): el ladrón se pone nervioso y su ventaja baja 3 h",
+            "en": "Give the interview (1 h): the thief gets nervous and their lead drops 3 h"
+          },
+          "effects": [
+            [
+              "hours",
+              1
+            ],
+            [
+              "lead",
+              -3
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "Sin comentarios",
+            "en": "No comment"
+          },
+          "effects": []
+        }
+      ]
+    }
+  ],
+  "reactions": [
+    {
+      "id": "tipoff",
+      "needs": [],
+      "title": {
+        "es": "Te denunciaron",
+        "en": "Someone reported you"
+      },
+      "text": {
+        "es": "El ladrón avisó a la policía local que un «extranjero sospechoso» anda por la ciudad. Vienen a hacerte preguntas.",
+        "en": "The thief told the local police a 'suspicious foreigner' is in town. They come to question you."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Colaborar con paciencia (2 h)",
+            "en": "Cooperate patiently (2 h)"
+          },
+          "effects": [
+            [
+              "hours",
+              2
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "Mostrar la credencial de Interpol: te dejan ir, pero investigás una vez menos",
+            "en": "Show your Interpol badge: they let you go, but you investigate once less"
+          },
+          "effects": [
+            [
+              "lose_action"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "burned",
+      "needs": [],
+      "title": {
+        "es": "Le pagaron al contacto",
+        "en": "The contact was paid off"
+      },
+      "text": {
+        "es": "El ladrón le pagó a tu contacto local para que no hable.",
+        "en": "The thief paid your local contact to keep quiet."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Pagarle más que él (2 h): el contacto habla",
+            "en": "Outbid the thief (2 h): the contact talks"
+          },
+          "effects": [
+            [
+              "hours",
+              2
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "Seguir sin el contacto en esta ciudad",
+            "en": "Carry on without the contact in this city"
+          },
+          "effects": [
+            [
+              "burn",
+              "contact"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plant",
+      "needs": [],
+      "title": {
+        "es": "Un regalito del ladrón",
+        "en": "A little gift from the thief"
+      },
+      "text": {
+        "es": "Interceptaron un mensaje: el ladrón dejó una pista falsa en esta ciudad. Una de las pistas escritas te va a mandar al país equivocado.",
+        "en": "An intercepted message: the thief left a fake clue in this city. One of the written clues will send you to the wrong country."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Entendido: voy a confirmar con dos fuentes",
+            "en": "Understood: I'll confirm with two sources"
+          },
+          "effects": [
+            [
+              "plant"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "thugs",
+      "needs": [],
+      "title": {
+        "es": "Te estaban esperando",
+        "en": "They were waiting for you"
+      },
+      "text": {
+        "es": "El ladrón dejó a dos matones vigilando la salida del hotel.",
+        "en": "The thief left two thugs watching the hotel exit."
+      },
+      "options": [
+        {
+          "label": {
+            "es": "Salir corriendo (si fallás, 3 h perdidas)",
+            "en": "Make a run for it (fail and lose 3 h)"
+          },
+          "effects": [
+            [
+              "minigame",
+              "checkpoint",
+              [],
+              [
+                [
+                  "hours",
+                  3
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "label": {
+            "es": "Salir por la cocina, despacio (2 h)",
+            "en": "Slip out through the kitchen (2 h)"
+          },
+          "effects": [
+            [
+              "hours",
+              2
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

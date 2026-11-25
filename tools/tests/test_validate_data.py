@@ -56,3 +56,42 @@ class EscapeTest(unittest.TestCase):
         d["escapes"]["escape_01"]["route"][1] = "tokyo_missing"
         d["cities"]["tokyo_missing"] = {"id": "tokyo_missing", "name": {"es": "x", "en": "x"}, "country": {"es": "x", "en": "x"}, "lat": 0, "lon": 0, "clues": []}
         self.assertTrue(any("no clues" in e for e in vd.validate(d)))
+
+
+class ValidateDepthTest(unittest.TestCase):
+    """ADR-0015 content checks."""
+
+    def setUp(self):
+        self.data = vd.load(vd.DEFAULT_DIR)
+
+    def test_shipped_depth_data_is_valid(self):
+        self.assertEqual(vd.validate_depth(self.data), [])
+
+    def test_missing_country_facts_detected(self):
+        d = copy.deepcopy(self.data)
+        del d["facts"]["countries"]["PRT"]
+        self.assertTrue(any("PRT" in e for e in vd.validate_depth(d)))
+
+    def test_bad_event_effect_detected(self):
+        d = copy.deepcopy(self.data)
+        d["events"]["events"][0]["options"][0]["effects"].append(["teleport"])
+        self.assertTrue(any("bad effect" in e for e in vd.validate_depth(d)))
+
+    def test_unknown_speaker_detected(self):
+        d = copy.deepcopy(self.data)
+        d["story"]["scenes"]["case_01"]["intro"][0]["who"] = "nobody"
+        self.assertTrue(any("unknown speaker" in e for e in vd.validate_depth(d)))
+
+    def test_split_thieves_must_share_early_traits(self):
+        d = copy.deepcopy(self.data)
+        case = d["cases"]["case_07"]
+        t = case["trait_order"][0]
+        b = d["suspects"][case["culprit_b"]]["traits"]
+        values = [v["id"] for v in d["traits"][t]["values"]]
+        b[t] = next(v for v in values if v != b[t])
+        self.assertTrue(any("share the traits" in e for e in vd.validate_depth(d)))
+
+    def test_city_without_map_data_detected(self):
+        d = copy.deepcopy(self.data)
+        d["cities"]["lisbon"]["water"] = "lava"
+        self.assertTrue(any("lisbon" in e for e in vd.validate_depth(d)))

@@ -28,7 +28,125 @@ def load(data_dir: Path) -> dict:
         "cases": {c["id"]: c for c in read("cases.json")["cases"]},
         "strings": read("i18n/strings.json")["strings"],
         "escapes": {e["id"]: e for e in read("escapes.json")["escapes"]},
+        "facts": read("facts.json"),
+        "hideout": read("hideout.json"),
+        "events": read("events.json"),
+        "story": read("story.json"),
     }
+
+
+EFFECTS = {"hours": 1, "next_flight": 1, "free_action": 0, "extra_action": 0, "lose_action": 0, "eliminate": 0,
+           "reveal_who": 0, "reveal_fact": 0, "lead": 1, "burn": 1, "plant": 0, "minigame": 3}
+MINIGAMES = {"sighting", "checkpoint"}
+OBJECTIVES = {"pursuit", "recover", "rescue", "split"}
+
+
+def _effects(effects, where: str, errors: list[str]) -> None:
+    for e in effects:
+        if not isinstance(e, list) or not e or e[0] not in EFFECTS or len(e) - 1 != EFFECTS[e[0]]:
+            errors.append(f"{where}: bad effect {e!r}")
+            continue
+        if e[0] == "minigame":
+            if e[1] not in MINIGAMES:
+                errors.append(f"{where}: unknown mini-game {e[1]!r}")
+            _effects(e[2], where + " (success)", errors)
+            _effects(e[3], where + " (fail)", errors)
+        if e[0] == "burn" and e[1] not in ("wiretap", "contact", "cctv", "money"):
+            errors.append(f"{where}: cannot burn {e[1]!r}")
+
+
+def validate_depth(d: dict) -> list[str]:
+    """ADR-0015 content: maps, facts, hideouts, events, story, objectives."""
+    errors: list[str] = []
+    cities, facts = d["cities"], d["facts"]
+    for cid, c in cities.items():
+        _i18n(c.get("landmark"), f"city {cid}.landmark", errors)
+        if c.get("water") not in ("coast", "river", "none"):
+            errors.append(f"city {cid}: water must be coast/river/none")
+    cats = facts["categories"]
+    for code in {c["country_code"] for c in cities.values()}:
+        vals = facts["countries"].get(code)
+        if vals is None:
+            errors.append(f"facts: no entry for landable country {code}")
+            continue
+        for cat in cats:
+            v = vals.get(cat)
+            if v is not None and v not in facts["values"][cat]:
+                errors.append(f"facts {code}.{cat}: unknown value {v!r}")
+    for cat in cats:
+        _i18n(facts["texts"][cat], f"facts text {cat}", errors)
+        for v, lbl in facts["values"][cat].items():
+            _i18n(lbl, f"facts value {cat}.{v}", errors)
+    pairs = {(n["kind"], n["zone"]) for n in d["hideout"]["names"]}
+    vals = d["hideout"]["values"]
+    if len(pairs) != len(vals["kind"]) * len(vals["zone"]):
+        errors.append("hideout: every (kind, zone) pair needs a place name")
+    for deck in ("events", "reactions"):
+        ids = set()
+        for card in d["events"][deck]:
+            if card["id"] in ids:
+                errors.append(f"{deck}: duplicate card {card['id']}")
+            ids.add(card["id"])
+            _i18n(card["title"], f"{deck} {card['id']}.title", errors)
+            _i18n(card["text"], f"{deck} {card['id']}.text", errors)
+            if not 1 <= len(card["options"]) <= 3:
+                errors.append(f"{deck} {card['id']}: needs 1 to 3 options")
+            for k, o in enumerate(card["options"]):
+                _i18n(o["label"], f"{deck} {card['id']} option {k}", errors)
+                _effects(o["effects"], f"{deck} {card['id']} option {k}", errors)
+    story = d["story"]
+    speakers = set(story["characters"]) | set(d["suspects"]) | {"culprit"}
+    looks = story.get("looks", {})
+    for who in story["characters"]:
+        look = looks.get(who)
+        if not isinstance(look, dict):
+            errors.append(f"story: character {who} has no portrait look")
+            continue
+        for key, top in (("skin", 5), ("hair", 6), ("coat", 6), ("hair_style", 4)):
+            if not isinstance(look.get(key), int) or not 0 <= look[key] < top:
+                errors.append(f"story: look {who}.{key} out of range")
+    for case_id, scene in story["scenes"].items():
+        if case_id not in d["cases"]:
+            errors.append(f"story: unknown case {case_id}")
+        for part, lines in scene.items():
+            if part not in ("intro", "outro") or not lines:
+                errors.append(f"story {case_id}: bad part {part}")
+            for ln in lines:
+                if ln["who"] not in speakers:
+                    errors.append(f"story {case_id}: unknown speaker {ln['who']}")
+                if not ln.get("es") or not ln.get("en"):
+                    errors.append(f"story {case_id}: missing text")
+    for net in {c["network"] for c in d["cases"].values()}:
+        _i18n(story["gang_files"].get(net), f"gang file {net}", errors)
+        if story["gang_twist"].get(net) not in ("forged", "sea", "jam", "double", "mixed"):
+            errors.append(f"gang twist {net}: unknown")
+    for kind, msgs in story["messages"].items():
+        for m in msgs:
+            _i18n(m, f"message {kind}", errors)
+    for kid, case in d["cases"].items():
+        obj = case.get("objective", "pursuit")
+        if obj not in OBJECTIVES:
+            errors.append(f"case {kid}: unknown objective {obj}")
+        if obj == "split":
+            at, rb = case.get("split_at"), case.get("route_b", [])
+            route = case["route"]
+            if not isinstance(at, int) or not 0 <= at < len(route) - 2 or not rb:
+                errors.append(f"case {kid}: bad split")
+                continue
+            for city in rb:
+                if city in route or not cities.get(city, {}).get("clues"):
+                    errors.append(f"case {kid}: branch city {city} must be new and have clues")
+            if cities[route[at + 1]]["country_code"] == cities[rb[0]]["country_code"]:
+                errors.append(f"case {kid}: the two branches must start in different countries")
+            if case.get("culprit_b") not in d["suspects"] or case.get("culprit_b") == case["culprit"]:
+                errors.append(f"case {kid}: needs a second culprit")
+            ob = case.get("trait_order_b", [])
+            if sorted(ob) != sorted(case["trait_order"]) or ob[: at + 1] != case["trait_order"][: at + 1]:
+                errors.append(f"case {kid}: branch trait order must share the first {at + 1} traits")
+            a, b = d["suspects"][case["culprit"]]["traits"], d["suspects"].get(case.get("culprit_b"), {}).get("traits", {})
+            if any(a[t] != b.get(t) for t in case["trait_order"][: at + 1]):
+                errors.append(f"case {kid}: both thieves must share the traits revealed before the split")
+    return errors
 
 
 def _i18n(value, where: str, errors: list[str]) -> None:
@@ -140,7 +258,7 @@ def validate(d: dict) -> list[str]:
     return errors
 
 
-def photo_warnings(d: dict) -> list[str]:
+def photo_warnings(d: dict) -> list[str]:  # noqa: D401
     """Route cities without a CCTV photo (allowed, but worth knowing)."""
     used = {c for k in d["cases"].values() for c in k["route"][1:]}
     used |= {c for e in d.get("escapes", {}).values() for c in e["route"][1:]}
@@ -153,7 +271,7 @@ def main(argv: list[str]) -> int:
     missing = photo_warnings(d)
     if missing:
         print(f"WARNING: {len(missing)} destination(s) without street photo: {', '.join(missing)}")
-    errors = validate(d)
+    errors = validate(d) + validate_depth(d)
     for e in errors:
         print("ERROR:", e)
     print(f"{'OK' if not errors else 'FAILED'} — {len(errors)} error(s)")

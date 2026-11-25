@@ -1,0 +1,496 @@
+{
+  "categories": [
+    "continent",
+    "language",
+    "currency",
+    "drive",
+    "season"
+  ],
+  "values": {
+    "continent": {
+      "europe": {
+        "es": "Europa",
+        "en": "Europe"
+      },
+      "asia": {
+        "es": "Asia",
+        "en": "Asia"
+      },
+      "africa": {
+        "es": "África",
+        "en": "Africa"
+      },
+      "north_america": {
+        "es": "Norteamérica o el Caribe",
+        "en": "North America or the Caribbean"
+      },
+      "south_america": {
+        "es": "Sudamérica",
+        "en": "South America"
+      },
+      "oceania": {
+        "es": "Oceanía",
+        "en": "Oceania"
+      }
+    },
+    "language": {
+      "arabic": {
+        "es": "árabe",
+        "en": "Arabic"
+      },
+      "spanish": {
+        "es": "español",
+        "en": "Spanish"
+      },
+      "english": {
+        "es": "inglés",
+        "en": "English"
+      },
+      "german": {
+        "es": "alemán",
+        "en": "German"
+      },
+      "portuguese": {
+        "es": "portugués",
+        "en": "Portuguese"
+      },
+      "chinese": {
+        "es": "chino",
+        "en": "Chinese"
+      },
+      "french": {
+        "es": "francés",
+        "en": "French"
+      },
+      "greek": {
+        "es": "griego",
+        "en": "Greek"
+      },
+      "hungarian": {
+        "es": "húngaro",
+        "en": "Hungarian"
+      },
+      "hindi": {
+        "es": "hindi",
+        "en": "Hindi"
+      },
+      "icelandic": {
+        "es": "islandés",
+        "en": "Icelandic"
+      },
+      "italian": {
+        "es": "italiano",
+        "en": "Italian"
+      },
+      "japanese": {
+        "es": "japonés",
+        "en": "Japanese"
+      },
+      "swahili": {
+        "es": "suajili",
+        "en": "Swahili"
+      },
+      "korean": {
+        "es": "coreano",
+        "en": "Korean"
+      },
+      "dutch": {
+        "es": "neerlandés",
+        "en": "Dutch"
+      },
+      "russian": {
+        "es": "ruso",
+        "en": "Russian"
+      },
+      "swedish": {
+        "es": "sueco",
+        "en": "Swedish"
+      },
+      "thai": {
+        "es": "tailandés",
+        "en": "Thai"
+      },
+      "turkish": {
+        "es": "turco",
+        "en": "Turkish"
+      }
+    },
+    "currency": {
+      "dirham": {
+        "es": "dírhams",
+        "en": "dirhams"
+      },
+      "peso": {
+        "es": "pesos",
+        "en": "pesos"
+      },
+      "dollar": {
+        "es": "dólares",
+        "en": "dollars"
+      },
+      "euro": {
+        "es": "euros",
+        "en": "euros"
+      },
+      "real": {
+        "es": "reales",
+        "en": "reais"
+      },
+      "pound": {
+        "es": "libras",
+        "en": "pounds"
+      },
+      "forint": {
+        "es": "florines",
+        "en": "forints"
+      },
+      "rupee": {
+        "es": "rupias",
+        "en": "rupees"
+      },
+      "krona": {
+        "es": "coronas",
+        "en": "kronor"
+      },
+      "yen": {
+        "es": "yenes",
+        "en": "yen"
+      },
+      "shilling": {
+        "es": "chelines",
+        "en": "shillings"
+      },
+      "won": {
+        "es": "wones",
+        "en": "won"
+      },
+      "naira": {
+        "es": "nairas",
+        "en": "naira"
+      },
+      "sol": {
+        "es": "soles",
+        "en": "soles"
+      },
+      "rouble": {
+        "es": "rublos",
+        "en": "roubles"
+      },
+      "baht": {
+        "es": "bahts",
+        "en": "baht"
+      },
+      "lira": {
+        "es": "liras",
+        "en": "lira"
+      },
+      "rand": {
+        "es": "rands",
+        "en": "rand"
+      }
+    },
+    "drive": {
+      "left": {
+        "es": "izquierda",
+        "en": "left"
+      },
+      "right": {
+        "es": "derecha",
+        "en": "right"
+      }
+    },
+    "season": {
+      "north": {
+        "es": "verano",
+        "en": "summer"
+      },
+      "south": {
+        "es": "invierno",
+        "en": "winter"
+      }
+    }
+  },
+  "texts": {
+    "continent": {
+      "es": "Su vuelo aterrizó en {v}.",
+      "en": "Their flight landed in {v}."
+    },
+    "language": {
+      "es": "Lo escucharon hablar en {v} por teléfono.",
+      "en": "They were heard speaking {v} on the phone."
+    },
+    "currency": {
+      "es": "Cambió plata a {v} antes de salir.",
+      "en": "They changed money into {v} before leaving."
+    },
+    "drive": {
+      "es": "Alquiló un auto allá: se maneja por la {v}.",
+      "en": "They rented a car there: people drive on the {v}."
+    },
+    "season": {
+      "es": "Armó la valija para el {v}: allá en julio es {v}.",
+      "en": "They packed for {v}: it's {v} there in July."
+    }
+  },
+  "countries": {
+    "ARE": {
+      "continent": "asia",
+      "language": "arabic",
+      "currency": "dirham",
+      "drive": "right",
+      "season": "north"
+    },
+    "ARG": {
+      "continent": "south_america",
+      "language": "spanish",
+      "currency": "peso",
+      "drive": "right",
+      "season": "south"
+    },
+    "AUS": {
+      "continent": "oceania",
+      "language": "english",
+      "currency": "dollar",
+      "drive": "left",
+      "season": "south"
+    },
+    "AUT": {
+      "continent": "europe",
+      "language": "german",
+      "currency": "euro",
+      "drive": "right",
+      "season": "north"
+    },
+    "BRA": {
+      "continent": "south_america",
+      "language": "portuguese",
+      "currency": "real",
+      "drive": "right",
+      "season": "south"
+    },
+    "CAN": {
+      "continent": "north_america",
+      "language": "english",
+      "currency": "dollar",
+      "drive": "right",
+      "season": "north"
+    },
+    "CHL": {
+      "continent": "south_america",
+      "language": "spanish",
+      "currency": "peso",
+      "drive": "right",
+      "season": "south"
+    },
+    "CHN": {
+      "continent": "asia",
+      "language": "chinese",
+      "currency": null,
+      "drive": null,
+      "season": "north"
+    },
+    "COL": {
+      "continent": "south_america",
+      "language": "spanish",
+      "currency": "peso",
+      "drive": "right",
+      "season": null
+    },
+    "CUB": {
+      "continent": "north_america",
+      "language": "spanish",
+      "currency": "peso",
+      "drive": "right",
+      "season": "north"
+    },
+    "DEU": {
+      "continent": "europe",
+      "language": "german",
+      "currency": "euro",
+      "drive": "right",
+      "season": "north"
+    },
+    "EGY": {
+      "continent": "africa",
+      "language": "arabic",
+      "currency": "pound",
+      "drive": "right",
+      "season": "north"
+    },
+    "ESP": {
+      "continent": "europe",
+      "language": "spanish",
+      "currency": "euro",
+      "drive": "right",
+      "season": "north"
+    },
+    "FRA": {
+      "continent": "europe",
+      "language": "french",
+      "currency": "euro",
+      "drive": "right",
+      "season": "north"
+    },
+    "GBR": {
+      "continent": "europe",
+      "language": "english",
+      "currency": "pound",
+      "drive": "left",
+      "season": "north"
+    },
+    "GRC": {
+      "continent": "europe",
+      "language": "greek",
+      "currency": "euro",
+      "drive": "right",
+      "season": "north"
+    },
+    "HUN": {
+      "continent": "europe",
+      "language": "hungarian",
+      "currency": "forint",
+      "drive": "right",
+      "season": "north"
+    },
+    "IND": {
+      "continent": "asia",
+      "language": "hindi",
+      "currency": "rupee",
+      "drive": "left",
+      "season": "north"
+    },
+    "ISL": {
+      "continent": "europe",
+      "language": "icelandic",
+      "currency": "krona",
+      "drive": "right",
+      "season": "north"
+    },
+    "ITA": {
+      "continent": "europe",
+      "language": "italian",
+      "currency": "euro",
+      "drive": "right",
+      "season": "north"
+    },
+    "JPN": {
+      "continent": "asia",
+      "language": "japanese",
+      "currency": "yen",
+      "drive": "left",
+      "season": "north"
+    },
+    "KEN": {
+      "continent": "africa",
+      "language": "swahili",
+      "currency": "shilling",
+      "drive": "left",
+      "season": null
+    },
+    "KOR": {
+      "continent": "asia",
+      "language": "korean",
+      "currency": "won",
+      "drive": "right",
+      "season": "north"
+    },
+    "MAR": {
+      "continent": "africa",
+      "language": "arabic",
+      "currency": "dirham",
+      "drive": "right",
+      "season": "north"
+    },
+    "MEX": {
+      "continent": "north_america",
+      "language": "spanish",
+      "currency": "peso",
+      "drive": "right",
+      "season": "north"
+    },
+    "NGA": {
+      "continent": "africa",
+      "language": "english",
+      "currency": "naira",
+      "drive": "right",
+      "season": null
+    },
+    "NLD": {
+      "continent": "europe",
+      "language": "dutch",
+      "currency": "euro",
+      "drive": "right",
+      "season": "north"
+    },
+    "NZL": {
+      "continent": "oceania",
+      "language": "english",
+      "currency": "dollar",
+      "drive": "left",
+      "season": "south"
+    },
+    "PER": {
+      "continent": "south_america",
+      "language": "spanish",
+      "currency": "sol",
+      "drive": "right",
+      "season": "south"
+    },
+    "PRT": {
+      "continent": "europe",
+      "language": "portuguese",
+      "currency": "euro",
+      "drive": "right",
+      "season": "north"
+    },
+    "RUS": {
+      "continent": "europe",
+      "language": "russian",
+      "currency": "rouble",
+      "drive": "right",
+      "season": "north"
+    },
+    "SGP": {
+      "continent": "asia",
+      "language": "english",
+      "currency": "dollar",
+      "drive": "left",
+      "season": null
+    },
+    "SWE": {
+      "continent": "europe",
+      "language": "swedish",
+      "currency": "krona",
+      "drive": "right",
+      "season": "north"
+    },
+    "THA": {
+      "continent": "asia",
+      "language": "thai",
+      "currency": "baht",
+      "drive": "left",
+      "season": "north"
+    },
+    "TUR": {
+      "continent": null,
+      "language": "turkish",
+      "currency": "lira",
+      "drive": "right",
+      "season": "north"
+    },
+    "USA": {
+      "continent": "north_america",
+      "language": "english",
+      "currency": "dollar",
+      "drive": "right",
+      "season": "north"
+    },
+    "ZAF": {
+      "continent": "africa",
+      "language": "english",
+      "currency": "rand",
+      "drive": "left",
+      "season": "south"
+    }
+  }
+}

@@ -23,6 +23,10 @@ const Minigame = preload("res://ui/minigame.gd")
 const Sfx = preload("res://ui/sfx.gd")
 const RoofChase = preload("res://ui/roof_chase.gd")
 const Coach = preload("res://ui/coach.gd")
+const Gadgets = preload("res://core/gadgets.gd")
+const CityMap = preload("res://ui/city_map.gd")
+const EventCard = preload("res://ui/event_card.gd")
+const StoryScene = preload("res://ui/story_scene.gd")
 const WATER_CITIES := ["amsterdam", "stockholm", "sydney", "istanbul", "hong_kong", "singapore", "rio", "cape_town", "lisbon"]
 
 const BG_SHADER := """
@@ -50,6 +54,14 @@ var current_escape := "escape_01"
 var notebook: Array = []
 var evidence: Array = []
 var known_traits: Dictionary = {}   # trait id -> value learned from evidence
+var leg_notes: Array = []           # clues about the current leg's destination (travel screen)
+var case_seed := 1
+var loadout: Array = []             # gear taken into the current case
+var outro_played := false
+var map_selected := ""              # place highlighted on the city map
+var _pending_tip := ""              # first-time explanation waiting to be shown
+var _tip_screen := ""               # screen the waiting tip belongs to
+var city_note := ""                 # one-line feedback on the city screen (raid miss, detector)
 var last_flight: Dictionary = {}
 var crossed: Dictionary = {}
 var pin: Vector2 = Vector2.INF
@@ -338,6 +350,7 @@ func _build_layout() -> void:
 	cv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	ch.add_child(cv)
 	clock_label = _label(cv, "", 15, Style.INK, "ui_bold")
+	clock_label.autowrap_mode = TextServer.AUTOWRAP_OFF   # "Hours: 29 / 130" stays on one line
 	clock_bar = ProgressBar.new()
 	clock_bar.custom_minimum_size = Vector2(110 if compact else 150, 6)
 	clock_bar.show_percentage = false
@@ -973,7 +986,7 @@ func show_cases() -> void:
 			_title(col, loc.t(cd["network_name"]), 24, Style.INK)
 			row = _grid(col, 3) if compact else _hbox(col, 14)
 		var unlocked: bool = progress.is_unlocked(n, by)
-		var meta: String = loc.s("case_meta", {"stops": cd["route"].size()}) + ("  ·  " + loc.s("boss") if n % 3 == 0 else "")
+		var meta: String = loc.s("obj_" + str(cd.get("objective", "pursuit"))) + "  ·  " + loc.s("case_meta", {"stops": cd["route"].size()}) + ("  ·  " + loc.s("boss") if n % 3 == 0 else "")
 		cards.append(_case_card(row, loc.t(cd["title"]), loc.t(cd["network_name"]), meta, progress.best(cd["id"]), unlocked, GANG_COLOR.get(cd["network"], Style.CORAL), func():
 			current_case = cd["id"]
 			_start_case()))
@@ -1015,25 +1028,41 @@ func _start_case() -> void:
 	force_tutorial = false
 	_tut_seen = {}
 	esc = null
-	state = CaseState.new(data, current_case, randi() % 100000 + 1)
+	case_seed = randi() % 100000 + 1
+	state = CaseState.new(data, current_case, case_seed)
 	hours_before = -1
 	notebook.clear()
 	evidence.clear()
 	known_traits.clear()
+	leg_notes.clear()
 	last_flight = {}
 	crossed = {}
 	chase_result = ""
 	recorded = false
 	promoted = false
+	outro_played = false
 	pin = Vector2.INF
+	loadout = _valid_loadout()
 	show_briefing()
+	_play_story("intro")
+
+
+## Gear the player may take into this case (remembered choice, trimmed to what is unlocked).
+func _valid_loadout() -> Array:
+	if tutorial != "":
+		return []
+	var stars: int = progress.total_stars()
+	var out: Array = progress.loadout.filter(func(g): return Gadgets.is_unlocked(g, stars))
+	while out.size() > Gadgets.slots(stars):
+		out.pop_back()
+	return out
 
 
 func show_briefing() -> void:
 	screen = "briefing"
 	var cd: Dictionary = state.case_def
 	_chrome(loc.s("briefing"), false)
-	var v := _paper(page)
+	var v := _paper(page if compact else _scroll(page))
 	var head := _hbox(v, 12)
 	var hv := _vbox(head, 2)
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -1046,14 +1075,16 @@ func show_briefing() -> void:
 	_wrap(_label(v, loc.t(cd["crime"]), 18, Style.INK2))
 	var chips := _flow(v, 8)
 	var arc := int((int(cd["number"]) - 1) / 3) + 1
+	_chip(chips, loc.s("obj_" + state.objective), Style.NAVY)
 	_chip(chips, loc.s("chip_difficulty", {"n": arc}), Style.CORAL)
 	_chip(chips, loc.s("chip_cities", {"n": cd["route"].size()}), Style.SKY)
 	_chip(chips, loc.s("chip_radius", {"km": int(state.radius_km)}), Style.NAVY)
 	_chip(chips, loc.s("chip_hours", {"h": state.budget}), Style.GREEN)
 	_label(v, loc.s("objective"), 13, Style.MUTED, "ui_bold")
-	for i in range(1, 4):
+	var lines := [loc.s("objective_1"), loc.s("objective_2"), loc.s("objective_3") if state.objective == "pursuit" else loc.s("obj_%s_desc" % state.objective)]
+	for i in range(3):
 		var r := _hbox(v, 10)
-		var num := _label(r, str(i), 15, Color.WHITE, "ui_bold")
+		var num := _label(r, str(i + 1), 15, Color.WHITE, "ui_bold")
 		num.custom_minimum_size = Vector2(26, 26)
 		num.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		num.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -1061,7 +1092,15 @@ func show_briefing() -> void:
 		nb.bg_color = Style.CORAL
 		nb.set_corner_radius_all(13)
 		num.add_theme_stylebox_override("normal", nb)
-		_wrap(_label(r, loc.s("objective_%d" % i), 16, Style.INK))
+		_wrap(_label(r, lines[i], 16, Style.INK))
+	if int(cd.get("twists", 0)) > 0:
+		var gf := _card(v, 14, Color("fdecec"), Color("f6c4c2"))
+		_label(gf, loc.s("gang_file_title").to_upper(), 12, Style.ROSE, "ui_bold")
+		_wrap(_label(gf, loc.t(data.story["gang_files"][cd["network"]]), 15, Style.INK))
+	if tutorial == "":
+		_gear_picker(v)
+		if not Gadgets.unlocked(progress.total_stars()).is_empty():
+			_tip("gear")
 	var bh := _btn_row(v)
 	if compact:
 		_named(_button(bh, loc.s("accept_case"), _accept_case, "primary", false, "cuffs"), "AcceptButton")
@@ -1071,13 +1110,101 @@ func show_briefing() -> void:
 		_named(_button(bh, loc.s("accept_case"), _accept_case, "primary", false, "cuffs"), "AcceptButton")
 
 
+## Gear selection in the briefing (ADR-0015 §5).
+func _gear_picker(parent: Control) -> void:
+	var stars: int = progress.total_stars()
+	var unlocked := Gadgets.unlocked(stars)
+	var box := _card(parent, 14, Style.SURFACE2, Style.LINE)
+	_label(box, loc.s("gear_title").to_upper(), 12, Style.NAVY, "ui_bold")
+	if unlocked.is_empty():
+		_wrap(_label(box, loc.s("gear_none_yet"), 14, Style.INK2))
+		return
+	_label(box, loc.s("gear_choose", {"n": Gadgets.slots(stars)}), 14, Style.INK2)
+	var grid := _grid(box, 2, 8)
+	for g in Gadgets.LIST:
+		var id: String = g["id"]
+		if not id in unlocked:
+			continue
+		var on: bool = id in loadout
+		var b := Button.new()
+		b.name = "Gear_" + id
+		b.toggle_mode = true
+		b.button_pressed = on
+		b.focus_mode = Control.FOCUS_NONE
+		b.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.custom_minimum_size = Vector2(0, 64)
+		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		b.add_theme_font_size_override("font_size", 14)
+		b.text = "%s %s  ·  %s\n%s" % ["✓" if on else "○", loc.s("gadget_%s_name" % id), loc.s("gear_" + str(g["kind"])), loc.s("gadget_%s_desc" % id)]
+		if on:
+			b.add_theme_stylebox_override("normal", Style.box(Color(Style.SKY, 0.1), 14, 12, Style.SKY, 2, false))
+			b.add_theme_stylebox_override("pressed", Style.box(Color(Style.SKY, 0.1), 14, 12, Style.SKY, 2, false))
+		else:
+			b.add_theme_stylebox_override("normal", Style.box(Style.SURFACE, 14, 12, Style.LINE, 1, false))
+			b.add_theme_stylebox_override("pressed", Style.box(Style.SURFACE, 14, 12, Style.LINE, 1, false))
+		b.pressed.connect(_toggle_gear.bind(id))
+		grid.add_child(b)
+	var nxt: Dictionary = {}
+	for g in Gadgets.LIST:
+		if not g["id"] in unlocked:
+			nxt = g
+			break
+	if not nxt.is_empty():
+		_label(box, loc.s("gear_next", {"name": loc.s("gadget_%s_name" % nxt["id"]), "n": nxt["unlock"]}), 12, Style.MUTED)
+
+
+func _toggle_gear(id: String) -> void:
+	if id in loadout:
+		loadout.erase(id)
+	elif loadout.size() < Gadgets.slots(progress.total_stars()):
+		loadout.append(id)
+	progress.loadout = loadout.duplicate()
+	progress.save_file()
+	show_briefing.call_deferred()
+
+
 func _accept_case() -> void:
 	if busy:
 		return
 	busy = true
+	if not loadout.is_empty():
+		state = CaseState.new(data, current_case, case_seed, loadout)
+		for t in state.known_traits:
+			var c := {"kind": "trait", "trait": t, "value": state.known_traits[t], "text": data.traits[t]["values"][state.known_traits[t]]["clues"][0]}
+			_note(c, "file")
 	await _cutscene("heist", loc.s("cut_heist", {"city": _city(state.route()[0])}), state.route()[0])
 	busy = false
 	show_city()
+
+
+## Play the case's story scene ("intro" / "outro") in the overlay, if it has one.
+func _play_story(part: String) -> void:
+	var case_id: String = state.case_def["id"] if state else ""
+	var scene: Array = data.story.get("scenes", {}).get(case_id, {}).get(part, [])
+	if scene.is_empty():
+		return
+	var lines: Array = []
+	for ln in scene:
+		var who: String = ln["who"]
+		var name := ""
+		var look: Dictionary = data.story.get("looks", {}).get(who, {})
+		var portrait := {"id": "char_" + who, "traits": look.get("traits", {}), "look": look}
+		if who == "culprit":
+			who = state.culprit()
+		if data.suspects.has(who):
+			name = str(data.suspects[who]["name"])
+			portrait = data.suspects[who]
+		else:
+			name = loc.t(data.story["characters"].get(who, {"es": who, "en": who}))
+		var culprit_name := str(data.suspects[state.culprit()]["name"])
+		lines.append({"id": who, "name": name, "portrait": portrait, "text": loc.t(ln).replace("{culprit}", culprit_name)})
+	var sc := StoryScene.new()
+	_show_overlay(sc)
+	sc.setup(lines, loc.s("story_next"), loc.s("story_start") if part == "intro" else loc.s("story_end"), loc.s("story_skip"))
+	await sc.finished
+	_close_overlay()
+	_coach_update.call_deferred()
 
 
 func _banner(parent: Control, city_id: String, height := 136.0) -> VBoxContainer:
@@ -1107,9 +1234,10 @@ func show_city() -> void:
 		return
 	screen = "city"
 	_chrome(loc.t(state.case_def["title"]), false)
-	var col := _vbox(page, 12)
+	known_traits = state.known_traits
+	var col := _vbox(page, 10)
 	var c: Dictionary = data.cities[state.current]
-	var bv := _banner(col, state.current)
+	var bv := _banner(col, state.current, 104)
 	var sub: Container = _flow(bv, 8) if compact else _hbox(bv, 10)
 	_label(sub, loc.t(c["country"]), 17, Style.INK2, "ui_bold")
 	if state.is_final():
@@ -1120,11 +1248,126 @@ func show_city() -> void:
 		_chip(sub, loc.s("status_cold"), Style.ROSE)
 	if not last_flight.is_empty():
 		var key := "flight_hit" if last_flight["hit"] else "flight_miss"
-		_label(col if compact else bv, loc.s(key, {"city": _city(last_flight["city"]), "km": int(last_flight["km_off"])}), 14, Style.INK2)
+		_label(col, loc.s(key, {"city": _city(last_flight["city"]), "km": int(last_flight["km_off"])}), 14, Style.INK2)
+	if city_note != "":
+		_wrap(_label(col, city_note, 14, Style.ROSE, "ui_bold"))
+	_lead_strip(col)
+	_step_strip(col)
+	if state.on_trail() and not state.is_final() and state.stop > 0:
+		_tip("lead")
+	if state.is_split_city():
+		_tip("split")
+		var sn := _card(col, 12, Color("fff6dd"), Color("f2d38a"))
+		_wrap(_label(sn, loc.s("split_note"), 14, Style.INK, "ui_bold"))
+	if state.objective == "recover" and state.is_final():
+		_raid_section(col)
+		_city_buttons(col)
+		return
+	var map := _city_map(col)
+	var list_parent: Control = col
+	if not compact:
+		# Desktop: map on the left, the places on the right.
+		var row := _hbox(col, 12)
+		row.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		col.remove_child(map.get_parent().get_parent())
+		row.add_child(map.get_parent().get_parent())
+		(map.get_parent().get_parent() as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var side := _vbox(row, 8)
+		side.custom_minimum_size.x = 440
+		var sc := ScrollContainer.new()
+		sc.name = "PlacesScroll"
+		sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		sc.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		side.add_child(sc)
+		list_parent = _vbox(sc, 8)
+		list_parent.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_trail_meter(list_parent)
+	var rows: Array = []
+	for spot in CaseState.SPOTS:
+		rows.append(_place_row(list_parent, spot))
+	_gear_bar(list_parent, "city")
+	_city_buttons(col)
+	_stagger(rows, 0.04)
 
+
+func _city_map(parent: Control) -> Control:
+	var c: Dictionary = data.cities[state.current]
+	var card := _card(parent, 6, Color("eef3f8"))
+	var map := CityMap.new()
+	map.name = "CityMap"
+	# Phone portrait: tall enough for the names and the landmark (tests/city_map_check.gd).
+	map.custom_minimum_size = Vector2(0, (clampf(_vp().y * 0.32, 240.0, 290.0) if _vp().x < 600.0 else 200.0) if compact else 260.0)
+	map.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	card.add_child(map)
+	var places: Array = []
+	for spot in CaseState.SPOTS:
+		places.append({"id": spot, "icon": spot, "label": loc.s("place_" + spot), "done": state.visited.has(spot), "disabled": state.is_burned(spot)})
+	map.setup_sources(state.current, str(c.get("water", "none")), loc.t(c.get("landmark", {"es": "", "en": ""})), places, loc.s("place_airport"))
+	map.set_selected(map_selected)
+	map.place_pressed.connect(_on_map_place)
+	return map
+
+
+func _on_map_place(id: String) -> void:
+	if id == "airport":
+		if state.can_travel():
+			show_travel()
+		return
+	map_selected = id
+	var row := _find("Place_" + id)
+	if row:
+		var p := row.get_parent()
+		while p != null and not (p is ScrollContainer):
+			p = p.get_parent()
+		if p is ScrollContainer:
+			(p as ScrollContainer).ensure_control_visible(row)
+		Fx.pulse(row, 1)
+		for spot in CaseState.SPOTS:
+			var r := _find("Place_" + spot)
+			if r:
+				r.modulate = Color.WHITE if spot == id else Color(1, 1, 1, 0.75)
+
+
+## The thief's lead and any intercepted message (ADR-0015 §3).
+func _lead_strip(parent: Control) -> void:
+	if not state.on_trail():
+		return
+	var txt := ""
+	var col: Color = Style.INK2
+	if state.is_final():
+		txt = loc.s("lead_final")
+		col = Style.ROSE
+	else:
+		var l: float = state.lead()
+		if l <= 0.0:
+			txt = loc.s("lead_here")
+			col = Style.ROSE
+		else:
+			txt = loc.s("lead_left", {"h": int(ceil(l))})
+			col = Style.ROSE if l <= CaseState.REACT_LEAD else (Style.GOLD.darkened(0.2) if l <= 8.0 else Style.INK2)
+	var strip := PanelContainer.new()
+	strip.name = "LeadStrip"
+	strip.add_theme_stylebox_override("panel", Style.box(Color(col, 0.08), 14, 10, Color(col, 0.35), 1, false))
+	parent.add_child(strip)
+	var h := _hbox(strip, 10)
+	h.add_child(_icon("clock", col, 22))
+	_wrap(_label(h, txt, 15, col, "ui_bold"))
+	if not state.message.is_empty():
+		var msgs: Array = data.story.get("messages", {}).get(state.message["type"], [])
+		if not msgs.is_empty():
+			var m := PanelContainer.new()
+			m.name = "ThiefMessage"
+			m.add_theme_stylebox_override("panel", Style.box(Style.NAVY, 14, 12, Color.TRANSPARENT, 0, false))
+			parent.add_child(m)
+			var mv := _vbox(m, 4)
+			_label(mv, loc.s("intercepted"), 11, Color("ffb59e"), "ui_bold")
+			_wrap(_label(mv, loc.t(msgs[int(state.message["index"]) % msgs.size()]).replace("{city}", _city(state.current)), 15, Color.WHITE, "mono"))
+
+
+func _step_strip(parent: Control) -> void:
 	var strip := PanelContainer.new()
 	strip.add_theme_stylebox_override("panel", Style.box(Color("fff4e6"), 14, 12, Color("ffd8b0"), 1, false))
-	col.add_child(strip)
+	parent.add_child(strip)
 	var sh := _hbox(strip, 12)
 	sh.add_child(_icon("notebook", Style.CORAL, 22))
 	var step_box: Control = _vbox(sh, 2) if compact else sh
@@ -1133,107 +1376,279 @@ func show_city() -> void:
 	_label(step_box, loc.s("next_step"), 15, Style.CORAL, "ui_bold")
 	_wrap(_label(step_box, loc.s(_next_step_key(), {"city": _city(state.route()[state.stop])}), 15, Style.INK))
 
-	var cards: Container = _grid(col, 4, 12) if compact else _hbox(col, 12)
-	cards.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var list: Array = []
-	for spot in CaseState.SPOTS:
-		list.append(_evidence_card(cards, spot))
 
+func _trail_meter(parent: Control) -> void:
+	if not state.on_trail() or state.is_final():
+		return
+	var key := "trail_cold" if state.is_cold() else "trail_meter"
+	_wrap(_label(parent, loc.s(key, {"used": state.actions_used, "limit": state.action_limit(), "x": CaseState.COLD_SURCHARGE}), 13,
+		Style.ROSE if state.is_cold() else Style.INK2, "ui_bold"))
+
+
+func _city_buttons(col: Control) -> void:
+	var arrest_text: String = loc.s("rescue_button") if state.objective == "rescue" else loc.s("arrest")
+	var show_arrest: bool = state.is_final() and state.objective != "recover"
 	if compact:
-		# Main action first and full width, then notebook / board side by side.
-		if state.is_final():
-			_named(_button(col, loc.s("arrest"), show_chase, "primary", false, "cuffs"), "ArrestButton")
+		if show_arrest:
+			_named(_button(col, arrest_text, show_chase, "primary", false, "cuffs"), "ArrestButton")
 		elif state.can_travel():
 			_named(_button(col, loc.s("travel"), show_travel, "primary", false, "globe"), "TravelButton")
 		var bar2 := _hbox(col, 8)
 		_shrinkable(_button(bar2, loc.s("notebook_btn", {"n": notebook.size()}), show_notebook, "secondary", false, "notebook"))
-		_shrinkable(_named(_button(bar2, loc.s("board"), show_board, "secondary", false, "board"), "BoardButton"))
-		_stagger(list, 0.05)
+		_shrinkable(_named(_button(bar2, loc.s("board_hideout_title") if state.objective == "recover" else loc.s("board"), show_board, "secondary", false, "board"), "BoardButton"))
 		return
 	var bar := _hbox(col, 10)
 	_button(bar, loc.s("notebook_btn", {"n": notebook.size()}), show_notebook, "secondary", false, "notebook").custom_minimum_size = Vector2(210, 0)
-	_named(_button(bar, loc.s("board"), show_board, "secondary", false, "board"), "BoardButton").custom_minimum_size = Vector2(210, 0)
+	_named(_button(bar, loc.s("board_hideout_title") if state.objective == "recover" else loc.s("board"), show_board, "secondary", false, "board"), "BoardButton").custom_minimum_size = Vector2(210, 0)
 	_spacer(bar, false)
-	if state.is_final():
-		_named(_button(bar, loc.s("arrest"), show_chase, "primary", false, "cuffs"), "ArrestButton").custom_minimum_size = Vector2(300, 0)
+	if show_arrest:
+		_named(_button(bar, arrest_text, show_chase, "primary", false, "cuffs"), "ArrestButton").custom_minimum_size = Vector2(300, 0)
 	elif state.can_travel():
 		_named(_button(bar, loc.s("travel"), show_travel, "primary", false, "globe"), "TravelButton").custom_minimum_size = Vector2(300, 0)
-	_stagger(list, 0.05)
 
 
 func _next_step_key() -> String:
 	if not state.on_trail():
 		return "step_deadend"
 	if state.is_final():
+		if state.objective == "recover":
+			return "step_recover_final"
+		if state.objective == "rescue" and state.warrant == "":
+			return "step_rescue_final"
 		return "step_final_warrant" if state.warrant == "" else "step_final_arrest"
 	if state.visited.size() >= 2:
 		return "step_travel"
 	return "step_investigate"
 
 
-func _evidence_card(parent: Control, spot: String) -> Control:
+## Clarity chip of a source before investigating (ADR-0015 §1).
+func _clarity(spot: String) -> Array:
+	var c: Dictionary = state.peek(spot)
+	match c.get("kind", ""):
+		"dest":
+			var t := int(c.get("tier", 2))
+			return [loc.s("clarity_%d" % t), [Style.GREEN, Style.GOLD.darkened(0.25), Style.ROSE][t - 1]]
+		"fact":
+			return [loc.s("clarity_fact"), Style.SKY]
+		"street":
+			return [loc.s("clarity_photo"), Style.NAVY]
+		"trait", "hide":
+			return [loc.s("clarity_who"), Style.ROSE]
+	return []
+
+
+func _place_row(parent: Control, spot: String) -> Control:
 	var done: bool = state.visited.has(spot)
-	var q: String = "q_who" if state.is_final() else SPOT_QUESTION[spot]
-	var accent: Color = Style.SKY if q == "q_where" else Style.ROSE
+	var burned: bool = state.is_burned(spot)
+	var who: bool = state.is_final() or spot == "money"
+	var accent: Color = Style.ROSE if who else Style.SKY
 	var p := PanelContainer.new()
+	p.name = "Place_" + spot
 	p.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	p.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	p.add_theme_stylebox_override("panel", Style.box(Style.SURFACE, 18, 16, accent if done else Color.TRANSPARENT, 2 if done else 0))
+	p.add_theme_stylebox_override("panel", Style.box(Style.SURFACE, 16, 12, accent if done else Color.TRANSPARENT, 2 if done else 0))
 	parent.add_child(p)
-	var v := VBoxContainer.new()
-	v.add_theme_constant_override("separation", 8)
-	p.add_child(v)
+	var v := _vbox(p, 6)
 	var head := _hbox(v, 10)
-	head.add_child(_icon_badge(spot, accent, 44))
+	head.add_child(_icon_badge(spot, accent, 38))
 	var hv := _vbox(head, 0)
 	hv.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_title(hv, loc.s("spot_" + spot), 19)
-	_label(hv, loc.s(q), 12, accent, "ui_bold")
+	_title(hv, loc.s("place_" + spot), 17)
+	_label(hv, "%s · %s" % [loc.s("spot_" + spot), loc.s("q_who" if who else "q_where")], 12, accent, "ui_bold")
+	if not done and not burned and state.on_trail():
+		var cl := _clarity(spot)
+		if not cl.is_empty():
+			var chip := PanelContainer.new()
+			chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+			chip.add_theme_stylebox_override("panel", Style.pill(Color(cl[1], 0.12), 10, 4))
+			head.add_child(chip)
+			var cll := Label.new()
+			cll.text = cl[0]
+			cll.add_theme_font_override("font", Style.font("ui_bold"))
+			cll.add_theme_font_size_override("font_size", _fs(12))
+			cll.add_theme_color_override("font_color", (cl[1] as Color).darkened(0.1))
+			chip.add_child(cll)
+	if burned:
+		_wrap(_label(v, loc.s("burned_note"), 14, Style.ROSE, "ui_bold"))
+		return p
 	if not done:
-		_label(v, loc.s("desc_" + spot), 14, Style.INK2)
-		_spacer(v)
-		var b := _button(v, loc.s("investigate", {"h": CaseState.SPOT_COST[spot]}), _investigate.bind(spot))
+		if not compact:
+			_wrap(_label(v, loc.s("desc_" + spot), 13, Style.INK2))
+		var cost: int = state.action_cost(spot)
+		var txt: String = loc.s("investigate_free") if state.free_next else (loc.s("investigate_cold", {"h": cost}) if state.is_cold() else loc.s("investigate", {"h": cost}))
+		var b := _button(v, txt, _investigate.bind(spot))
 		b.name = "Investigate_" + spot
-		Style.primary(b, accent)
+		Style.primary(b, accent if not state.is_cold() else Style.MUTED)
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		return p
 	var clue: Dictionary = state.visited[spot]
-	var inner: VBoxContainer
-	if compact:
-		inner = _vbox(v, 6)
-	else:
-		var sc := ScrollContainer.new()
-		sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-		sc.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		v.add_child(sc)
-		inner = _vbox(sc, 6)
-	inner.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	if clue.get("kind") == "street":
 		var img_path = clue["street"].get("image")
 		if img_path != null and ResourceLoader.exists(img_path):
 			var frame := PanelContainer.new()
-			frame.custom_minimum_size = Vector2(0, 150 if compact else 96)
+			frame.custom_minimum_size = Vector2(0, 140 if compact else 110)
 			frame.add_theme_stylebox_override("panel", Style.box(Color("0f1a2b"), 10, 0, Color.TRANSPARENT, 0, false))
 			frame.clip_children = CanvasItem.CLIP_CHILDREN_AND_DRAW
-			inner.add_child(frame)
+			v.add_child(frame)
 			var tr := TextureRect.new()
 			tr.texture = load(img_path)
 			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 			frame.add_child(tr)
-	_label(inner, _card_text(clue), 14, Style.INK, "mono")
+	_wrap(_label(v, _card_text(clue), 14, Style.INK, "mono"))
+	if clue.get("double", false) and state.has_gadget("lens"):
+		_wrap(_label(v, loc.s("double_note"), 13, Style.ROSE, "ui_bold"))
+	if state.detector_spot == spot:
+		_wrap(_label(v, loc.s("fake_note"), 13, Style.ROSE, "ui_bold"))
+	if clue.get("jammed", false):
+		_wrap(_label(v, loc.s("jammed_note"), 13, Style.GOLD.darkened(0.3), "ui_bold"))
+		_named(_button(v, loc.s("decrypt"), _on_decrypt), "DecryptButton").size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	if clue.get("hint_locked", false):
-		_button(v, loc.s("enhance"), _on_enhance).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_named(_button(v, loc.s("enhance"), _on_enhance), "EnhanceButton").size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	return p
 
 
+## Gear chips + "Use" for once-per-case gadgets that make sense on this screen.
+func _gear_bar(parent: Control, where: String) -> void:
+	if state.gadgets.is_empty():
+		return
+	var box := _flow(parent, 6)
+	box.name = "GearBar"
+	for id in state.gadgets:
+		var g := Gadgets.get_def(id)
+		var usable_here: bool = (where == "city" and id == "detector") or (where == "travel" and id in ["interpol", "jet"])
+		if g["kind"] == "once" and usable_here and state.gadget_available(id):
+			var b := _button(box, "%s: %s" % [loc.s("gear_use"), loc.s("gadget_%s_name" % id)], _use_gadget.bind(id))
+			b.name = "UseGear_" + id
+			b.add_theme_font_size_override("font_size", 13)
+		else:
+			var used: bool = state.gadget_used.has(id)
+			_chip(box, loc.s("gadget_%s_name" % id) + (" · " + loc.s("gear_used") if used else ""), Style.MUTED if used else Style.NAVY)
+
+
+func _use_gadget(id: String) -> void:
+	var r: Dictionary = state.use_gadget(id)
+	if id == "detector":
+		city_note = loc.s("detector_found", {"spot": loc.s("place_" + str(r.get("fake", "")))}) if str(r.get("fake", "")) != "" else loc.s("detector_none")
+	Sfx.play("lock", -6.0)
+	_refresh()
+
+
+## Recover objective, final city: the six candidate hideouts.
+func _raid_section(col: Control) -> void:
+	var known := _card(col, 12, Color("eef4ff"), Color("c9dcff"))
+	_label(known, loc.s("known_hideout_title").to_upper(), 12, Style.NAVY, "ui_bold")
+	if state.known_hideout.is_empty():
+		_wrap(_label(known, loc.s("hideout_none"), 14, Style.INK2))
+	for a in state.hideout_order:
+		if state.known_hideout.has(a):
+			var lbl: Dictionary = data.hideout["values"][a][state.known_hideout[a]]["label"]
+			_label(known, "• %s: %s" % [loc.s("hideout_" + a), loc.t(lbl)], 14, Style.INK, "ui_bold")
+	var c: Dictionary = data.cities[state.current]
+	var card := _card(col, 6, Color("eef3f8"))
+	var map := CityMap.new()
+	map.name = "CityMap"
+	map.custom_minimum_size = Vector2(0, (300 if _vp().x < 600.0 else 240) if compact else 280)
+	card.add_child(map)
+	var places: Array = []
+	for pl in state.places:
+		places.append({"id": pl["id"], "zone": pl["zone"], "label": loc.t(pl["name"]), "done": pl["id"] in state.raided, "disabled": pl["id"] in state.raided})
+	map.setup_hideouts(state.current, str(c.get("water", "none")), loc.t(c.get("landmark", {"es": "", "en": ""})), places)
+	map.place_pressed.connect(func(id):
+		var row := _find("Hideout_" + id)
+		if row:
+			var p := row.get_parent()
+			while p != null and not (p is ScrollContainer):
+				p = p.get_parent()
+			if p is ScrollContainer:
+				(p as ScrollContainer).ensure_control_visible(row)
+			Fx.pulse(row, 1))
+	_label(col, loc.s("places_title").to_upper(), 12, Style.MUTED, "ui_bold")
+	var grid := _grid(col, 2, 10)
+	for k in range(state.places.size()):
+		grid.add_child(_hideout_card(state.places[k], k, true))
+	_label(col, loc.s("more_info_title").to_upper(), 12, Style.MUTED, "ui_bold")
+	var more := _grid(col, 2, 10)
+	for spot in CaseState.SPOTS:
+		_place_row(more, spot)
+
+
+func _hideout_card(pl: Dictionary, k: int, raid_button: bool) -> Control:
+	var raided: bool = pl["id"] in state.raided
+	var out: bool = crossed.get(pl["id"], false)
+	var p := PanelContainer.new()
+	p.name = "Hideout_" + pl["id"]
+	p.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	p.add_theme_stylebox_override("panel", Style.box(Style.SURFACE if not (raided or out) else Color("efeae2"), 14, 12, Style.LINE, 1, false))
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 4)
+	p.add_child(v)
+	_wrap(_label(v, "%s · %s" % [char(65 + k), loc.t(pl["name"])], 15, Style.INK if not (raided or out) else Style.MUTED, "ui_bold"))
+	for a in ["zone", "kind", "detail"]:
+		var lbl: Dictionary = data.hideout["values"][a][pl[a]]["label"]
+		var mark := ""
+		var colr: Color = Style.INK2
+		if state.known_hideout.has(a):
+			var ok: bool = state.known_hideout[a] == pl[a]
+			mark = "  ✓" if ok else "  ✗"
+			colr = Style.GREEN if ok else Style.ROSE
+		_wrap(_label(v, "%s: %s%s" % [loc.s("hideout_" + a), loc.t(lbl), mark], 12, colr))
+	if raided:
+		_label(v, loc.s("raid_empty"), 13, Style.MUTED, "ui_bold")
+	elif raid_button:
+		var b := _button(v, loc.s("raid"), _raid.bind(pl["id"]), "primary")
+		b.name = "Raid_" + pl["id"]
+	else:
+		var x := Button.new()
+		x.name = "Cross_" + pl["id"]
+		x.text = loc.s("restore") if out else loc.s("cross_out")
+		x.focus_mode = Control.FOCUS_NONE
+		x.pressed.connect(func():
+			crossed[pl["id"]] = not out
+			show_board())
+		v.add_child(x)
+	return p
+
+
+func _raid(place_id: String) -> void:
+	if busy:
+		return
+	var name := ""
+	for pl in state.places:
+		if pl["id"] == place_id:
+			name = loc.t(pl["name"])
+	var r: Dictionary = state.raid(place_id)
+	if r.is_empty():
+		return
+	if r.get("found", false):
+		busy = true
+		chase_result = ""
+		await _cutscene("arrest", loc.s("won_recover", {"place": name}), state.current)
+		busy = false
+		show_results()
+		return
+	Sfx.play("fail", -4.0)
+	city_note = loc.s("raid_miss", {"place": name})
+	show_city()
+
+
 func _card_text(clue: Dictionary) -> String:
+	var pre := ""
+	if clue.has("thief"):
+		pre = loc.s("thief_1" if clue["thief"] == "a" else "thief_2") + ": "
 	match clue.get("kind", ""):
 		"dest":
-			return "«" + loc.t(clue["text"]) + "»"
+			var t: String = loc.t(clue["text"])
+			if clue.get("jammed", false):
+				t = _jam(t)
+			return pre + "«" + t + "»"
+		"fact":
+			return loc.t(clue["text"])
 		"trait":
-			var pre: String = loc.s("near_short") + " " if clue.get("near", false) else ""
-			return pre + loc.t(clue["text"]) + "\n" + loc.s("about_trait", {"trait": loc.t(data.traits[clue["trait"]]["name"])})
+			var near: String = loc.s("near_short") + " " if clue.get("near", false) else ""
+			return near + loc.t(clue["text"]) + "\n" + loc.s("about_trait", {"trait": loc.t(data.traits[clue["trait"]]["name"])})
+		"hide":
+			var near2: String = loc.s("near_short") + " " if clue.get("near", false) else ""
+			return near2 + loc.t(clue["text"]) + "\n" + loc.s("about_hideout", {"attr": loc.s("hideout_" + str(clue["attr"]))})
 		"street":
 			if clue.get("hint_locked", false):
 				return loc.s("cctv_locked")
@@ -1244,8 +1659,34 @@ func _card_text(clue: Dictionary) -> String:
 			return loc.s("deadend")
 
 
+## Zero Signal interference: every third longer word blacked out (deterministic).
+func _jam(t: String) -> String:
+	var words := t.split(" ")
+	for i in range(words.size()):
+		if i % 3 == 1 and words[i].length() > 3:
+			words[i] = "[?]"
+	return " ".join(words)
+
+
 func _clue_text(clue: Dictionary, spot: String) -> String:
-	return "%s · %s — %s" % [_city(state.current), loc.s("spot_" + spot), _card_text(clue).replace("\n", " ")]
+	var src: String = loc.s("event_source") if spot == "event" else (loc.s("gadget_file_name") if spot == "file" else loc.s("spot_" + spot))
+	return "%s · %s — %s" % [_city(state.current), src, _card_text(clue).replace("\n", " ")]
+
+
+## Record a clue in the notebook (and as evidence / destination note).
+func _note(clue: Dictionary, spot: String) -> void:
+	if clue.is_empty():
+		return
+	var line := _clue_text(clue, spot)
+	if not line in notebook:
+		notebook.append(line)
+	if clue.get("kind") in ["trait", "hide"] and not line in evidence:
+		evidence.append(line)
+	if clue.get("kind") in ["dest", "fact"] and state.on_trail() and not state.is_final():
+		var dn := _card_text(clue)
+		if not dn in leg_notes:
+			leg_notes.append(dn)
+	known_traits = state.known_traits
 
 
 func _reveal_texts(spot: String, clue: Dictionary) -> Dictionary:
@@ -1287,12 +1728,13 @@ func _pick_variant(kind: String, img) -> String:
 
 
 func _investigate(spot: String) -> void:
-	if busy or state.visited.has(spot):
+	if busy or state.visited.has(spot) or state.is_burned(spot):
 		return
 	busy = true
+	city_note = ""
 	var clue: Dictionary = state.peek(spot)
 	var kind := spot if clue.get("kind") != "deadend" else "note"
-	if kind == "wiretap" and clue.get("kind") != "dest":
+	if kind == "wiretap" and not clue.get("kind") in ["dest", "fact"]:
 		kind = "note"   # final-city wiretap gives a trait: no tuning needed
 	if kind == "cctv" and clue.get("kind") != "street":
 		kind = "note"   # final-city camera reports a trait, not a photo
@@ -1303,14 +1745,15 @@ func _investigate(spot: String) -> void:
 	rv.setup(kind, _reveal_texts(spot, clue), img, portrait, _pick_variant(kind, img))
 	var bonus: bool = await rv.done
 	_close_overlay()
+	var was_cold: bool = state.is_cold()
 	var got: Dictionary = state.visit(spot, 1 if bonus else 0)
-	if not got.is_empty():
-		var line := _clue_text(got, spot)
-		if not line in notebook:
-			notebook.append(line)
-			if got.get("kind") == "trait":
-				evidence.append(line)
-				known_traits[got["trait"]] = got["value"]
+	_note(got, spot)
+	if got.get("kind") == "fact":
+		_tip("combo")
+	if got.get("jammed", false):
+		_tip("jam")
+	if state.is_cold() and not was_cold and state.on_trail() and not state.is_final():
+		_tip("cold")
 	busy = false
 	show_city()
 
@@ -1319,10 +1762,61 @@ func _on_enhance() -> void:
 	var old := _clue_text(state.visited["cctv"], "cctv")
 	var clue: Dictionary = state.enhance_cctv()
 	notebook.erase(old)
-	var line := _clue_text(clue, "cctv")
-	if not line in notebook:
-		notebook.append(line)
+	leg_notes.erase(_card_text({"kind": "street", "hint_locked": true}))
+	_note(clue, "cctv")
 	show_city()
+
+
+func _on_decrypt() -> void:
+	var old := _clue_text(state.visited["wiretap"], "wiretap")
+	var old_leg := _card_text(state.visited["wiretap"])
+	var clue: Dictionary = state.decrypt()
+	notebook.erase(old)
+	leg_notes.erase(old_leg)
+	_note(clue, "wiretap")
+	show_city()
+
+
+## Event card on arrival (ADR-0015 §2): choose, maybe play its mini-game, show what it gave.
+func _run_event() -> void:
+	var pe: Dictionary = state.pending_event
+	if pe.is_empty():
+		return
+	var card: Dictionary = pe["card"]
+	var reaction: bool = pe["deck"] == "reactions"
+	var labels: Array = []
+	for o in card["options"]:
+		labels.append(loc.t(o["label"]))
+	var ec := EventCard.new()
+	_show_overlay(ec)
+	ec.setup(loc.s("reaction_tag") if reaction else loc.s("event_tag", {"city": _city(state.current).to_upper()}),
+		loc.t(card["title"]), loc.t(card["text"]), labels, reaction)
+	var k: int = await ec.chosen
+	_close_overlay()
+	var r: Dictionary = state.choose_event(k)
+	if r.has("minigame"):
+		var kind: String = r["minigame"][0]
+		var mg := Minigame.new()
+		_show_overlay(mg)
+		if kind == "sighting":
+			mg.setup("sighting", {"title": loc.s("mg_pick_title"), "hint": loc.s("mg_pick_hint"), "status": loc.s("mg_pick_status"),
+				"win": loc.s("mg_pick_win"), "lose": loc.s("mg_pick_lose")})
+		else:
+			mg.setup("checkpoint", {"title": loc.s("mg_ambush_title"), "hint": loc.s("mg_ambush_hint"), "action": loc.s("mg_ambush_action"),
+				"status": loc.s("mg_ambush_status"), "win": loc.s("mg_ambush_win"), "lose": loc.s("mg_ambush_lose")})
+		var ok: bool = await mg.finished
+		_close_overlay()
+		r = state.resolve_event_minigame(ok)
+	var clue: Dictionary = r.get("clue", {})
+	if not clue.is_empty():
+		_note(clue, "event")
+		var rv := ClueReveal.new()
+		_show_overlay(rv)
+		rv.setup("note", {"title": loc.s("event_clue_title"), "subtitle": loc.s("q_who" if clue.get("kind") in ["trait", "hide"] else "q_where"),
+			"icon": "notebook", "color": Style.ROSE if clue.get("kind") in ["trait", "hide"] else Style.SKY,
+			"body": _card_text(clue), "continue": loc.s("reveal_continue")})
+		await rv.done
+		_close_overlay()
 
 
 func show_notebook() -> void:
@@ -1437,10 +1931,26 @@ func show_travel() -> void:
 	var here: Dictionary = parts[2]
 	if pin != Vector2.INF:
 		globe.set_pin(pin.x, pin.y)
+	# What the player gathered about the destination in this city (combined clues need both halves).
+	if state.on_trail():
+		var known := _card(side, 10, Style.SURFACE2, Style.LINE)
+		known.name = "DestKnown"
+		_label(known, loc.s("dest_known_title").to_upper(), 11, Style.NAVY, "ui_bold")
+		if leg_notes.is_empty():
+			_wrap(_label(known, loc.s("dest_known_none"), 13, Style.MUTED))
+		for n in leg_notes:
+			_wrap(_label(known, "• " + n, 13, Style.INK, "mono"))
+	if state.is_split_city():
+		_wrap(_label(side, loc.s("split_travel"), 13, Style.GOLD.darkened(0.3), "ui_bold"))
 	var sug: Array = state.suggested_countries()
+	if state.is_sea_leg() and sug.is_empty():
+		var sea := _card(side, 10, Color("eaf4fc"), Color("bcd9f2"))
+		_wrap(_label(sea, loc.s("sea_leg"), 13, Style.NAVY, "ui_bold"))
+		_tip("sea")
 	if not sug.is_empty():
 		_label(side, loc.s("analyst"), 13, Style.CORAL, "ui_bold")
 		_country_chips(side, sug, globe)
+	_gear_bar(side, "travel")
 	var info := _label(parts[3], "", 14 if compact else 15, Style.INK, "ui_bold")
 	if compact:
 		parts[3].move_child(info, 0)   # destination line above the buttons
@@ -1578,14 +2088,32 @@ func _on_fly() -> void:
 	coach.hide_step()
 	var prev_city: String = state.current
 	var from: Dictionary = data.cities[state.current]
+	# Remember what fooled the player, to explain it if they land where it pointed.
+	var fake_target := ""
+	var double_target := ""
+	for spot in state.visited:
+		var vc: Dictionary = state.visited[spot]
+		if vc.get("fake", false):
+			fake_target = str(vc.get("points_to", ""))
+		if vc.get("double", false):
+			double_target = str(vc.get("city", ""))
 	last_flight = state.travel_to_pin(pin.x, pin.y)
 	pin = Vector2.INF
+	leg_notes.clear()
+	city_note = ""
+	map_selected = ""
 	await _animate_flight(from, data.cities[state.current])
 	if last_flight.get("hit", false):
 		var scene: String = TRAIL_SCENES[state.stop % TRAIL_SCENES.size()]
 		await _cutscene(scene, loc.s("cut_trail_" + scene, {"from": _city(prev_city), "city": _city(state.current)}), state.current)
+		await _run_event()
 		if state.has_sighting():
 			await _sighting()
+	elif not last_flight.is_empty():
+		if fake_target != "" and state.current == fake_target:
+			_tip("forged")
+		elif double_target != "" and state.current == double_target:
+			_tip("double")
 	flying = false
 	show_city()
 
@@ -1606,6 +2134,10 @@ func _sighting() -> void:
 
 func show_board() -> void:
 	screen = "board"
+	known_traits = state.known_traits
+	if state.objective == "recover":
+		_show_hideout_board()
+		return
 	_chrome(loc.s("board"), false)
 	var row := _row(page, 14)
 	var main := _card(row, 12 if compact else 16)
@@ -1644,6 +2176,30 @@ func show_board() -> void:
 			show_board(), "primary"), "WarrantButton")
 	elif remaining.size() != 1:
 		_label(side, loc.s("issue_warrant_hint"), 14, Style.MUTED)
+	_named(_button(side, loc.s("back"), show_city), "BackButton")
+
+
+## Recover objective: cross out hideout candidates against what the money trail said.
+func _show_hideout_board() -> void:
+	_chrome(loc.s("board_hideout_title"), false)
+	var row := _row(page, 14)
+	var main := _card(row, 12 if compact else 16)
+	(main.get_parent() as Control).size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_label(main, loc.s("cork_hideout"), 15, Style.INK2)
+	var col := _scroll(main)
+	var grid := _grid(col, 3, 12)
+	for k in range(state.places.size()):
+		grid.add_child(_hideout_card(state.places[k], k, false))
+	var side := _side(row, 330)
+	_title(side, loc.s("known_hideout_title"), 20)
+	for line in evidence:
+		var item := PanelContainer.new()
+		item.add_theme_stylebox_override("panel", Style.box(Color("eef4ff"), 12, 10, Color.TRANSPARENT, 0, false))
+		side.add_child(item)
+		_label(item, line, 13, Style.INK)
+	if evidence.is_empty():
+		_label(side, loc.s("hideout_none"), 13, Style.MUTED)
+	_spacer(side)
 	_named(_button(side, loc.s("back"), show_city), "BackButton")
 
 
@@ -1781,23 +2337,27 @@ func _chase_buttons(box: BoxContainer, start_text: String, kind: String, icon: S
 
 func show_chase() -> void:
 	screen = "chase"
-	_chrome(loc.s("chase_title"), false, false)
+	var rescue: bool = state.objective == "rescue"
+	var title: String = loc.s("chase_title_rescue") if rescue else loc.s("chase_title")
+	_chrome(title, false, false)
 	var parts := _chase_layout()
 	var cw: VBoxContainer = parts[0]
 	var side: VBoxContainer = parts[1]
 	var kind := _arrest_kind(state.current, int(state.case_def["number"]))
-	var chase := _make_chase(kind, false)
+	var chase := _make_chase(kind, rescue)
 	cw.add_child(chase)
 	if kind == "canal":
 		chase.set_canal_theme()
+	if rescue:
+		chase.set_escape_mode()   # you flee with the hostage; survive the clock
 	if not compact:
-		_title(side, loc.s("chase_title"), 28, Style.CORAL)
-	_label(side, loc.s("chase_text_" + kind, {"city": _city(state.current)}), 14 if compact else 16, Style.INK)
+		_title(side, title, 28, Style.CORAL)
+	_label(side, loc.s("chase_text_rescue", {"city": _city(state.current)}) if rescue else loc.s("chase_text_" + kind, {"city": _city(state.current)}), 14 if compact else 16, Style.INK)
 	if state.warrant == "":
 		_label(side, loc.s("chase_no_warrant"), 15, Style.ROSE, "ui_bold")
 		_button(side, loc.s("board"), show_board)
-	_label(side, loc.s("chase_help_" + kind), 13 if compact else 14, Style.INK2)
-	var start_btn := _chase_buttons(parts[2], loc.s("chase_start"), "primary", "cuffs", show_city)
+	_label(side, loc.s("esc_chase_help_" + kind) if rescue else loc.s("chase_help_" + kind), 13 if compact else 14, Style.INK2)
+	var start_btn := _chase_buttons(parts[2], loc.s("chase_start_rescue") if rescue else loc.s("chase_start"), "primary", "cuffs", show_city)
 	start_btn.pressed.connect(func():
 		start_btn.disabled = true
 		coach.hide_step()
@@ -1807,7 +2367,7 @@ func show_chase() -> void:
 		state.arrest(caught)
 		await get_tree().create_timer(0.6).timeout
 		if state.status == "won":
-			await _cutscene("arrest", loc.s("cut_arrest", {"name": data.suspects[state.case_def["culprit"]]["name"]}), state.current)
+			await _cutscene("arrest", loc.s("cut_arrest", {"name": data.suspects[state.culprit()]["name"]}), state.current)
 		show_results())
 
 
@@ -1879,14 +2439,23 @@ func show_results() -> void:
 		progress.save_file()
 		promoted = loc.t(progress.rank()) != old_rank
 	var won: bool = state.status == "won"
-	var culprit: Dictionary = data.suspects[state.case_def["culprit"]]
-	var portrait := SuspectPortrait.new()
-	portrait.custom_minimum_size = Vector2(120, 144)
-	portrait.setup(culprit, false)
-	var v := _result_card(won, loc.s("stamp_won") if won else loc.s("stamp_lost"),
-		loc.s("won", {"name": culprit["name"]}) if won else loc.s(state.status),
-		loc.s(chase_result) if (chase_result != "" and won) else "", state.stars(), loc.s("stars_rule"),
-		loc.s("summary", {"used": state.hours_used, "budget": state.budget, "misses": state.misses, "km": int(state.avg_precision_km())}), portrait,
+	var culprit: Dictionary = data.suspects[state.culprit()]
+	var art: Control
+	var line1: String = loc.s(state.status)
+	if state.objective == "recover":
+		art = _icon_badge("money", Style.GREEN if won else Style.ROSE, 120)
+		if won:
+			line1 = loc.s("won_recover", {"place": loc.t(state._target_place().get("name", {"es": "", "en": ""}))})
+	else:
+		var portrait := SuspectPortrait.new()
+		portrait.custom_minimum_size = Vector2(120, 144)
+		portrait.setup(culprit, false)
+		art = portrait
+		if won:
+			line1 = loc.s("won_rescue", {"name": culprit["name"]}) if state.objective == "rescue" else loc.s("won", {"name": culprit["name"]})
+	var v := _result_card(won, loc.s("stamp_won") if won else loc.s("stamp_lost"), line1,
+		loc.s(chase_result) if (chase_result != "" and won) else "", state.stars(), loc.s("stars_rule_recover") if state.objective == "recover" else loc.s("stars_rule"),
+		loc.s("summary", {"used": state.hours_used, "budget": state.budget, "misses": state.misses, "km": int(state.avg_precision_km())}), art,
 		_pts(state.route().slice(0, state.stop + 1)))
 	var bh := _btn_row(v)
 	_button(bh, loc.s("menu"), show_menu)
@@ -1898,6 +2467,9 @@ func show_results() -> void:
 			_start_case(), "primary")
 		if compact:
 			bh.move_child(nb, 0)
+	if won and not outro_played:
+		outro_played = true
+		_play_story.call_deferred("outro")
 
 
 # ======================================================================
@@ -2295,8 +2867,17 @@ func _find(n_name: String) -> Control:
 func _coach_update() -> void:
 	if coach == null or not is_instance_valid(coach):
 		return
-	if tutorial == "" or (overlay and overlay.visible) or flying or busy:
+	if (overlay and overlay.visible) or flying or busy:
 		coach.hide_step()
+		return
+	if tutorial == "":
+		if _pending_tip != "" and screen != _tip_screen:
+			# The player moved on without reading it: show it again next time instead.
+			_pending_tip = ""
+		if _pending_tip != "":
+			coach.show_step("tip_" + _pending_tip, loc.s("tip_tag"), loc.s("tip_" + _pending_tip, {"x": CaseState.COLD_SURCHARGE}), null, loc.s("tip_ok"), "")
+		else:
+			coach.hide_step()
 		return
 	var step := _tut_step()
 	if step.is_empty():
@@ -2310,6 +2891,12 @@ func _coach_update() -> void:
 
 func _on_coach_ok() -> void:
 	var id: String = coach.step_id
+	if id.begins_with("tip_"):
+		progress.set_flag(id)
+		progress.save_file()
+		_pending_tip = ""
+		coach.hide_step()
+		return
 	_tut_seen[id] = true
 	if id in ["won", "esc_won"]:
 		_end_tutorial()
@@ -2318,6 +2905,15 @@ func _on_coach_ok() -> void:
 		coach.hide_step()
 		return
 	_coach_update()
+
+
+## Queue a first-time explanation (shown once ever, never during the guided case).
+func _tip(id: String) -> void:
+	if tutorial != "" or progress.flag("tip_" + id) or _pending_tip != "":
+		return
+	_pending_tip = id
+	_tip_screen = screen
+	_coach_update.call_deferred()
 
 
 ## Finish (or skip) the guide; it won't start by itself again.
@@ -2423,26 +3019,46 @@ func _tut_city() -> Dictionary:
 	if st.stop == 1 and not _tut_seen.has("repeat"):
 		return {"id": "repeat", "key": "tut_repeat", "ok": true, "args": _city_args(st.current)}
 	var answer: String = st.route()[st.stop + 1]
-	if not st.visited.has("wiretap"):
+	var where_done := ""
+	for sp in ["wiretap", "contact", "cctv"]:
+		if st.visited.has(sp):
+			where_done = sp
+	if where_done == "":
+		var best := _clearest_spot()
+		var args := _city_args(st.current)
+		args["place"] = loc.s("place_" + best)
 		if st.stop == 0:
-			return {"id": "investigate", "key": "tut_investigate", "target": "Investigate_wiretap", "args": _city_args(st.current)}
-		return {"id": "investigate_%d" % st.stop, "key": "tut_investigate_again", "target": "Investigate_wiretap"}
+			return {"id": "investigate", "key": "tut_investigate", "target": "Investigate_" + best, "args": args}
+		return {"id": "investigate_%d" % st.stop, "key": "tut_investigate_again", "target": "Investigate_" + best, "args": args}
 	if st.stop == 0 and not _tut_seen.has("clue"):
-		var clue: Dictionary = st.visited["wiretap"]
-		var args := _city_args(answer)
+		var clue: Dictionary = st.visited[where_done]
+		var cargs := _city_args(answer)
 		if clue.get("kind") == "dest":
-			args["clue"] = _unstop(loc.t(clue["text"]))
-			return {"id": "clue", "key": "tut_clue", "ok": true, "args": args}
-		return {"id": "clue", "key": "tut_clue_generic", "ok": true, "args": args}
+			cargs["clue"] = _unstop(loc.t(clue["text"]))
+			return {"id": "clue", "key": "tut_clue", "ok": true, "args": cargs}
+		return {"id": "clue", "key": "tut_clue_generic", "ok": true, "args": cargs}
 	if not st.visited.has("money"):
+		var margs := {"place": loc.s("place_money")}
 		if st.stop == 0:
-			return {"id": "money", "key": "tut_money", "target": "Investigate_money"}
-		return {"id": "money_%d" % st.stop, "key": "tut_money_again", "target": "Investigate_money"}
+			return {"id": "money", "key": "tut_money", "target": "Investigate_money", "args": margs}
+		return {"id": "money_%d" % st.stop, "key": "tut_money_again", "target": "Investigate_money", "args": margs}
 	if st.stop == 0 and not _tut_seen.has("money_done"):
 		var m: Dictionary = st.visited["money"]
 		var trait_text: String = _unstop(loc.t(m["text"])) if m.get("kind") == "trait" else loc.s("tut_trait_unknown")
 		return {"id": "money_done", "key": "tut_money_done", "ok": true, "args": {"trait": trait_text}}
 	return {"id": "travel_%d" % st.stop, "key": "tut_travel", "target": "TravelButton"}
+
+
+## The clearest truthful where-source in this city (the guide starts there).
+func _clearest_spot() -> String:
+	var best := "wiretap"
+	var best_tier := 99
+	for sp in ["wiretap", "contact"]:
+		var c: Dictionary = state.peek(sp)
+		if c.get("kind") == "dest" and not c.get("fake", false) and int(c.get("tier", 9)) < best_tier:
+			best = sp
+			best_tier = int(c["tier"])
+	return best
 
 
 ## Gang members not crossed out that match everything known so far.

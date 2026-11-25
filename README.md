@@ -3,7 +3,7 @@
 > An original 3D-arcade geography detective game with **two modes**: chase gangs around the world as a detective — or switch sides and escape an AI inspector as the thief.
 > Built with **Godot 4** for **PC, Android, iOS and Web**. Free with ads, one-time purchase to remove them.
 
-**Status:** 🟡 Alpha — two full modes playable (15 cases + 5 escapes), modern UI, interactive clues, cutscenes and sound.
+**Status:** 🟡 Alpha — two full modes playable (15 cases + 5 escapes), modern UI, interactive clues, cutscenes and sound. New: the *depth update* — city maps, surprise events, a thief who reacts, a story, gear, three kinds of objectives and combined clues ([ADR-0015](docs/decisions/0015-depth-update.md)).
 
 ## Screenshots
 | | |
@@ -13,13 +13,21 @@
 | ![Cutscene](docs/screenshots/04_cutscene_heist.png) | ![Fugitive](docs/screenshots/26_esc_city.png) |
 | ![CCTV](docs/screenshots/08_cctv.png) | ![Board](docs/screenshots/20_board.png) |
 
+**Depth update** — gear before each case, surprise events, the hideout raid, body doubles spotted by the forensic lens, two thieves who split up, and a story told between cases:
+
+| | |
+|---|---|
+| ![Gear](docs/screenshots/depth_briefing_gear.png) | ![Surprise event](docs/screenshots/depth_event_card.png) |
+| ![Raid map](docs/screenshots/depth_raid_map.png) | ![Body double](docs/screenshots/depth_double_lens.png) |
+| ![Split](docs/screenshots/depth_split_city.png) | ![Story](docs/screenshots/depth_story_outro.png) |
+
 **On a phone** (same build, single-column touch layout):
 
-| | | | |
-|---|---|---|---|
-| ![City on phone](docs/screenshots/phone_05_city.png) | ![Travel on phone](docs/screenshots/phone_14_globe_highlight.png) | ![Board on phone](docs/screenshots/phone_20_board.png) | ![Chase on phone](docs/screenshots/phone_21_chase.png) |
+| | | | | |
+|---|---|---|---|---|
+| ![City on phone](docs/screenshots/phone_05_city.png) | ![The thief reacts](docs/screenshots/phone_depth_reaction.png) | ![Raid on phone](docs/screenshots/phone_depth_raid_map.png) | ![Travel on phone](docs/screenshots/phone_14_globe_highlight.png) | ![Chase on phone](docs/screenshots/phone_21_chase.png) |
 
-*Rendered automatically by `game/tests/screenshot_tour.gd` (xvfb + OpenGL).*
+*Rendered automatically by `game/tests/screenshot_tour.gd` and `game/tests/depth_tour.gd` (xvfb + OpenGL).*
 
 ## Why this project
 A portfolio project documented end to end: design, technical decisions, development log, testing and store release. Every significant decision is recorded in [`docs/decisions/`](docs/decisions/) and every work session in [`docs/devlog/`](docs/devlog/).
@@ -29,11 +37,17 @@ A portfolio project documented end to end: design, technical decisions, developm
 - 15 hand-crafted cases across 5 gangs, routes of 4–11 cities, saved progress and detective ranks
 - Stylized low-poly 3D globe + arcade/retro UI
 - **Pin-drop pursuit** on a labelled 3D globe with marked cities — or travel by picking one of the analyst's four countries
-- **Four evidence sources** per city: wiretaps, CCTV street photos (easy GeoGuessr-style), a local contact and the money trail
+- **Four evidence sources** per city, placed on a drawn **city map** (streets, coast or river, landmark): wiretaps, CCTV street photos (easy GeoGuessr-style), a local contact and the money trail
+- **Choose what to investigate:** two places per city before the trail goes cold; each clue says how clear it is, so every visit is a decision
+- **Surprise events** (informants, strikes, storms, pickpockets…) with a choice to make, and a **thief who reacts** when you get close: intercepted messages, ambushes, false leads
+- **Gang tricks + gear:** each gang has its own twist (forged clues, sea legs with no flight data, jammed wiretaps, body doubles); unlock 8 gadgets with stars and bring up to 3 per case
+- **Three objectives:** arrest the thief, *recover the loot* (raid one of six hideouts on the map) or *rescue a hostage* (escape chase); two cases where the gang **splits up** and you pick who to follow
+- **Combined clues:** in later cases each source gives half a fact; put two together to find the place
+- **A story across the 15 cases** told in short scenes before and after each case
 - **Corkboard** deduction: cross out suspects, issue the arrest order
 - **Arrest finales**: car chase, canal boat chase or rooftop foot chase (keyboard, swipe or tap)
 - **Interactive evidence** with 8 mini-games: tune a radio, match a voiceprint, focus CCTV, interrogate contacts, order transactions…
-- **Cutscenes** with a recurring thief character and **action events** (sightings, passport control)
+- **Cutscenes** with a recurring thief character and **action events** (sightings, passport control, ambushes)
 - Original synthesized **sound effects**; modern light UI (Outfit / Inter)
 - Built-in guidance: *How to play*, a *Next step* box and a notebook split into *Where?* / *Who?*
 - Spanish & English
@@ -56,7 +70,7 @@ This is an original work. It belongs to the *geography/detective* genre, but its
 ---
 
 ## 🇪🇸 Resumen en español
-Juego original de detectives y geografía, con gráficos 3D estilo arcade, hecho en **Godot 4** para PC, Android, iOS y web. Tiene **dos modos**: como detective perseguís a redes criminales por el mundo; como **fugitivo** sos el ladrón y escapás de una inspectora controlada por el juego. En modo detective revisás escuchas, rastros de dinero y cámaras de seguridad, **clavás un pin en un globo 3D** para seguirlos, tachás sospechosos en un pizarrón de corcho y terminás con una persecución arcade. La v1 tiene 15 casos (niveles), español e inglés, anuncios y una compra única para quitarlos. Todo el desarrollo queda documentado (decisiones, diario y plan) como proyecto de portfolio.
+Juego original de detectives y geografía, con gráficos 3D estilo arcade, hecho en **Godot 4** para PC, Android, iOS y web. Tiene **dos modos**: como detective perseguís a redes criminales por el mundo; como **fugitivo** sos el ladrón y escapás de una inspectora controlada por el juego. En modo detective revisás escuchas, rastros de dinero y cámaras de seguridad, **clavás un pin en un globo 3D** para seguirlos, tachás sospechosos en un pizarrón de corcho y terminás con una persecución arcade. La v1 tiene 15 casos (niveles), español e inglés, anuncios y una compra única para quitarlos. Con la *actualización de profundidad* cada ciudad es un mapa donde elegís qué investigar antes de que se enfríe el rastro, hay eventos sorpresa, el ladrón reacciona cuando te acercás, cada banda tiene su truco, llevás equipo (8 gadgets), hay casos de recuperar el botín, rescatar rehenes y bandas que se separan, pistas combinadas y una historia que atraviesa los 15 casos. Todo el desarrollo queda documentado (decisiones, diario y plan) como proyecto de portfolio.
 
 ## Play the latest build
 ▶️ **https://ftagliaferro.github.io/Geo-Detective/** — built and deployed automatically by GitHub Actions on every push to `main`. Works on desktop and phone browsers: on phones the UI switches to a single-column touch layout (portrait or landscape) — see [ADR-0013](docs/decisions/0013-phone-layout.md). New players get a step-by-step guide in their first case and first escape ([ADR-0014](docs/decisions/0014-guided-tutorial.md)).
@@ -79,4 +93,7 @@ godot --headless --path game --script res://tests/ui_flows.gd -- --landscape  # 
 
 # Guided tutorial: a newcomer who only follows the guide must win (any layout)
 godot --headless --path game --script res://tests/tutorial_flow.gd [-- --phone|--landscape]
+
+# City maps: no pin, label or landmark covers another, for every city and screen size
+godot --headless --path game --script res://tests/city_map_check.gd
 ```
