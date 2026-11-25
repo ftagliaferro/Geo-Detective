@@ -63,6 +63,7 @@ Feedback: "it feels monotonous". Diagnosis: every city plays the same way (four 
 ### 9. City as a map
 - The city screen is a stylised map (district streets, water when the city is coastal or on a river, the landmark) with **places**: Hotel (wiretap), Main avenue (cameras), Café (contact), Exchange office (money), Airport (travel). Tap a place to see clarity, cost and result. A list under the map mirrors the places (phones, accessibility, tests).
 - Recover cases reuse the map for the six hideout candidates.
+- Pins are laid out in pixels once the map's size is known: each takes the nearest free spot to its ideal position (growing-ring search), with two fallback strategies; if the names can't all fit (long names on a small phone map), only the pins/letters are drawn and the list names every place. The landmark is placed first when the pins still fit around it, otherwise in the room left, otherwise left out. Layouts are cached per city and size. `tests/city_map_check.gd` asserts: no overlap, inside the map, on land, and names + landmark always shown on wide maps.
 
 ## Fairness rules (asserted by tests)
 - A forged/double clue never sits alone: the city always has at least one truthful where-source of each other kind.

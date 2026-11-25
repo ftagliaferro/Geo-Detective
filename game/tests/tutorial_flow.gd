@@ -192,7 +192,7 @@ func _follow(label: String) -> int:
 		var tr: Rect2 = t.get_global_rect()
 		check(tr.position.y >= -2 and tr.end.y <= vp.y + 2 and tr.position.x >= -2 and tr.end.x <= vp.x + 2,
 			"%s/%s: target '%s' is on screen (%s)" % [label, id, t.name, tr])
-		check(not br.intersects(tr.grow(-2)), "%s/%s: bubble does not cover '%s'" % [label, id, t.name])
+		check(not br.intersects(tr.grow(-2)), "%s/%s: bubble does not cover '%s' (bubble %s, target %s)" % [label, id, t.name, br, tr])
 		check(t is Button and not t.disabled, "%s/%s: target '%s' can be pressed" % [label, id, t.name])
 		if t is Button and not t.disabled:
 			t.pressed.emit()

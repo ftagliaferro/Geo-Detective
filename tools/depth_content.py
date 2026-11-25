@@ -342,6 +342,15 @@ CHARACTERS = {
     "hostage_violin": ("Clara Wenzel, violinista", "Clara Wenzel, violinist"),
     "hostage_accountant": ("Elías Prado, contador", "Elías Prado, accountant"),
 }
+# Fixed portraits for the story cast (indices into suspect_portrait.gd's SKIN/HAIR/COAT;
+# hair_style 2 = long hair, 3 = bald; traits.mark draws glasses etc.).
+CHARACTER_LOOKS = {
+    "rivas": {"skin": 1, "hair": 1, "coat": 0, "hair_style": 2, "hat": False},
+    "nico": {"skin": 3, "hair": 0, "coat": 3, "hair_style": 0, "hat": False},
+    "varela": {"skin": 0, "hair": 4, "coat": 4, "hair_style": 3, "hat": False, "traits": {"mark": "glasses"}},
+    "hostage_violin": {"skin": 0, "hair": 3, "coat": 5, "hair_style": 2, "hat": False},
+    "hostage_accountant": {"skin": 2, "hair": 0, "coat": 1, "hair_style": 1, "hat": False, "traits": {"mark": "glasses"}},
+}
 L = lambda sp, es, en: [sp, es, en]  # noqa: E731
 
 STORY = {

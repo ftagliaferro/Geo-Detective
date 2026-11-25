@@ -21,6 +21,49 @@
       "en": "Elías Prado, accountant"
     }
   },
+  "looks": {
+    "rivas": {
+      "skin": 1,
+      "hair": 1,
+      "coat": 0,
+      "hair_style": 2,
+      "hat": false
+    },
+    "nico": {
+      "skin": 3,
+      "hair": 0,
+      "coat": 3,
+      "hair_style": 0,
+      "hat": false
+    },
+    "varela": {
+      "skin": 0,
+      "hair": 4,
+      "coat": 4,
+      "hair_style": 3,
+      "hat": false,
+      "traits": {
+        "mark": "glasses"
+      }
+    },
+    "hostage_violin": {
+      "skin": 0,
+      "hair": 3,
+      "coat": 5,
+      "hair_style": 2,
+      "hat": false
+    },
+    "hostage_accountant": {
+      "skin": 2,
+      "hair": 0,
+      "coat": 1,
+      "hair_style": 1,
+      "hat": false,
+      "traits": {
+        "mark": "glasses"
+      }
+    }
+  },
   "scenes": {
     "case_01": {
       "intro": [

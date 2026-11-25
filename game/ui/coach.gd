@@ -76,6 +76,7 @@ func show_step(id: String, tag: String, text: String, p_target: Control, ok_text
 	_ok.text = ok_text
 	_ok.visible = ok_text != ""
 	_skip.text = skip_text
+	_skip.visible = skip_text != ""
 	visible = true
 	if not same:
 		_step_frames = 0
@@ -120,10 +121,15 @@ func _place() -> void:
 	var center_w := minf(460.0, vp.x - 16.0)
 	var side_w := minf(420.0, vp.x * 0.46)
 	var cands: Array = []   # [x, y_mode, width]
-	if vp.x > vp.y * 1.2:
+	var wide_target: bool = _target_ok() and _target_rect().size.x > vp.x * 0.5
+	if vp.x > vp.y * 1.2 and not wide_target:
+		# Side columns only help when the target leaves one free (not for full-width buttons).
 		cands += [[vp.x - side_w - 12.0, "bottom", side_w], [vp.x - side_w - 12.0, "top", side_w],
 			[12.0, "bottom", side_w], [12.0, "top", side_w]]
-	cands += [[(vp.x - center_w) / 2.0, "bottom", center_w], [(vp.x - center_w) / 2.0, "top", center_w]]
+	if _target_ok() and _target_rect().get_center().y > vp.y * 0.5:
+		cands += [[(vp.x - center_w) / 2.0, "top", center_w], [(vp.x - center_w) / 2.0, "bottom", center_w]]
+	else:
+		cands += [[(vp.x - center_w) / 2.0, "bottom", center_w], [(vp.x - center_w) / 2.0, "top", center_w]]
 	var tr := _target_rect().grow(10.0) if _target_ok() else Rect2()
 	var best := Rect2()
 	var best_overlap := INF
@@ -141,6 +147,17 @@ func _place() -> void:
 			best = r
 		if overlap <= 0.0:
 			break
+	if best_overlap > 0.0 and _target_ok() and _step_frames <= 30:
+		# No free spot (e.g. a full-width button on a short landscape screen): scroll the
+		# page so the target sits at the top, then the bottom band is clear for the bubble.
+		var p := target.get_parent()
+		while p != null and not (p is ScrollContainer):
+			p = p.get_parent()
+		if p is ScrollContainer:
+			var sc := p as ScrollContainer
+			var delta := int(target.get_global_rect().position.y - sc.get_global_rect().position.y - 8.0)
+			if delta > 2:
+				sc.scroll_vertical += delta
 	_bubble.custom_minimum_size = Vector2(best.size.x, 0)
 	_bubble.reset_size()
 	_bubble.position = best.position

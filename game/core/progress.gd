@@ -13,6 +13,7 @@ const RANKS := [
 
 var stars: Dictionary = {}   # case_id -> best stars (0..3); 0 = played but not solved
 var flags: Dictionary = {}   # e.g. "tutorial_detective_done": true (old saves have none)
+var loadout: Array = []      # gear ids chosen for the next case (ADR-0015 §5)
 var path: String = SAVE_PATH
 
 
@@ -23,6 +24,7 @@ func _init(p_path: String = SAVE_PATH) -> void:
 func load_file() -> void:
 	stars = {}
 	flags = {}
+	loadout = []
 	if not FileAccess.file_exists(path):
 		return
 	var f := FileAccess.open(path, FileAccess.READ)
@@ -35,12 +37,15 @@ func load_file() -> void:
 	if parsed is Dictionary and parsed.get("flags") is Dictionary:
 		for k in parsed["flags"]:
 			flags[k] = bool(parsed["flags"][k])
+	if parsed is Dictionary and parsed.get("loadout") is Array:
+		for g in parsed["loadout"]:
+			loadout.append(str(g))
 
 
 func save_file() -> void:
 	var f := FileAccess.open(path, FileAccess.WRITE)
 	if f:
-		f.store_string(JSON.stringify({"version": 1, "stars": stars, "flags": flags}))
+		f.store_string(JSON.stringify({"version": 1, "stars": stars, "flags": flags, "loadout": loadout}))
 
 
 func flag(key: String) -> bool:

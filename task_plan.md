@@ -18,6 +18,9 @@ Ship v1.1: 15 cases, ES/EN, PC + Android + Web (itch.io), then iOS; ads + remove
 ## Done extra
 - [x] Fugitive mode (ADR-0010): 5 escapes vs AI inspector, escape chase, UI smoke test in CI
 - [x] Core twist (ADR-0006): pin-drop globe, forensic evidence, corkboard, arcade chase
+- [x] Phone layout (ADR-0013), iPhone scrolling fix, guided tutorial (ADR-0014)
+- [x] Depth update (ADR-0015): city maps, choose what to investigate, surprise events, thief reactions, gang tricks, gear, recover/rescue/split objectives, combined clues, story
+- [ ] Later (not in ADR-0015): points 8 and 10 of the "monotony" review
 
 ## Open questions
 - Final game title

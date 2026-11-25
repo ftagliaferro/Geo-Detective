@@ -240,6 +240,7 @@ def write_depth_data() -> None:
     events = {"events": [card(e) for e in depth.EVENTS], "reactions": [card(e) for e in depth.REACTIONS]}
     story = {
         "characters": {k: i18n(v) for k, v in depth.CHARACTERS.items()},
+        "looks": depth.CHARACTER_LOOKS,
         "scenes": {f"case_{n:02d}": {part: [{"who": sp, "es": es, "en": en} for sp, es, en in lines]
                                      for part, lines in sc.items()} for n, sc in depth.STORY.items()},
         "gang_files": {k: i18n(v) for k, v in depth.GANG_FILES.items()},

@@ -96,6 +96,15 @@ def validate_depth(d: dict) -> list[str]:
                 _effects(o["effects"], f"{deck} {card['id']} option {k}", errors)
     story = d["story"]
     speakers = set(story["characters"]) | set(d["suspects"]) | {"culprit"}
+    looks = story.get("looks", {})
+    for who in story["characters"]:
+        look = looks.get(who)
+        if not isinstance(look, dict):
+            errors.append(f"story: character {who} has no portrait look")
+            continue
+        for key, top in (("skin", 5), ("hair", 6), ("coat", 6), ("hair_style", 4)):
+            if not isinstance(look.get(key), int) or not 0 <= look[key] < top:
+                errors.append(f"story: look {who}.{key} out of range")
     for case_id, scene in story["scenes"].items():
         if case_id not in d["cases"]:
             errors.append(f"story: unknown case {case_id}")

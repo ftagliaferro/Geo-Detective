@@ -259,10 +259,12 @@ func test_progress_flags_roundtrip() -> void:
 	var p = Progress.new("user://test_flags.json")
 	p.record("case_01", 2)
 	p.set_flag("tutorial_detective_done")
+	p.loadout = ["lens", "jet"]
 	p.save_file()
 	var q = Progress.new("user://test_flags.json")
 	q.load_file()
 	check(q.flag("tutorial_detective_done") and not q.flag("other") and q.best("case_01") == 2, "progress flags survive save/load")
+	check(q.loadout == ["lens", "jet"], "gear loadout survives save/load")
 	var f := FileAccess.open("user://test_flags_old.json", FileAccess.WRITE)
 	f.store_string('{"version": 1, "stars": {"case_01": 3}}')
 	f.close()

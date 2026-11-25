@@ -385,12 +385,12 @@
       "en": "NEXT STEP"
     },
     "step_investigate": {
-      "es": "Tocá «Investigar». Escuchas, cámaras y contacto dicen A DÓNDE fue; el rastro de dinero, QUIÉN es.",
-      "en": "Tap “Investigate”. Wiretaps, cameras and the contact say WHERE they went; the money trail, WHO it is."
+      "es": "Elegí qué investigar: te alcanza para dos lugares antes de que se enfríe el rastro. Escuchas, cámaras y café dicen A DÓNDE fue; la casa de cambio, QUIÉN es.",
+      "en": "Choose what to investigate: you have time for two places before the trail cools. Wiretap, cameras and café say WHERE they went; the exchange office, WHO it is."
     },
     "step_travel": {
-      "es": "¿Ya sabés a dónde fue? Tocá «Viajar». Si dudás, investigá otra pista.",
-      "en": "Know where they went? Tap “Travel”. Not sure? Investigate another clue."
+      "es": "¿Ya sabés a dónde fue? Tocá «Viajar». Si dudás, investigá otro lugar (con el rastro frío cuesta más).",
+      "en": "Know where they went? Tap “Travel”. Not sure? Investigate another place (it costs more once the trail is cold)."
     },
     "step_deadend": {
       "es": "Acá no hay rastro. Volvé a {city} o, si ya sabés a dónde fue, viajá directo para allá.",
@@ -1101,12 +1101,12 @@
       "en": "A thief has just pulled off a heist and is fleeing from city to city. Your job: follow and catch them before your hours run out. Tap “{accept}”."
     },
     "tut_investigate": {
-      "es": "Estás en {city}, donde fue el robo. El ladrón ya se fue de acá. Las pistas de cada ciudad te dicen A DÓNDE fue. Tocá «Investigar» en {wiretap}.",
-      "en": "You are in {city}, where the heist happened. The thief has already left. Each city's clues tell you WHERE they went. Tap “Investigate” on {wiretap}."
+      "es": "Estás en {city}, donde fue el robo; el ladrón ya se fue. Cada lugar del mapa es una fuente de pistas. Te alcanza para DOS investigaciones por ciudad antes de que se enfríe el rastro. Empezá por «{place}»: tiene la pista más clara.",
+      "en": "You are in {city}, where the heist happened; the thief has already left. Each place on the map is a source of clues. You have time for TWO investigations per city before the trail cools. Start with “{place}”: it has the clearest clue."
     },
     "tut_investigate_again": {
-      "es": "Igual que antes: investigá {wiretap} para saber a dónde fue ahora.",
-      "en": "Same as before: investigate {wiretap} to find out where they went next."
+      "es": "Igual que antes: investigá «{place}» para saber a dónde fue ahora.",
+      "en": "Same as before: investigate “{place}” to find out where they went next."
     },
     "tut_clue": {
       "es": "La pista dice: «{clue}». Eso es {city}, en {country}: ¡ahí fue el ladrón! Las pistas hablan de monumentos, comidas, idiomas o monedas del próximo destino.",
@@ -1117,12 +1117,12 @@
       "en": "Clues describe the next destination: landmarks, food, languages or currencies. This time they point to {city}, in {country}."
     },
     "tut_money": {
-      "es": "El {money} es distinto: no dice a dónde fue, dice QUIÉN es el ladrón. Investigalo.",
-      "en": "The {money} is different: it doesn't say where they went, it says WHO the thief is. Investigate it."
+      "es": "Tu segunda investigación: «{place}». No dice a dónde fue: dice QUIÉN es el ladrón.",
+      "en": "Your second investigation: “{place}”. It doesn't say where they went: it says WHO the thief is."
     },
     "tut_money_again": {
-      "es": "No te olvides del {money}: cada dato sobre QUIÉN es te ayuda al final.",
-      "en": "Don't forget the {money}: every fact about WHO it is helps you at the end."
+      "es": "No te olvides de «{place}»: cada dato sobre QUIÉN es te ayuda al final.",
+      "en": "Don't forget “{place}”: every fact about WHO it is helps you at the end."
     },
     "tut_money_done": {
       "es": "Anotado en tu libreta: {trait}. Al final vas a usar estos datos para elegir al culpable entre los sospechosos.",
@@ -1165,8 +1165,8 @@
       "en": "Perfect! Tap “{fly}”."
     },
     "tut_repeat": {
-      "es": "¡Bien! Llegaste a {city}: seguís el rastro. Ahora repetí lo mismo en cada ciudad: investigá, deducí a dónde fue y viajá. Cada acción gasta horas: mirá el reloj de arriba.",
-      "en": "Well done! You reached {city}: you're on the trail. Now repeat in every city: investigate, work out where they went, and travel. Every action costs hours: watch the clock at the top."
+      "es": "¡Bien! Llegaste a {city}: seguís el rastro. Arriba ves hace cuánto se fue el ladrón: si gastás poco tiempo en cada ciudad, lo alcanzás. Repetí en cada ciudad: dos investigaciones bien elegidas y viajá.",
+      "en": "Well done! You reached {city}: you're on the trail. At the top you can see how long ago the thief left: spend little time in each city and you'll catch up. Repeat in every city: two well-chosen investigations, then travel."
     },
     "tut_miss": {
       "es": "Esta no era la ciudad: acá no hay pistas del ladrón (y perdiste horas). Tocá «{travel}» y volvé a {city}, o probá otro país.",
@@ -1299,6 +1299,478 @@
     "tut_board_cross_next": {
       "es": "Bien. Seguí tachando a los que tienen ✗: ahora {name}.",
       "en": "Good. Keep crossing out those with a ✗: now {name}."
+    },
+    "place_wiretap": {
+      "es": "Hotel",
+      "en": "Hotel"
+    },
+    "place_cctv": {
+      "es": "Avenida principal",
+      "en": "Main avenue"
+    },
+    "place_contact": {
+      "es": "Café",
+      "en": "Café"
+    },
+    "place_money": {
+      "es": "Casa de cambio",
+      "en": "Exchange office"
+    },
+    "place_airport": {
+      "es": "Aeropuerto",
+      "en": "Airport"
+    },
+    "clarity_1": {
+      "es": "Pista clara",
+      "en": "Clear clue"
+    },
+    "clarity_2": {
+      "es": "Pista media",
+      "en": "Medium clue"
+    },
+    "clarity_3": {
+      "es": "Pista vaga",
+      "en": "Vague clue"
+    },
+    "clarity_fact": {
+      "es": "Media pista",
+      "en": "Half a clue"
+    },
+    "clarity_photo": {
+      "es": "Foto",
+      "en": "Photo"
+    },
+    "clarity_who": {
+      "es": "Quién es",
+      "en": "Who it is"
+    },
+    "investigate_cold": {
+      "es": "Investigar ({h} h, rastro frío)",
+      "en": "Investigate ({h} h, cold trail)"
+    },
+    "investigate_free": {
+      "es": "Investigar (gratis)",
+      "en": "Investigate (free)"
+    },
+    "trail_meter": {
+      "es": "Investigaciones: {used} de {limit}. Después, cada una cuesta {x} h más.",
+      "en": "Investigations: {used} of {limit}. After that, each costs {x} h more."
+    },
+    "trail_cold": {
+      "es": "El rastro se enfrió: cada investigación nueva cuesta {x} h más.",
+      "en": "The trail has gone cold: each new investigation costs {x} h more."
+    },
+    "lead_left": {
+      "es": "El sospechoso se fue de acá hace {h} h.",
+      "en": "The suspect left here {h} h ago."
+    },
+    "lead_here": {
+      "es": "¡El sospechoso todavía está en la ciudad!",
+      "en": "The suspect is still in town!"
+    },
+    "lead_final": {
+      "es": "El sospechoso se esconde en esta ciudad.",
+      "en": "The suspect is hiding in this city."
+    },
+    "intercepted": {
+      "es": "MENSAJE INTERCEPTADO",
+      "en": "INTERCEPTED MESSAGE"
+    },
+    "burned_note": {
+      "es": "Le pagaron para que no hable.",
+      "en": "They were paid to keep quiet."
+    },
+    "jammed_note": {
+      "es": "Interferencia: hay palabras tapadas.",
+      "en": "Interference: some words are blacked out."
+    },
+    "decrypt": {
+      "es": "Descifrar (1 h)",
+      "en": "Decrypt (1 h)"
+    },
+    "double_note": {
+      "es": "¡Es un doble! La foto es de otra ciudad.",
+      "en": "It's a body double! The photo is from another city."
+    },
+    "fake_note": {
+      "es": "¡Pista falsa! Apunta a otro país.",
+      "en": "Forged clue! It points to another country."
+    },
+    "split_note": {
+      "es": "¡Se separaron! La escucha sigue a uno y el contacto al otro. Elegí a quién seguir.",
+      "en": "They split up! The wiretap follows one, the contact the other. Choose who to follow."
+    },
+    "thief_1": {
+      "es": "Ladrón 1",
+      "en": "Thief 1"
+    },
+    "thief_2": {
+      "es": "Ladrón 2",
+      "en": "Thief 2"
+    },
+    "step_recover_final": {
+      "es": "El botín está en uno de estos seis lugares. Compará con lo que sabés del escondite y allaná (3 h por intento).",
+      "en": "The loot is in one of these six places. Compare with what you know about the hideout and raid (3 h per try)."
+    },
+    "step_rescue_final": {
+      "es": "Los captores están en esta ciudad. Emití la orden en el Pizarrón y rescatá al rehén.",
+      "en": "The kidnappers are in this city. Issue the warrant on the Board and rescue the hostage."
+    },
+    "known_hideout_title": {
+      "es": "Lo que sabés del escondite",
+      "en": "What you know about the hideout"
+    },
+    "hideout_none": {
+      "es": "Todavía nada: el rastro de dinero describe el escondite.",
+      "en": "Nothing yet: the money trail describes the hideout."
+    },
+    "raid": {
+      "es": "Allanar (3 h)",
+      "en": "Raid (3 h)"
+    },
+    "raid_empty": {
+      "es": "Vacío",
+      "en": "Empty"
+    },
+    "raid_miss": {
+      "es": "No había nada en {place}. Perdiste 3 h.",
+      "en": "Nothing at {place}. You lost 3 h."
+    },
+    "hideout_zone": {
+      "es": "Zona",
+      "en": "Area"
+    },
+    "hideout_kind": {
+      "es": "Tipo",
+      "en": "Kind"
+    },
+    "hideout_detail": {
+      "es": "Detalle",
+      "en": "Detail"
+    },
+    "about_hideout": {
+      "es": "[dato del escondite: {attr}]",
+      "en": "[hideout fact: {attr}]"
+    },
+    "places_title": {
+      "es": "Lugares sospechosos",
+      "en": "Suspicious places"
+    },
+    "more_info_title": {
+      "es": "¿Te falta información? Investigá:",
+      "en": "Missing information? Investigate:"
+    },
+    "gear_title": {
+      "es": "Equipo",
+      "en": "Gear"
+    },
+    "gear_choose": {
+      "es": "Elegí hasta {n} para este caso.",
+      "en": "Pick up to {n} for this case."
+    },
+    "gear_use": {
+      "es": "Usar",
+      "en": "Use"
+    },
+    "gear_used": {
+      "es": "usado",
+      "en": "used"
+    },
+    "gear_once": {
+      "es": "1 uso",
+      "en": "1 use"
+    },
+    "gear_passive": {
+      "es": "siempre activo",
+      "en": "always on"
+    },
+    "gear_none_yet": {
+      "es": "Ganás equipo con las estrellas. El primero se desbloquea con 2 ★.",
+      "en": "Stars unlock gear. The first one unlocks at 2 ★."
+    },
+    "gear_next": {
+      "es": "Próximo: {name} con {n} ★",
+      "en": "Next: {name} at {n} ★"
+    },
+    "gadget_interpol_name": {
+      "es": "Contacto en Interpol",
+      "en": "Interpol contact"
+    },
+    "gadget_interpol_desc": {
+      "es": "Una vez por caso: el analista descarta 2 países.",
+      "en": "Once per case: the analyst drops 2 countries."
+    },
+    "gadget_lens_name": {
+      "es": "Lupa forense",
+      "en": "Forensic lens"
+    },
+    "gadget_lens_desc": {
+      "es": "Las cámaras siempre traen su descripción y detecta dobles.",
+      "en": "Camera hints are always readable, and it spots body doubles."
+    },
+    "gadget_book_name": {
+      "es": "Agenda de contactos",
+      "en": "Contact book"
+    },
+    "gadget_book_desc": {
+      "es": "Tres investigaciones por ciudad antes de que se enfríe el rastro.",
+      "en": "Three investigations per city before the trail cools."
+    },
+    "gadget_jet_name": {
+      "es": "Jet privado",
+      "en": "Private jet"
+    },
+    "gadget_jet_desc": {
+      "es": "Una vez por caso: un vuelo tarda la mitad.",
+      "en": "Once per case: one flight takes half the time."
+    },
+    "gadget_decoder_name": {
+      "es": "Descifrador",
+      "en": "Decoder"
+    },
+    "gadget_decoder_desc": {
+      "es": "Las escuchas llegan sin interferencia.",
+      "en": "Wiretaps arrive without interference."
+    },
+    "gadget_detector_name": {
+      "es": "Detector de mentiras",
+      "en": "Lie detector"
+    },
+    "gadget_detector_desc": {
+      "es": "Una vez por caso: marca la pista falsa de una ciudad.",
+      "en": "Once per case: marks a city's forged clue."
+    },
+    "gadget_file_name": {
+      "es": "Archivo de Interpol",
+      "en": "Interpol file"
+    },
+    "gadget_file_desc": {
+      "es": "Empezás el caso sabiendo un dato de quién es.",
+      "en": "You start the case knowing one fact about who it is."
+    },
+    "gadget_radar_name": {
+      "es": "Radar de puertos",
+      "en": "Port radar"
+    },
+    "gadget_radar_desc": {
+      "es": "El analista sugiere países también en los tramos en barco.",
+      "en": "The analyst suggests countries on sea legs too."
+    },
+    "detector_found": {
+      "es": "El detector marcó una pista falsa: {spot}.",
+      "en": "The detector marked a forged clue: {spot}."
+    },
+    "detector_none": {
+      "es": "El detector no encontró pistas falsas en esta ciudad.",
+      "en": "The detector found no forged clues in this city."
+    },
+    "dest_known_title": {
+      "es": "Lo que sabés del destino",
+      "en": "What you know about the destination"
+    },
+    "dest_known_none": {
+      "es": "Todavía nada: investigá antes de viajar.",
+      "en": "Nothing yet: investigate before you travel."
+    },
+    "sea_leg": {
+      "es": "Tramo en barco: el analista no tiene datos de vuelos. Buscá la ciudad en el globo (el margen del pin es generoso).",
+      "en": "Sea leg: the analyst has no flight data. Find the city on the globe (the pin margin is generous)."
+    },
+    "split_travel": {
+      "es": "Cualquiera de los dos destinos sirve: elegí a quién seguir. El tramo largo tiene más ciudades; el corto termina antes.",
+      "en": "Either destination works: choose who to follow. The long branch has more cities; the short one ends sooner."
+    },
+    "obj_pursuit": {
+      "es": "Persecución",
+      "en": "Pursuit"
+    },
+    "obj_recover": {
+      "es": "Recuperar el botín",
+      "en": "Recover the loot"
+    },
+    "obj_rescue": {
+      "es": "Rescate",
+      "en": "Rescue"
+    },
+    "obj_split": {
+      "es": "Dos ladrones",
+      "en": "Two thieves"
+    },
+    "obj_pursuit_desc": {
+      "es": "Seguí el rastro, identificá al culpable y atrapalo.",
+      "en": "Follow the trail, identify the culprit and catch them."
+    },
+    "obj_recover_desc": {
+      "es": "El rastro de dinero describe el escondite. En la última ciudad, allaná el lugar correcto antes de que vendan el botín.",
+      "en": "The money trail describes the hideout. In the last city, raid the right place before the loot is sold."
+    },
+    "obj_rescue_desc": {
+      "es": "Encontrá a los captores, emití la orden y sacá al rehén de la ciudad a toda velocidad.",
+      "en": "Find the kidnappers, issue the warrant and get the hostage out of the city at full speed."
+    },
+    "obj_split_desc": {
+      "es": "En algún momento se separan: elegí a cuál seguir. Cualquiera de los dos cierra el caso.",
+      "en": "At some point they split up: choose which one to follow. Either one closes the case."
+    },
+    "gang_file_title": {
+      "es": "Ficha de la banda",
+      "en": "Gang file"
+    },
+    "event_tag": {
+      "es": "IMPREVISTO EN {city}",
+      "en": "SURPRISE IN {city}"
+    },
+    "reaction_tag": {
+      "es": "EL LADRÓN REACCIONA",
+      "en": "THE THIEF REACTS"
+    },
+    "event_clue_title": {
+      "es": "Lo que conseguiste",
+      "en": "What you got"
+    },
+    "mg_ambush_title": {
+      "es": "¡Corré!",
+      "en": "Run!"
+    },
+    "mg_ambush_hint": {
+      "es": "Salí corriendo cuando la aguja esté en la zona verde.",
+      "en": "Make your run when the needle is in the green zone."
+    },
+    "mg_ambush_action": {
+      "es": "¡Ahora!",
+      "en": "Now!"
+    },
+    "mg_ambush_status": {
+      "es": "Esperá el momento justo...",
+      "en": "Wait for the right moment..."
+    },
+    "mg_ambush_win": {
+      "es": "¡Te escapaste!",
+      "en": "You got away!"
+    },
+    "mg_ambush_lose": {
+      "es": "Te alcanzaron: perdiste tiempo.",
+      "en": "They caught you: you lost time."
+    },
+    "mg_pick_title": {
+      "es": "¡Atrapalo!",
+      "en": "Catch them!"
+    },
+    "mg_pick_hint": {
+      "es": "Tocá al carterista 3 veces antes de que se pierda entre la gente.",
+      "en": "Tap the pickpocket 3 times before they vanish into the crowd."
+    },
+    "mg_pick_status": {
+      "es": "Toques: %d / %d",
+      "en": "Taps: %d / %d"
+    },
+    "mg_pick_win": {
+      "es": "¡Recuperaste la billetera!",
+      "en": "You got your wallet back!"
+    },
+    "mg_pick_lose": {
+      "es": "Se escapó...",
+      "en": "They got away..."
+    },
+    "story_next": {
+      "es": "Siguiente",
+      "en": "Next"
+    },
+    "story_start": {
+      "es": "Empezar",
+      "en": "Start"
+    },
+    "story_end": {
+      "es": "Continuar",
+      "en": "Continue"
+    },
+    "story_skip": {
+      "es": "Saltar",
+      "en": "Skip"
+    },
+    "stars_rule_recover": {
+      "es": "Estrellas: recuperar el botín · no errar ningún viaje · acertar el primer allanamiento",
+      "en": "Stars: recover the loot · miss no trip · get the first raid right"
+    },
+    "won_recover": {
+      "es": "¡Recuperaste el botín en {place}!",
+      "en": "You recovered the loot at {place}!"
+    },
+    "won_rescue": {
+      "es": "¡El rehén está a salvo! Capturaste a {name}.",
+      "en": "The hostage is safe! You caught {name}."
+    },
+    "chase_title_rescue": {
+      "es": "¡Rescate!",
+      "en": "Rescue!"
+    },
+    "chase_text_rescue": {
+      "es": "Liberaste al rehén. Ahora sacalo de {city} antes de que los captores los alcancen.",
+      "en": "You freed the hostage. Now get them out of {city} before the kidnappers catch up."
+    },
+    "rescue_button": {
+      "es": "Rescatar al rehén",
+      "en": "Rescue the hostage"
+    },
+    "chase_start_rescue": {
+      "es": "¡Escapar con el rehén!",
+      "en": "Escape with the hostage!"
+    },
+    "board_hideout_title": {
+      "es": "Pizarrón del escondite",
+      "en": "Hideout board"
+    },
+    "cork_hideout": {
+      "es": "Tachá los lugares que no coinciden con lo que sabés del escondite.",
+      "en": "Cross out the places that don't match what you know about the hideout."
+    },
+    "tip_cold": {
+      "es": "Se enfrió el rastro. Podés seguir investigando acá, pero cada lugar nuevo cuesta {x} h más. ¿No conviene viajar?",
+      "en": "The trail has gone cold. You can keep investigating here, but each new place costs {x} h more. Maybe it's time to travel?"
+    },
+    "tip_lead": {
+      "es": "Arriba ves cuánto te lleva el ladrón. Si gastás poco tiempo en cada ciudad lo alcanzás, pero cuando estás cerca reacciona.",
+      "en": "At the top you can see the thief's lead. Spend little time per city and you'll catch up, but when you get close, they react."
+    },
+    "tip_forged": {
+      "es": "Era una pista falsa: los Santos de Papel falsifican documentos. Confirmá con una segunda fuente; las cámaras nunca mienten.",
+      "en": "That was a forged clue: the Paper Saints fake documents. Confirm with a second source; cameras never lie."
+    },
+    "tip_double": {
+      "es": "La foto era de un doble: las Manos de Terciopelo los usan. En sus casos, confiá en las pistas escritas.",
+      "en": "The photo showed a body double: the Velvet Hands use them. In their cases, trust the written clues."
+    },
+    "tip_jam": {
+      "es": "Interferencia de Señal Cero: hay palabras tapadas. Podés descifrarla por 1 h o confiar en otra fuente.",
+      "en": "Zero Signal interference: some words are blacked out. Decrypt it for 1 h or trust another source."
+    },
+    "tip_sea": {
+      "es": "Este tramo es en barco y el analista no ve nada. Buscá la ciudad en el globo: el margen del pin es generoso.",
+      "en": "This leg is by sea and the analyst can't see a thing. Find the city on the globe: the pin margin is generous."
+    },
+    "tip_combo": {
+      "es": "Media pista: sola no alcanza. Combinala con la otra media pista de esta ciudad para saber cuál de los países es.",
+      "en": "Half a clue: on its own it isn't enough. Combine it with this city's other half to tell which country it is."
+    },
+    "tip_gear": {
+      "es": "¡Desbloqueaste equipo! Antes de cada caso elegí qué llevar: cada banda tiene un truco y hay equipo contra cada uno.",
+      "en": "Gear unlocked! Before each case, choose what to bring: every gang has a trick and there's gear against each one."
+    },
+    "tip_split": {
+      "es": "Desde acá se separan. Las dos pistas escritas apuntan a destinos distintos: cualquiera de los dos sirve.",
+      "en": "They split up here. The two written clues point to different destinations: either one works."
+    },
+    "tip_ok": {
+      "es": "Entendido",
+      "en": "Got it"
+    },
+    "tip_tag": {
+      "es": "CONSEJO",
+      "en": "TIP"
+    },
+    "event_source": {
+      "es": "Imprevisto",
+      "en": "Event"
     }
   }
 }
